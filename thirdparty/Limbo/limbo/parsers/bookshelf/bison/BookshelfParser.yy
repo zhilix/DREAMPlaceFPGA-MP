@@ -127,6 +127,7 @@
 %token              KWD_SLICE           "SLICE"
 %token              KWD_DSP             "DSP"
 %token              KWD_BRAM            "BRAM"
+%token              KWD_URAM            "URAM"
 %token              KWD_IO              "IO"
 %token              KWD_SITE            "SITE"
 %token              KWD_RESOURCES       "RESOURCES"
@@ -454,6 +455,7 @@ site_block_header : KWD_SITE site_type_name EOL
 site_type_name : KWD_SLICE
                | KWD_DSP
                | KWD_BRAM
+               | KWD_URAM
                | KWD_IO
                ;
 
@@ -512,6 +514,7 @@ sitemap_block_lines : sitemap_block_lines sitemap_block_line
 sitemap_block_line : INTEGER INTEGER KWD_SLICE EOL  { driver.setSiteTypeToSliceLCbk($1, $2); }
                    | INTEGER INTEGER KWD_DSP EOL    { driver.setSiteTypeToDspCbk($1, $2); }
                    | INTEGER INTEGER KWD_BRAM EOL   { driver.setSiteTypeToRamCbk($1, $2); }
+                   | INTEGER INTEGER KWD_URAM EOL   { driver.setSiteTypeToURamCbk($1, $2); }
                    | INTEGER INTEGER KWD_IO EOL     { driver.setSiteTypeToIoCbk($1, $2); }
                    ;
 

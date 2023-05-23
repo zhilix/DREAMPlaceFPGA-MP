@@ -67,6 +67,7 @@ typedef BookshelfParser::Parser::token_type token_type;
 (?i:SITE)           {return token::KWD_SITE;}
 (?i:CTRL)           {return token::KWD_CTRL;}
 (?i:BRAM)           {return token::KWD_BRAM;}
+(?i:URAM)           {return token::KWD_URAM;}
 (?i:Type)           {return token::KWD_TYPE;}
 (?i:CLOCK)          {return token::KWD_CLOCK;}
 (?i:INPUT)          {return token::KWD_INPUT;}

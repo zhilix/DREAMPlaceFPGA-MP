@@ -117,6 +117,8 @@ public:
     /// @brief from .scl file, add site (x, y) as RAM 
     void setSiteTypeToRamCbk(int xIdx, int yIdx); 
     /// @brief from .scl file, add site (x, y) as IO 
+    void setSiteTypeToURamCbk(int xIdx, int yIdx);
+    /// @brief from scl file, add site (x, y) as URAM
     void setSiteTypeToIoCbk(int xIdx, int yIdx); 
     /// @brief from .scl file, initialize clock region information
     void initClockRegionsCbk(int xReg, int yReg); 
