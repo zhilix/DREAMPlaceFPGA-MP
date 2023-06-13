@@ -740,6 +740,10 @@ class NonLinearPlaceFPGA (BasicPlaceFPGA):
                 self.pos[0][:placedb.num_physical_nodes].data.copy_(self.data_collections.node_x)
                 self.pos[0][placedb.num_nodes:placedb.num_nodes+placedb.num_physical_nodes].data.copy_(self.data_collections.node_y)
                 logging.info("Read Global Placement solution from %s" % (place_file))
+                cur_metric = EvalMetricsFPGA(iteration)
+                all_metrics.append(cur_metric)
+                cur_metric.evaluate(placedb, {"hpwl" : self.op_collections.hpwl_op}, self.pos[0])
+                logging.info(cur_metric)
 
             #Perform sorting of pin, net, node
             _, sortedNetIdx = torch.sort(self.data_collections.net2pincount_map)
@@ -768,16 +772,12 @@ class NonLinearPlaceFPGA (BasicPlaceFPGA):
             sortedNodeMap = sortedNodeMap.to(torch.int32)
 
             tt = time.time()
-            
+
             self.op_collections.lut_ff_legalization_op.initialize(self.pos[0], model.precondWL[:placedb.num_physical_nodes], sortedNodeMap, sortedNodeIdx, sortedNetMap, sortedNetIdx, sortedPinMap)
 
             DLStatus = 1
             dlIter = 0
         
-            ##DBG
-            #pdb.set_trace()
-            temp_pos = self.pos[0].detach().clone()
-
             #For runDLIter stopping criteria
             activeStatus = torch.zeros(placedb.num_sites_x*placedb.num_sites_y, dtype=torch.int, device=self.device)
             illegalStatus = torch.zeros(placedb.num_nodes, dtype=torch.int, device=self.device)
@@ -815,8 +815,6 @@ class NonLinearPlaceFPGA (BasicPlaceFPGA):
                 if dlIter > 100 or iter_stable > 5:
                     DLStatus = 0
 
-    
-            #pdb.set_trace()
             self.pos[0].data.copy_(self.op_collections.lut_ff_legalization_op.ripUP_Greedy_slotAssign(self.pos[0], model.precondWL[:placedb.num_physical_nodes], self.data_collections.node_z[:placedb.num_movable_nodes], sortedNodeMap, sortedNodeIdx, sortedNetMap, sortedNetIdx, sortedPinMap))
             logging.info("legalization takes %.3f seconds" % (time.time()-tt))
             cur_metric = EvalMetricsFPGA(iteration)

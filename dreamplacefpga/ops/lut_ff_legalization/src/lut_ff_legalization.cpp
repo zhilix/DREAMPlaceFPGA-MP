@@ -248,47 +248,29 @@ inline bool check_sig_in_site_next_pq_sig(const int* nwCand_sig, const int nwCan
 inline bool add_inst_to_sig(const int node2prclstrCount, const int* flat_node2precluster_map, const int* sorted_node_map, const int instPcl, int* nwCand_sig, int& nwCand_sigIdx)
 {
     std::vector<int> temp;
-    int itA(0), itB(0); 
-    int endA(nwCand_sigIdx), endB(node2prclstrCount);
 
-    while (itA != endA && itB != endB)
+    for (int el = 0; el < node2prclstrCount; ++el)
     {
-        if(sorted_node_map[nwCand_sig[itA]] < sorted_node_map[flat_node2precluster_map[instPcl+itB]])
+        int newInstId = flat_node2precluster_map[instPcl+el];
+        //Ensure instance is not in sig
+        if (!inst_in_sig(newInstId, nwCand_sigIdx, nwCand_sig, 0))
         {
-            temp.emplace_back(nwCand_sig[itA]);
-            ++itA;
-        }
-        else if(sorted_node_map[nwCand_sig[itA]] > sorted_node_map[flat_node2precluster_map[instPcl+itB]])
-        {
-            temp.emplace_back(flat_node2precluster_map[instPcl+itB]);
-            ++itB;
+            temp.emplace_back(newInstId);
         } else
         {
             return false;
         }
     }
-    if (itA == endA)
-    {
-        for (int mBIdx = itB; mBIdx < endB; ++mBIdx)
-        {
-            temp.emplace_back(flat_node2precluster_map[instPcl+mBIdx]);
-        }
-    } else
-    {
-        for (int mAIdx = itA; mAIdx < endA; ++mAIdx)
-        {
-            temp.emplace_back(nwCand_sig[mAIdx]);
-        }
-    }
 
-    if (temp.size() > 2*SLICE_CAPACITY)
+    if (nwCand_sigIdx + temp.size() > 2*SLICE_CAPACITY)
     {
         return false;
     }
-    nwCand_sigIdx = (int)temp.size();
-    for(unsigned int i = 0; i < temp.size(); ++i)
+
+    for (int mBIdx = 0; mBIdx < temp.size(); ++mBIdx)
     {
-        nwCand_sig[i] = temp[i];
+        nwCand_sig[nwCand_sigIdx] = temp[mBIdx];
+        ++nwCand_sigIdx;
     }
     return true;
 }
@@ -1182,6 +1164,11 @@ inline bool compare_pq_tops(const int siteId, const int sPQ, const int SIG_IDX, 
     int curr_pq_topId = sPQ+site_curr_pq_top_idx[siteId];
     int next_pq_topId = sPQ+site_next_pq_top_idx[siteId];
 
+    if (site_curr_pq_sig_idx[curr_pq_topId] == 0 || 
+            site_next_pq_sig_idx[next_pq_topId] == 0)
+    {
+        return false;
+    }
     if (site_curr_pq_score[curr_pq_topId] == site_next_pq_score[next_pq_topId] && 
         site_curr_pq_siteId[curr_pq_topId] == site_next_pq_siteId[next_pq_topId] &&
         site_curr_pq_sig_idx[curr_pq_topId] == site_next_pq_sig_idx[next_pq_topId])
@@ -1536,6 +1523,9 @@ int initSiteNeighbours(const T *pos_x,
     //Update sites_nbrListMap_instId and sites_nbrListMap_dist
     for (int i = 0; i < num_nodes; ++i)
     {
+        //DBG
+        //std::cout << "At node " << i << " out of " << num_nodes << std::endl;
+        //DBG
         const int instId = sorted_node_idx[i];
         int prIdx = instId*3;
 
@@ -4291,6 +4281,21 @@ int slotAssign(
                 ce[2] = ce[0];
                 ce[3] = ce[1];
             }
+            ////DBG
+            //std::cout << "Slot assignment for sIdx: " << sIdx << " with " << site_det_sig_idx[sIdx] << " elements and siteId: " << siteId << std::endl;
+            //std::cout << "There are " << lut.size() << " luts: ";
+            //for (auto el : lut)
+            //{
+            //    std::cout << el << " ";
+            //}
+            //std::cout << std::endl;
+            //std::cout << "There are " << ff.size() << " ffs: ";
+            //for (auto el : ff)
+            //{
+            //    std::cout << el << " ";
+            //}
+            //std::cout << std::endl;
+            ////DBG
 
             //computeLUTScoreAndScoreImprov
             std::vector<BLE<T> > bleS(lut.size()), bleP, bleLP;
@@ -5423,7 +5428,7 @@ void runDLIter(at::Tensor pos,
                                 DREAMPLACE_TENSOR_DATA_PTR(illegalStatus, int));
                     });
 
-    //std::cout << "Run DL Sync: " << DLStatus << std::endl;
+    //std::cout << "Run DL Sync " << std::endl;
 }
 
 //RipUp & Greedy Legalization

@@ -1231,6 +1231,11 @@ inline __device__ bool compare_pq_tops(const int siteId, const int sPQ, const in
     int curr_pq_topId = sPQ+site_curr_pq_top_idx[siteId];
     int next_pq_topId = sPQ+site_next_pq_top_idx[siteId];
 
+    if (site_curr_pq_sig_idx[curr_pq_topId] == 0 || 
+            site_next_pq_sig_idx[next_pq_topId] == 0)
+    {
+        return false;
+    }
     if (site_curr_pq_score[curr_pq_topId] == site_next_pq_score[next_pq_topId] && 
         site_curr_pq_siteId[curr_pq_topId] == site_next_pq_siteId[next_pq_topId] &&
         site_curr_pq_sig_idx[curr_pq_topId] == site_next_pq_sig_idx[next_pq_topId])
