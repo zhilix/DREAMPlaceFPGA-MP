@@ -137,6 +137,25 @@ public:
     void addCellClockPinCbk(std::string& pName);
     /// @brief from .lib file, lib cell ctrl pin entry
     void addCellCtrlPinCbk(std::string& pName);
+    ///.regions file
+    /// @brief from .regions file, region constraint entry
+    void addRegionConstraintCbk(int RegionIdx, int numBoxes);
+    /// @brief from .regions file, region box entry
+    void addRegionBoxCbk(int xl, int yl, int xh, int yh);
+    /// @brief from .regions file, region constraint entry
+    void addInstanceToRegionCbk(const std::string& instName, int regionIdx);
+    /// .cascade_shape file
+    /// @brief from cascade_shape file, add shape entry
+    void addShapeCbk(const std::string& name, int numRows, int numCols);
+    /// @brief from cascade_shape file, add shape that is single column 
+    void addShapeSingleColCbk(std::string& macroType);
+    /// @brief from cascade_shape file, add shape that is double column
+    void addShapeDoubleColCbk(std::string& macroType);
+    /// .cascade_shape_instances file
+    /// @brief from cascade_shape_inst file, add instance to shape entry
+    void addCascadeInstToShapeCbk(const std::string& shapeName, const std::string& instName);
+    /// @brief from cascade_shape_inst file, add node to instance entry
+    void addNodeToCascadeInstCbk(const std::string& nodeName);
 
     /// @brief control m_plFlag
     /// @param flag control flag 
@@ -236,6 +255,9 @@ public:
     void setNetFileCbk(const std::string &str);
     void setPlFileCbk(const std::string &str);
     void setWtFileCbk(const std::string &str);
+    void setRegionFileCbk(const std::string &str);
+    void setCascadeShapeFileCbk(const std::string &str);
+    void setCascadeInstFileCbk(const std::string &str);
 
     /// get all bookshelf files except .aux 
     /// @return bookshelf files except .aux 
@@ -246,6 +268,9 @@ public:
     string const& netFile() const {return m_netFile;}
     string const& plFile() const {return m_plFile;}
     string const& wtFile() const {return m_wtFile;}
+    string const& regionFile() const {return m_regionFile;}
+    string const& cascadeShapeFile() const {return m_cascadeShapeFile;}
+    string const& cascadeInstFile() const {return m_cascadeInstFile;}
 protected:
 	Net m_net; ///< temporary storage of net 
 	//Row m_row; ///< temporary storage of row 
@@ -257,6 +282,9 @@ protected:
     string m_netFile;
     string m_plFile;
     string m_wtFile;
+    string m_regionFile;
+    string m_cascadeShapeFile;
+    string m_cascadeInstFile;
     //bool m_plFlag; ///< if true, indicate that only reads .pl file, this will result in different callbacks in the database 
 };
 

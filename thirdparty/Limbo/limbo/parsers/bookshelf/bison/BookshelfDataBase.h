@@ -420,7 +420,22 @@ class BookshelfDataBase
         virtual void add_clk_pin(string&) = 0; 
         /// @brief add lib cell ctrl pin
         virtual void add_ctrl_pin(string&) = 0; 
-        //
+        /// @brief add region constraint
+        virtual void add_region_constraint(int, int) = 0;
+        // @brief add region constraint boxes
+        virtual void add_region_box(int, int, int, int) = 0;
+        /// @brief add instance to region constraint
+        virtual void add_instance_to_region(string const&, int) = 0;
+        /// @brief add cascade shape
+        virtual void add_cascade_shape(string const&, int, int) = 0;
+        /// @brief add cascade shape single column
+        virtual void add_cascade_shape_single_col(string) = 0;
+        /// @brief add cascade shape double columns
+        virtual void add_cascade_shape_double_col(string) = 0;
+        /// @brief add cascade instance to shape
+        virtual void add_cascade_instance_to_shape(string const&, string const&) = 0;
+        /// @brief add cascade instance to shape
+        virtual void add_node_to_cascade_inst(string const&) = 0;
 //        /// @brief set number of terminals 
 //        virtual void resize_bookshelf_node_terminals(int, int) = 0;
 //        /// @brief set number of nets 

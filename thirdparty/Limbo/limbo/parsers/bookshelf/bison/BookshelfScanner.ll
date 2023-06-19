@@ -58,34 +58,42 @@ typedef BookshelfParser::Parser::token_type token_type;
 
  /*** BEGIN EXAMPLE - Change the example lexer rules below ***/
 
-(?i:IO)             {return token::KWD_IO;}
-(?i:END)            {return token::KWD_END;}
-(?i:DSP)            {return token::KWD_DSP;}
-(?i:PIN)            {return token::KWD_PIN;}
-(?i:net)            {return token::KWD_NET;}
-(?i:CELL)           {return token::KWD_CELL;}
-(?i:SITE)           {return token::KWD_SITE;}
-(?i:CTRL)           {return token::KWD_CTRL;}
-(?i:BRAM)           {return token::KWD_BRAM;}
-(?i:URAM)           {return token::KWD_URAM;}
-(?i:Type)           {return token::KWD_TYPE;}
-(?i:CLOCK)          {return token::KWD_CLOCK;}
-(?i:INPUT)          {return token::KWD_INPUT;}
-(?i:FIXED)          {return token::KWD_FIXED;}
-(?i:OUTPUT)         {return token::KWD_OUTPUT;}
-(?i:SLICE)          {return token::KWD_SLICE;}
-(?i:endnet)         {return token::KWD_ENDNET;}
-(?i:SITEMAP)        {return token::KWD_SITEMAP;}
-(?i:RESOURCES)      {return token::KWD_RESOURCES;}
-(?i:CLOCKREGION)    {return token::KWD_CLOCKREGION;}
-(?i:CLOCKREGIONS)   {return token::KWD_CLOCKREGIONS;}
+(?i:IO)                                 {return token::KWD_IO;}
+(?i:END)                                {return token::KWD_END;}
+(?i:DSP)                                {return token::KWD_DSP;}
+(?i:PIN)                                {return token::KWD_PIN;}
+(?i:net)                                {return token::KWD_NET;}
+(?i:CELL)                               {return token::KWD_CELL;}
+(?i:SITE)                               {return token::KWD_SITE;}
+(?i:CTRL)                               {return token::KWD_CTRL;}
+(?i:BRAM)                               {return token::KWD_BRAM;}
+(?i:URAM)                               {return token::KWD_URAM;}
+(?i:Type)                               {return token::KWD_TYPE;}
+(?i:CLOCK)                              {return token::KWD_CLOCK;}
+(?i:INPUT)                              {return token::KWD_INPUT;}
+(?i:FIXED)                              {return token::KWD_FIXED;}
+(?i:OUTPUT)                             {return token::KWD_OUTPUT;}
+(?i:SLICE)                              {return token::KWD_SLICE;}
+(?i:endnet)                             {return token::KWD_ENDNET;}
+(?i:SITEMAP)                            {return token::KWD_SITEMAP;}
+(?i:RESOURCES)                          {return token::KWD_RESOURCES;}
+(?i:CLOCKREGION)                        {return token::KWD_CLOCKREGION;}
+(?i:CLOCKREGIONS)                       {return token::KWD_CLOCKREGIONS;}
+(?i:RegionConstraint)                   {return token::KWD_REGION_CONSTRAINT;}
+(?i:BEGIN)                              {return token::KWD_BEGIN;}
+(?i:InstanceToRegionConstraintMapping)  {return token::KWD_INSTANCE_TO_REGION;}
+(?i:Shape)                              {return token::KWD_SHAPE;}
+(?i:End)                                {return token::KWD_END_SHAPE;}
 
-[A-Za-z0-9_]+\.lib           { yylval->stringVal = new std::string(yytext, yyleng); return token::LIB_FILE; }
-[A-Za-z0-9_]+\.scl           { yylval->stringVal = new std::string(yytext, yyleng); return token::SCL_FILE; }
-[A-Za-z0-9_]+\.nodes         { yylval->stringVal = new std::string(yytext, yyleng); return token::NODE_FILE; }
-[A-Za-z0-9_]+\.nets          { yylval->stringVal = new std::string(yytext, yyleng); return token::NET_FILE; }
-[A-Za-z0-9_]+\.pl            { yylval->stringVal = new std::string(yytext, yyleng); return token::PL_FILE; }
-[A-Za-z0-9_]+\.wts           { yylval->stringVal = new std::string(yytext, yyleng); return token::WT_FILE; }
+[A-Za-z0-9_]+\.lib                      { yylval->stringVal = new std::string(yytext, yyleng); return token::LIB_FILE; }
+[A-Za-z0-9_]+\.scl                      { yylval->stringVal = new std::string(yytext, yyleng); return token::SCL_FILE; }
+[A-Za-z0-9_]+\.nodes                    { yylval->stringVal = new std::string(yytext, yyleng); return token::NODE_FILE; }
+[A-Za-z0-9_]+\.nets                     { yylval->stringVal = new std::string(yytext, yyleng); return token::NET_FILE; }
+[A-Za-z0-9_]+\.pl                       { yylval->stringVal = new std::string(yytext, yyleng); return token::PL_FILE; }
+[A-Za-z0-9_]+\.wts                      { yylval->stringVal = new std::string(yytext, yyleng); return token::WT_FILE; }
+[A-Za-z0-9_]+\.regions                  { yylval->stringVal = new std::string(yytext, yyleng); return token::REGION_FILE; }
+[A-Za-z0-9_]+\.cascade_shape            { yylval->stringVal = new std::string(yytext, yyleng); return token::CASCADE_SHAPE_FILE; }
+[A-Za-z0-9_]+\.cascade_shape_instances  { yylval->stringVal = new std::string(yytext, yyleng); return token::CASCADE_INST_FILE; }
 
 
 [\+\-]?[0-9]+ {

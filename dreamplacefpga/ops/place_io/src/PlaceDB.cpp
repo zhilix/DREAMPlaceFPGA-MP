@@ -25,7 +25,13 @@ PlaceDB::PlaceDB() {
   m_numLUT = 0;
   m_numFF = 0;
   m_numDSP = 0;
-  m_numRAM = 0;
+//   m_numRAM = 0;
+  m_numBRAM = 0;
+  m_numURAM = 0;
+  num_physical_constraints = 0;
+  num_region_constraint_boxes = 0;
+  m_numCascadeShape = 0;
+  m_numCascadeInst = 0;
 }
 
 void PlaceDB::add_bookshelf_node(std::string& name, std::string& type) 
@@ -200,7 +206,22 @@ void PlaceDB::add_bookshelf_node(std::string& name, std::string& type)
       m_numDSP += 1;
       ++num_movable_nodes;
     }
-    else if (type.find("RAM") != std::string::npos)
+    // else if (type.find("RAM") != std::string::npos)
+    // {
+    //   node_name2id_map.insert(std::make_pair(name, mov_node_names.size()));
+    //   mov_node_names.emplace_back(name);
+    //   mov_node_types.emplace_back(type);
+    //   node2fence_region_map.emplace_back(3);
+    //   mov_node_size_x.push_back(1.0);
+    //   mov_node_size_y.push_back(5.0);
+    //   mov_node_x.emplace_back(0.0);
+    //   mov_node_y.emplace_back(0.0);
+    //   mov_node_z.emplace_back(0);
+    //   lut_type.emplace_back(0);
+    //   m_numRAM += 1;
+    //   ++num_movable_nodes;
+    // }
+    else if (type.find("RAMB") != std::string::npos)
     {
       node_name2id_map.insert(std::make_pair(name, mov_node_names.size()));
       mov_node_names.emplace_back(name);
@@ -212,8 +233,23 @@ void PlaceDB::add_bookshelf_node(std::string& name, std::string& type)
       mov_node_y.emplace_back(0.0);
       mov_node_z.emplace_back(0);
       lut_type.emplace_back(0);
-      m_numRAM += 1;
+      m_numBRAM += 1;
       ++num_movable_nodes;
+    }
+    else if (type.find("URAM") != std::string::npos)
+    {
+      node_name2id_map.insert(std::make_pair(name, mov_node_names.size()));
+      mov_node_names.emplace_back(name);
+      mov_node_types.emplace_back(type);
+      node2fence_region_map.emplace_back(3);
+      mov_node_size_x.push_back(1.0);
+      mov_node_size_y.push_back(15.0);  // 15.0? 
+      mov_node_x.emplace_back(0.0);
+      mov_node_y.emplace_back(0.0);
+      mov_node_z.emplace_back(0);
+      lut_type.emplace_back(0);
+      m_numURAM += 1;
+      ++num_movable_nodes; 
     }
     else if (type.find("BUF") != std::string::npos)
     {
@@ -430,6 +466,87 @@ void PlaceDB::add_ctrl_pin(std::string& pName)
         dreamplacePrint(kWARN, "libCell not found in .lib file: %s\n",
                 m_libCellTemp.c_str());
     }
+}
+void PlaceDB::add_region_constraint(int RegionIdx, int numBoxes)
+{
+    std::vector<index_type> regionBoxes;
+    flat_constraint2box_start.emplace_back(flat_constraint2box.size());
+    ++num_physical_constraints;
+    num_region_constraint_boxes += numBoxes;
+
+}
+void PlaceDB::add_region_box(int xl, int yl, int xh, int yh)
+{
+    region_box2xl.emplace_back(xl);
+    region_box2yl.emplace_back(yl);
+    region_box2xh.emplace_back(xh);
+    region_box2yh.emplace_back(yh);
+
+    index_type boxId(region_box2xl.size() - 1);
+    flat_constraint2box.emplace_back(boxId);
+
+}
+void PlaceDB::add_instance_to_region(std::string const& instName, int regionIdx)
+{
+    index_type nodeId;
+    nodeId = node_name2id_map.at(instName);
+    
+    flat_constraint2node.emplace_back(nodeId);
+    flat_constraint2node_start.emplace_back(flat_constraint2node.size());
+    
+}
+void PlaceDB::add_cascade_shape(std::string const& name, int numRows, int numCols)
+{
+    
+    cascade_shape_name2id_map.insert(std::make_pair(name, cascade_shape_names.size()));
+    cascade_shape_names.emplace_back(name);
+    cascade_shape_heights.emplace_back(numRows);
+    cascade_shape_widths.emplace_back(numCols);
+    
+    ++m_numCascadeShape;
+    m_cascadeShapeTemp = name;
+    cascade_shape2macro_type.emplace_back(" ");
+
+}
+void PlaceDB::add_cascade_shape_single_col(std::string macroType)
+{
+    //DBG
+    //std::cout << "Add single col cascade shape " << macroType << " for " << m_cascadeShapeTemp << std::endl;
+    //DBG
+    string2index_map_type::iterator found = cascade_shape_name2id_map.find(m_cascadeShapeTemp);
+    if (found != cascade_shape_name2id_map.end())
+    {
+    //DBG
+    //std::cout << "Found " << m_cascadeShapeTemp << std::endl;
+    //DBG
+        cascade_shape2macro_type.at(cascade_shape_name2id_map.at(m_cascadeShapeTemp)) = macroType;
+    }
+
+}
+void PlaceDB::add_cascade_shape_double_col(std::string macroType)
+{
+    string2index_map_type::iterator found = cascade_shape_name2id_map.find(m_cascadeShapeTemp);
+    if (found != cascade_shape_name2id_map.end())
+    {
+        cascade_shape2macro_type.at(cascade_shape_name2id_map.at(m_cascadeShapeTemp)) = macroType;
+    }
+}
+void PlaceDB::add_cascade_instance_to_shape(std::string const& shapeName, std::string const& instName)
+{
+    cascade_inst_name2id_map.insert(std::make_pair(instName, cascade_inst_names.size()));
+    cascade_inst_names.emplace_back(instName);
+    
+    //need to convert the cascade shape name to upper case due to the bookshelf file provided
+    std::string upper_shapeName = limbo::toupper(shapeName);
+    cascade_inst2shape.emplace_back(cascade_shape_name2id_map.at(upper_shapeName));
+
+    flat_cascade_inst2node_start.emplace_back(flat_cascade_inst2node.size());
+    ++m_numCascadeInst;
+
+}
+void PlaceDB::add_node_to_cascade_inst(std::string const& nodeName)
+{
+    flat_cascade_inst2node.emplace_back(node_name2id_map.at(nodeName));
 }
 
 void PlaceDB::set_bookshelf_node_pos(std::string const& name, double x, double y, int z)

@@ -33,6 +33,9 @@ Driver::Driver(BookshelfDataBase& db)
     m_netFile.clear();
     m_plFile.clear();
     m_wtFile.clear();
+    m_regionFile.clear();
+    m_cascadeShapeFile.clear();
+    m_cascadeInstFile.clear();
 
 }
 
@@ -378,6 +381,50 @@ void Driver::addCellCtrlPinCbk(std::string& pName)
 {
     m_db.add_ctrl_pin(pName);
 }
+// .regions file
+void Driver::addRegionConstraintCbk(int RegionIdx, int numBoxes)
+{
+    m_db.add_region_constraint(RegionIdx, numBoxes);
+}
+void Driver::addRegionBoxCbk(int xl, int yl, int xh, int yh)
+{
+    m_db.add_region_box(xl, yl, xh, yh);
+}
+void Driver::addInstanceToRegionCbk(const std::string& instName, int regionIdx)
+{
+    m_db.add_instance_to_region(instName, regionIdx);
+}
+// .cascade_shape file
+void Driver::addShapeCbk(const std::string& name, int numRows, int numCols)
+{
+    //DBG
+    //std::cout << "Add shape " << name << " of size: " << numRows << " x " << numCols << std::endl;
+    //DBG
+    m_db.add_cascade_shape(name, numRows, numCols);
+}
+void Driver::addShapeSingleColCbk(std::string& macroType)
+{
+    //DBG
+    //std::cout << "Add single column shape " << macroType << std::endl;
+    //DBG
+    m_db.add_cascade_shape_single_col(macroType);
+}
+void Driver::addShapeDoubleColCbk(std::string& macroType)
+{
+    //DBG
+    //std::cout << "Add double column shape " << macroType << std::endl;
+    //DBG
+    m_db.add_cascade_shape_double_col(macroType);
+}
+// .cascade_shape_instances file
+void Driver::addCascadeInstToShapeCbk(const std::string& shapeName, const std::string& instName)
+{
+    m_db.add_cascade_instance_to_shape(shapeName, instName);
+}
+void Driver::addNodeToCascadeInstCbk(const std::string& nodeName)
+{
+    m_db.add_node_to_cascade_inst(nodeName);
+}
 // .aux file 
 void Driver::auxCbk(std::string& design_name, vector<std::string>& vBookshelfFiles)
 {
@@ -425,6 +472,27 @@ void Driver::setWtFileCbk(const std::string &str)
 {
     //std::cout << "Wt File: " << str << std::endl; 
     m_wtFile = str;
+    m_vBookshelfFiles.push_back(str);
+}
+
+void Driver::setRegionFileCbk(const std::string &str)
+{
+    //std::cout << "Region File: " << str << std::endl; 
+    m_regionFile = str;
+    m_vBookshelfFiles.push_back(str);
+}
+
+void Driver::setCascadeShapeFileCbk(const std::string &str)
+{
+    //std::cout << "Cascade Shape File: " << str << std::endl; 
+    m_cascadeShapeFile = str;
+    m_vBookshelfFiles.push_back(str);
+}
+
+void Driver::setCascadeInstFileCbk(const std::string &str)
+{
+    //std::cout << "Cascade Inst File: " << str << std::endl; 
+    m_cascadeInstFile = str;
     m_vBookshelfFiles.push_back(str);
 }
 
@@ -512,7 +580,29 @@ bool read(BookshelfDataBase& db, const std::string& auxFile)
     //    if (!flag)
     //        return false;
     //}
-    for (auto file : {driverAux.libFile(), driverAux.sclFile(), driverAux.nodeFile(), driverAux.plFile(), driverAux.netFile()})
+
+
+    //Include mandatory files first
+    std::vector<std::string> input_bookshelf_files = {driverAux.libFile(), driverAux.sclFile()};
+
+    input_bookshelf_files.emplace_back(driverAux.nodeFile());
+    input_bookshelf_files.emplace_back(driverAux.plFile());
+    input_bookshelf_files.emplace_back(driverAux.netFile());
+    input_bookshelf_files.emplace_back(driverAux.wtFile());
+    input_bookshelf_files.emplace_back(driverAux.regionFile());
+    input_bookshelf_files.emplace_back(driverAux.cascadeShapeFile());
+
+    //cascadeInstFile is optional
+    if (driverAux.cascadeInstFile() != "")
+    {
+        //DBG
+        //std::cout << "cascade inst file exists" << std::endl;
+        //DBG
+        input_bookshelf_files.emplace_back(driverAux.cascadeInstFile());
+    }
+
+    //for (auto file : {driverAux.libFile(), driverAux.sclFile(), driverAux.nodeFile(), driverAux.plFile(), driverAux.netFile(), driverAux.wtFile(), driverAux.regionFile(), driverAux.cascadeShapeFile(), driverAux.cascadeInstFile()})
+    for (auto file : input_bookshelf_files)
     {
         std::string path = auxPath + "/" + file;
         std::cout << "Parsing File " << path << std::endl;
@@ -524,6 +614,9 @@ bool read(BookshelfDataBase& db, const std::string& auxFile)
         }
         driverAux.parse_stream(ifs);
         ifs.close();
+        //DBG
+        //std::cout << "Completed parsing " << file << std::endl;
+        //DBG
     }
 
     //Parse bookshelf files in order
