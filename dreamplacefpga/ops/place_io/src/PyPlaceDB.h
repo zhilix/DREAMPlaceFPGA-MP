@@ -102,6 +102,29 @@ struct PyPlaceDB
     int row_height;
     int site_width;
 
+    unsigned int num_physical_constraints; ///< number of physical constraints
+    unsigned int num_region_constraint_boxes; ///< number of physical region constraints boxes
+    pybind11::list region_box2xl; ///< xl of each physical region box
+    pybind11::list region_box2yl; ///< yl of each physical region box
+    pybind11::list region_box2xh; ///< xh of each physical region box
+    pybind11::list region_box2yh; ///< yh of each physical region box
+    pybind11::list flat_constraint2box; ///< flattened array of constraints2boxes_map
+    pybind11::list flat_constraint2box_start; ///< starting point for each physical region box
+    pybind11::list flat_constraint2node; ///< flattened array of constraint2node_map
+    pybind11::list flat_constraint2node_start; ///< starting point for each node in each constraint
+    
+    pybind11::list cascade_shape_names; ///< names of cascade nodes
+    pybind11::dict cascade_shape_name2id_map; ///< map cascade node name to id
+    pybind11::list cascade_shape_heights; ///< heights(num of rows) of cascade shapes
+    pybind11::list cascade_shape_widths; ///< widths(num of columns) of cascade shapes
+    pybind11::list cascade_shape2macro_type; ///< macro types(DSP, URAM, BRAM) of cascade shapes
+
+    pybind11::list cascade_inst_names; ///< names of cascade instances
+    pybind11::dict cascade_inst_name2id_map; ///< map cascade instance name to id
+    pybind11::list cascade_inst2shape; ///< shape id of cascade instances
+    pybind11::list flat_cascade_inst2node; ///< flattened array of cascade_inst2node_map
+    pybind11::list flat_cascade_inst2node_start; ///< starting point for each cascade instance
+    
     //pybind11::list node2orig_node_map; ///< due to some fixed nodes may have non-rectangular shapes, we flat the node list; 
     //                                    ///< this map maps the new indices back to the original ones 
     //pybind11::list pin_direct; ///< 1D array, pin direction IO 

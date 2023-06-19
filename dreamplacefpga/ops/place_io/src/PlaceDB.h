@@ -219,7 +219,81 @@ class PlaceDB : public BookshelfParser::BookshelfDataBase
         std::size_t numLUT() const {return m_numLUT;}
         std::size_t numFF() const {return m_numFF;}
         std::size_t numDSP() const {return m_numDSP;}
-        std::size_t numRAM() const {return m_numRAM;}
+        // std::size_t numRAM() const {return m_numRAM;}
+        std::size_t numBRAM() const {return m_numBRAM;}
+        std::size_t numURAM() const {return m_numURAM;}
+        std::size_t numPhysicalConstraints() const {return num_physical_constraints;}
+        std::size_t numRegionConstraintBoxes() const {return num_region_constraint_boxes;}
+        std::size_t numCascadeShape() const {return m_numCascadeShape;}
+        std::size_t numCascadeInst() const {return m_numCascadeInst;}
+
+        std::vector<double> const& regionBoxXLows() const {return region_box2xl;}
+        std::vector<double>& regionBoxXLows() {return region_box2xl;}
+        double const& regionBoxXl(index_type id) const {return region_box2xl.at(id);}
+        double& regionBoxXl(index_type id) {return region_box2xl.at(id);}
+
+        std::vector<double> const& regionBoxYLows() const {return region_box2yl;}
+        std::vector<double>& regionBoxYLows() {return region_box2yl;}
+        double const& regionBoxYl(index_type id) const {return region_box2yl.at(id);}
+        double& regionBoxYl(index_type id) {return region_box2yl.at(id);}
+
+        std::vector<double> const& regionBoxXHighs() const {return region_box2xh;}
+        std::vector<double>& regionBoxXHighs() {return region_box2xh;}
+        double const& regionBoxXh(index_type id) const {return region_box2xh.at(id);}
+        double& regionBoxXh(index_type id) {return region_box2xh.at(id);}
+
+        std::vector<double> const& regionBoxYHighs() const {return region_box2yh;}
+        std::vector<double>& regionBoxYHighs() {return region_box2yh;}
+        double const& regionBoxYh(index_type id) const {return region_box2yh.at(id);}
+        double& regionBoxYh(index_type id) {return region_box2yh.at(id);}
+
+        std::vector<index_type> const& flatConstraint2Box() const {return flat_constraint2box;}
+        std::vector<index_type>& flatConstraint2Box() {return flat_constraint2box;}
+
+        std::vector<index_type> const& flatConstraint2BoxStart() const {return flat_constraint2box_start;}
+        std::vector<index_type>& flatConstraint2BoxStart() {return flat_constraint2box_start;}
+
+        std::vector<index_type> const& flatConstraint2Node() const {return flat_constraint2node;}
+        std::vector<index_type>& flatConstraint2Node() {return flat_constraint2node;}
+
+        std::vector<index_type> const& flatConstraint2NodeStart() const {return flat_constraint2node_start;}
+        std::vector<index_type>& flatConstraint2NodeStart() {return flat_constraint2node_start;}
+
+
+        std::vector<std::string> const& cascadeShapeNames() const {return cascade_shape_names;}
+        std::vector<std::string>& cascadeShapeNames() {return cascade_shape_names;}
+        std::string const& cascadeShapeName(index_type id) const {return cascade_shape_names.at(id);}
+        std::string& cascadeShapeName(index_type id) {return cascade_shape_names.at(id);}
+
+        std::vector<double> const& cascadeShapeHeights() const {return cascade_shape_heights;}
+        std::vector<double>& cascadeShapeHeights() {return cascade_shape_heights;}
+
+        std::vector<double> const& cascadeShapeWidths() const {return cascade_shape_widths;}
+        std::vector<double>& cascadeShapeWidths() {return cascade_shape_widths;}
+
+        std::vector<std::string> const& cascadeShape2MacroType() const {return cascade_shape2macro_type;}
+        std::vector<std::string>& cascadeShape2MacroType() {return cascade_shape2macro_type;}
+
+        std::vector<std::string> const& cascadeInstNames() const {return cascade_inst_names;}
+        std::vector<std::string>& cascadeInstNames() {return cascade_inst_names;}
+        std::string const& cascadeInstName(index_type id) const {return cascade_inst_names.at(id);}
+        std::string& cascadeInstName(index_type id) {return cascade_inst_names.at(id);}
+
+        std::vector<index_type> const& cascadeInst2Shape() const {return cascade_inst2shape;}
+        std::vector<index_type>& cascadeInst2Shape() {return cascade_inst2shape;}
+
+        std::vector<index_type> const& flatCascadeInst2Node() const {return flat_cascade_inst2node;}
+        std::vector<index_type>& flatCascadeInst2Node() {return flat_cascade_inst2node;}
+
+        std::vector<index_type> const& flatCascadeInst2NodeStart() const {return flat_cascade_inst2node_start;}
+        std::vector<index_type>& flatCascadeInst2NodeStart() {return flat_cascade_inst2node_start;}
+
+        string2index_map_type const& cascadeInstName2Index() const {return cascade_inst_name2id_map;}
+        string2index_map_type& cascadeInstName2Index() {return cascade_inst_name2id_map;}
+
+        string2index_map_type const& cascadeShapeName2Index() const {return cascade_shape_name2id_map;}
+        string2index_map_type& cascadeShapeName2Index() {return cascade_shape_name2id_map;}
+
         std::string designName() const {return m_designName;}
 
         /// \return die area information of layout 
@@ -243,6 +317,14 @@ class PlaceDB : public BookshelfParser::BookshelfDataBase
         virtual void add_output_pin(std::string& pName);
         virtual void add_clk_pin(std::string& pName);
         virtual void add_ctrl_pin(std::string& pName);
+        virtual void add_region_constraint(int RegionIdx, int numBoxes);
+        virtual void add_region_box(int xl, int yl, int xh, int yh);
+        virtual void add_instance_to_region(std::string const& instName, int regionIdx);
+        virtual void add_cascade_shape(std::string const& name, int numRows, int numCols);
+        virtual void add_cascade_shape_single_col(std::string macroType);
+        virtual void add_cascade_shape_double_col(std::string macroType);
+        virtual void add_cascade_instance_to_shape(std::string const& shapeName, std::string const& instName);
+        virtual void add_node_to_cascade_inst(std::string const& nodeName);
         virtual void set_bookshelf_design(std::string& name);
         virtual void bookshelf_end(); 
 
@@ -270,7 +352,13 @@ class PlaceDB : public BookshelfParser::BookshelfDataBase
         std::size_t m_numLUT; ///< number of LUTs in design
         std::size_t m_numFF; ///< number of FFs in design
         std::size_t m_numDSP; ///< number of DSPs in design
-        std::size_t m_numRAM; ///< number of RAMs in design
+        // std::size_t m_numRAM; ///< number of RAMs in design
+        std::size_t m_numBRAM; ///< number of BRAMs in design
+        std::size_t m_numURAM; ///< number of URAMs in design
+        std::size_t num_physical_constraints; ///< number of physical constraints
+        std::size_t num_region_constraint_boxes; ///< number of regions
+        std::size_t m_numCascadeShape; ///< number of cascade shapes 
+        std::size_t m_numCascadeInst; ///< number of cascade instances
 
         std::string m_designName; ///< for writing def file
 
@@ -317,6 +405,31 @@ class PlaceDB : public BookshelfParser::BookshelfDataBase
 
         std::vector<double> dspSiteXYs;
         std::vector<double> ramSiteXYs;
+
+        std::vector<double> region_box2xl;
+        std::vector<double> region_box2yl;
+        std::vector<double> region_box2xh;
+        std::vector<double> region_box2yh;
+        
+        std::vector<index_type> flat_constraint2box;
+        std::vector<index_type> flat_constraint2box_start;
+        std::vector<index_type> flat_constraint2node;
+        std::vector<index_type> flat_constraint2node_start;
+
+        std::string m_cascadeShapeTemp;
+        
+        std::vector<std::string> cascade_shape_names;
+        std::vector<double> cascade_shape_heights;
+        std::vector<double> cascade_shape_widths;
+        std::vector<std::string> cascade_shape2macro_type;
+
+        std::vector<std::string> cascade_inst_names;
+        std::vector<index_type> cascade_inst2shape;
+        std::vector<index_type> flat_cascade_inst2node;
+        std::vector<index_type> flat_cascade_inst2node_start;
+
+        string2index_map_type cascade_inst_name2id_map;
+        string2index_map_type cascade_shape_name2id_map;
 
 };
 

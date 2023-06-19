@@ -41,7 +41,9 @@ void PyPlaceDB::set(PlaceDB const& db)
     node_count.append(db.numLUT());
     node_count.append(db.numFF());
     node_count.append(db.numDSP());
-    node_count.append(db.numRAM());
+    // node_count.append(db.numRAM());
+    node_count.append(db.numURAM());
+    node_count.append(db.numBRAM());
     node_count.append(num_terminals);
 
     std::vector<double> fixed_node_size(num_terminals, 1.0); 
@@ -81,6 +83,33 @@ void PyPlaceDB::set(PlaceDB const& db)
     pin2net_map = pybind11::cast(std::move(db.pin2NetMap()));
     pin2node_map = pybind11::cast(std::move(db.pin2NodeMap()));
     pin2nodeType_map = pybind11::cast(std::move(db.pin2NodeTypeMap()));
+
+    // region constraints
+    num_physical_constraints = db.numPhysicalConstraints();
+    num_region_constraint_boxes = db.numRegionConstraintBoxes();
+
+    region_box2xl = pybind11::cast(std::move(db.regionBoxXLows()));
+    region_box2yl = pybind11::cast(std::move(db.regionBoxYLows()));
+    region_box2xh = pybind11::cast(std::move(db.regionBoxXHighs()));
+    region_box2yh = pybind11::cast(std::move(db.regionBoxYHighs()));
+    flat_constraint2box = pybind11::cast(std::move(db.flatConstraint2Box()));
+    flat_constraint2box_start = pybind11::cast(std::move(db.flatConstraint2BoxStart()));
+    flat_constraint2node = pybind11::cast(std::move(db.flatConstraint2Node()));
+    flat_constraint2node_start = pybind11::cast(std::move(db.flatConstraint2NodeStart()));
+  
+    // cascade shapes
+    cascade_shape_names = pybind11::cast(std::move(db.cascadeShapeNames()));
+    cascade_shape_name2id_map = pybind11::cast(std::move(db.cascadeShapeName2Index()));
+    cascade_shape_heights = pybind11::cast(std::move(db.cascadeShapeHeights()));
+    cascade_shape_widths = pybind11::cast(std::move(db.cascadeShapeWidths()));
+    cascade_shape2macro_type = pybind11::cast(std::move(db.cascadeShape2MacroType()));
+
+    // cascade instances
+    cascade_inst_names = pybind11::cast(std::move(db.cascadeInstNames()));
+    cascade_inst_name2id_map = pybind11::cast(std::move(db.cascadeInstName2Index()));
+    cascade_inst2shape = pybind11::cast(std::move(db.cascadeInst2Shape()));
+    flat_cascade_inst2node = pybind11::cast(std::move(db.flatCascadeInst2Node()));
+    flat_cascade_inst2node_start = pybind11::cast(std::move(db.flatCascadeInst2NodeStart()));
 
     //num_terminals = db.numFixed(); //IOs
     //num_movable_nodes = db.numMovable();  // Movable cells

@@ -147,6 +147,30 @@ class PlaceDBFPGA (object):
         self.ram_mask = None
         self.dsp_mask = None
 
+        # for enhanced bookshelf format in MLCAD23 contest
+        self.num_physical_constraints = 0 # number of region constraints
+        self.num_region_constraint_boxes = 0 # number of physical region constraints boxes
+        self.region_box2xl = [] # xl of each physical region box
+        self.region_box2yl = [] # yl of each physical region box
+        self.region_box2xh = [] # xh of each physical region box
+        self.region_box2yh = [] # yh of each physical region box
+        self.flat_constraint2box = [] # flattened array of constraints2boxes_map
+        self.flat_constraint2box_start = [] # starting point for each physical region box 
+        self.flat_constraint2node = [] # flattened array of constraint2node_map
+        self.flat_constraint2node_start = [] # starting point for each node in each constraint
+
+        self.cascade_shape_names = [] # names of cascade shapes
+        self.cascade_shape_name2id_map = {} # map cascade shape name to id
+        self.cascade_shape_heights = [] # heights(num of rows) of cascade shapes
+        self.cascade_shape_widths = [] # widths(num of columns) of cascade shapes
+        self.cascade_shape2macro_type = [] # macro types(DSP, URAM, BRAM) of cascade shapes
+
+        self.cascade_inst_names = [] # names of cascade instances
+        self.cascade_inst_name2id_map = {} # map cascade instance name to id 
+        self.cascade_inst2shape = [] # shape id of cascade instances
+        self.flat_cascade_inst2node = [] # flattened array of cascade_inst2node_map
+        self.flat_cascade_inst2node_start = [] # starting point for each cascade instance
+
 
     """
     @return number of nodes
@@ -225,6 +249,7 @@ class PlaceDBFPGA (object):
         self.flop_mask = self.node2fence_region_map == 1
         self.dsp_mask = self.node2fence_region_map == 2
         self.ram_mask = self.node2fence_region_map == 3
+        # self.uram_mask = self.node2fence_region_map == 4
 
     def initialize_from_rawdb(self, params):
         """
@@ -315,9 +340,34 @@ class PlaceDBFPGA (object):
         self.row_height = float(pydb.row_height)
         self.site_width = float(pydb.site_width)
 
+        self.num_physical_constraints = pydb.num_physical_constraints
+        self.num_region_constraint_boxes = pydb.num_region_constraint_boxes
+        self.region_box2xl = pydb.region_box2xl
+        self.region_box2yl = pydb.region_box2yl
+        self.region_box2xh = pydb.region_box2xh
+        self.region_box2yh = pydb.region_box2yh
+        self.flat_constraint2box = pydb.flat_constraint2box
+        self.flat_constraint2box_start = pydb.flat_constraint2box_start
+        self.flat_constraint2node = pydb.flat_constraint2node
+        self.flat_constraint2node_start = pydb.flat_constraint2node_start
+
+        self.cascade_shape_names = pydb.cascade_shape_names 
+        self.cascade_shape_name2id_map = pydb.cascade_shape_name2id_map
+        self.cascade_shape_heights = pydb.cascade_shape_heights
+        self.cascade_shape_widths = pydb.cascade_shape_widths
+        self.cascade_shape2macro_type = pydb.cascade_shape2macro_type
+
+        self.cascade_inst_names = pydb.cascade_inst_names
+        self.cascade_inst_name2id_map = pydb.cascade_inst_name2id_map 
+        self.cascade_inst2shape = pydb.cascade_inst2shape
+        self.flat_cascade_inst2node = pydb.flat_cascade_inst2node
+        self.flat_cascade_inst2node_start = pydb.flat_cascade_inst2node_start
+
         self.num_routing_layers = 1
         self.unit_horizontal_capacity = 0.95 * params.unit_horizontal_capacity
         self.unit_vertical_capacity = 0.95 * params.unit_vertical_capacity
+
+        # pdb.set_trace()
 
     def print_node(self, node_id):
         """

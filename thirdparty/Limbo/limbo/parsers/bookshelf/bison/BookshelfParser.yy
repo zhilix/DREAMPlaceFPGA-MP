@@ -122,42 +122,53 @@
 %token			KWD_VIASPACING		        "ViaSpacing"
 %token			KWD_GRIDORIGIN		        "GridOrigin"*/
 /*Added for FPGA*/
-%token              KWD_END             "END"
-%token              KWD_SITEMAP         "SITEMAP"
-%token              KWD_SLICE           "SLICE"
-%token              KWD_DSP             "DSP"
-%token              KWD_BRAM            "BRAM"
-%token              KWD_URAM            "URAM"
-%token              KWD_IO              "IO"
-%token              KWD_SITE            "SITE"
-%token              KWD_RESOURCES       "RESOURCES"
-%token              KWD_FIXED           "FIXED"
-%token              KWD_CELL            "CELL"
-%token              KWD_PIN             "PIN"
-%token              KWD_INPUT           "INPUT"
-%token              KWD_OUTPUT          "OUTPUT"
-%token              KWD_CLOCK           "CLOCK"
-%token              KWD_CTRL            "CTRL"
-%token              KWD_NET             "net"
-%token              KWD_ENDNET          "endnet"
-%token              KWD_CLOCKREGION     "CLOCKREGION"
-%token              KWD_CLOCKREGIONS    "CLOCKREGIONS"
-%token              KWD_TYPE            "Type"
+%token              KWD_END                     "END"
+%token              KWD_SITEMAP                 "SITEMAP"
+%token              KWD_SLICE                   "SLICE"
+%token              KWD_DSP                     "DSP"
+%token              KWD_BRAM                    "BRAM"
+%token              KWD_URAM                    "URAM"
+%token              KWD_IO                      "IO"
+%token              KWD_SITE                    "SITE"
+%token              KWD_RESOURCES               "RESOURCES"
+%token              KWD_FIXED                   "FIXED"
+%token              KWD_CELL                    "CELL"
+%token              KWD_PIN                     "PIN"
+%token              KWD_INPUT                   "INPUT"
+%token              KWD_OUTPUT                  "OUTPUT"
+%token              KWD_CLOCK                   "CLOCK"
+%token              KWD_CTRL                    "CTRL"
+%token              KWD_NET                     "net"
+%token              KWD_ENDNET                  "endnet"
+%token              KWD_CLOCKREGION             "CLOCKREGION"
+%token              KWD_CLOCKREGIONS            "CLOCKREGIONS"
+%token              KWD_TYPE                    "Type"
+%token              KWD_REGION_CONSTRAINT       "RegionConstraint"
+%token              KWD_BEGIN                   "BEGIN"
+%token              KWD_INSTANCE_TO_REGION      "InstanceToRegionConstraintMapping"
+%token              KWD_SHAPE                   "Shape"
+%token              KWD_END_SHAPE               "End"
 
-%token          KWD_LIB         "lib"
-%token          KWD_SCL         "scl"
-%token          KWD_NODES       "nodes"
-%token          KWD_NETS        "nets"
-%token          KWD_PL          "pl"
-%token          KWD_WTS         "wts"
-%token          KWD_AUX         "aux"
+%token          KWD_LIB                         "lib"
+%token          KWD_SCL                         "scl"
+%token          KWD_NODES                       "nodes"
+%token          KWD_NETS                        "nets"
+%token          KWD_PL                          "pl"
+%token          KWD_WTS                         "wts"
+%token          KWD_AUX                         "aux"
+%token          KWD_REGIONS                     "regions"
+%token          KWD_CASCADE_SHAPE               "cascade_shape"
+%token          KWD_CASCADE_SHAPE_INSTANCES     "cascade_shape_instances"
 
 %token <stringVal> 	LIB_FILE  
 %token <stringVal> 	SCL_FILE  
 %token <stringVal> 	NODE_FILE 
 %token <stringVal> 	NET_FILE  
 %token <stringVal> 	PL_FILE   
-%token <stringVal> 	WT_FILE   
+%token <stringVal> 	WT_FILE
+%token <stringVal> 	REGION_FILE
+%token <stringVal> 	CASCADE_SHAPE_FILE
+%token <stringVal> 	CASCADE_INST_FILE  
 
 /* %token			KWD_LUT1		"LUT1"
  *%token			KWD_LUT2		"LUT2"
@@ -251,6 +262,9 @@ sub_top : aux_top
         | pl_top
         | net_top
         | wt_top
+        | region_top
+        | cascade_shape_top
+        | cascade_inst_top
         ;
 
 /***** aux file *****/
@@ -278,6 +292,9 @@ aux_file : LIB_FILE   { driver.setLibFileCbk(*$1); delete $1; }
          | NET_FILE   { driver.setNetFileCbk(*$1); delete $1; }
          | PL_FILE    { driver.setPlFileCbk(*$1); delete $1; }
          | WT_FILE    { driver.setWtFileCbk(*$1); delete $1; }
+         | REGION_FILE { driver.setRegionFileCbk(*$1); delete $1; }
+         | CASCADE_SHAPE_FILE { driver.setCascadeShapeFileCbk(*$1); delete $1; }
+         | CASCADE_INST_FILE { driver.setCascadeInstFileCbk(*$1); delete $1; }
          ;
 
 /***** .nodes file *****/
@@ -778,6 +795,110 @@ cell_block_line : KWD_PIN STRING KWD_INPUT EOL            { driver.addCellInputP
                 | KWD_PIN STRING KWD_INPUT KWD_CLOCK EOL  { driver.addCellClockPinCbk(*$2);  delete $2; }
                 | KWD_PIN STRING KWD_INPUT KWD_CTRL EOL   { driver.addCellCtrlPinCbk(*$2);   delete $2; }
                 ;
+
+/***** region file *****/
+region_top : region_constraint_blocks instance_to_region_block
+           ;
+
+/* region constraint blocks */
+region_constraint_blocks : region_constraint_blocks region_constraint_block
+                         | region_constraint_block
+                         ;
+
+region_constraint_block : region_constraint_block_header
+                          region_constraint_block_lines
+                          region_constraint_block_footer
+                        ;
+
+region_constraint_block_header : KWD_REGION_CONSTRAINT KWD_BEGIN INTEGER INTEGER EOL  { driver.addRegionConstraintCbk($3, $4); }
+                               ;
+
+region_constraint_block_footer : KWD_REGION_CONSTRAINT KWD_END EOL_STAR 
+
+region_constraint_block_lines  : region_constraint_block_lines region_constraint_block_line
+                               | region_constraint_block_line
+                               ;
+
+region_constraint_block_line : STRING INTEGER INTEGER INTEGER INTEGER EOL { driver.addRegionBoxCbk($2, $3, $4, $5); delete $1; }
+
+/* instance to regionc onstraint Mapping blocks */
+instance_to_region_block : instance_to_region_block_header
+                           instance_to_region_block_lines
+                           instance_to_region_block_footer
+                         ;
+
+instance_to_region_block_header : KWD_INSTANCE_TO_REGION KWD_BEGIN EOL
+                                ;
+
+instance_to_region_block_footer : KWD_INSTANCE_TO_REGION KWD_END EOL_STAR
+
+instance_to_region_block_lines  : instance_to_region_block_lines instance_to_region_block_line
+                                | instance_to_region_block_line
+                                ;
+
+instance_to_region_block_line : STRING INTEGER EOL { driver.addInstanceToRegionCbk(*$1, $2); delete $1; }
+
+
+/***** cascade shape file *****/
+
+cascade_shape_top : cascade_shape_blocks
+                  ;
+
+/* cascade shape blocks */
+cascade_shape_blocks : cascade_shape_blocks cascade_shape_block
+                     | cascade_shape_block
+                     ;
+
+cascade_shape_block : cascade_shape_block_header
+                      cascade_shape_block_header_begin
+                      cascade_shape_block_lines
+                      cascade_shape_block_footer
+
+cascade_shape_block_header : KWD_SHAPE STRING INTEGER INTEGER EOL { driver.addShapeCbk(*$2, $3, $4); delete $2; }
+                           ;
+
+cascade_shape_block_header_begin : KWD_BEGIN EOL
+                          ;
+
+cascade_shape_block_footer : KWD_END EOL_STAR
+
+cascade_shape_block_lines  : cascade_shape_block_lines cascade_shape_block_line
+                           | cascade_shape_block_line
+                           ;
+
+cascade_shape_block_line : STRING EOL { driver.addShapeSingleColCbk(*$1); delete $1; }
+                         | STRING STRING EOL { driver.addShapeDoubleColCbk(*$1); delete $1; delete $2; }
+                         ;
+
+/***** cascade instance file *****/
+
+cascade_inst_top : cascade_inst_blocks
+                     ;
+
+/* cascade instance blocks */
+cascade_inst_blocks : cascade_inst_blocks cascade_inst_block
+                        | cascade_inst_block
+                        ;
+
+cascade_inst_block : cascade_inst_block_header
+                     cascade_inst_block_header_begin
+                     cascade_inst_block_lines
+                     cascade_inst_block_footer
+
+cascade_inst_block_header : STRING INTEGER INTEGER STRING EOL { driver.addCascadeInstToShapeCbk(*$1, *$4); delete $1; delete $4; }
+                          ;
+
+cascade_inst_block_header_begin : KWD_BEGIN EOL
+                          ;
+
+cascade_inst_block_footer : KWD_END EOL_STAR
+
+cascade_inst_block_lines  : cascade_inst_block_lines cascade_inst_block_line
+                          | cascade_inst_block_line
+                          ;
+
+cascade_inst_block_line : STRING EOL { driver.addNodeToCascadeInstCbk(*$1); delete $1; }
+
 
  /*** END EXAMPLE - Change the example grammar rules above ***/
 
