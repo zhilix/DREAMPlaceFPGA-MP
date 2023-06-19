@@ -368,11 +368,11 @@ class LegalizeCLB(nn.Module):
                 self.site_det_impl_ff, self.site_det_impl_cksr, self.site_det_impl_ce, self.inst_curr_detSite, self.inst_curr_bestScoreImprov, self.inst_curr_bestSite, self.inst_next_detSite,
                 self.inst_next_bestScoreImprov, self.inst_next_bestSite, activeStatus, illegalStatus)
 
-            ####DBG
-            # print(dlIter,": ", (self.inst_curr_detSite[self.node2fence_region_map<2] > -1).sum().item(), "/", self.num_nodes)
-            # print("\tactive Status : ", activeStatus.sum().item())
-            # print("\tillegal Status : ", illegalStatus.sum().item())
-            #DBG
+        ####DBG
+        print(dlIter,": ", (self.inst_curr_detSite[self.node2fence_region_map<2] > -1).sum().item(), "/", self.num_nodes)
+        print("\tactive Status : ", activeStatus.sum().item())
+        print("\tillegal Status : ", illegalStatus.sum().item())
+        #DBG
 
     def ripUP_Greedy_slotAssign(self, pos, wlPrecond, node_z, sorted_node_map, sorted_node_idx, sorted_net_map, sorted_net_idx, sorted_pin_map):
 
@@ -410,12 +410,11 @@ class LegalizeCLB(nn.Module):
         _, sorted_remNode_map = torch.sort(sort_all_ids)
         sorted_remNode_map = sorted_remNode_map.to(torch.int32)
 
-        #DBG
-        #print("RipUp & Greedy LG on ", num_remInsts, "insts (neighbors within", self.nbrDistEnd, "distance)")
         numFFs = self.node2fence_region_map[rem_inst_ids].sum().item()
         numLUTs = rem_inst_ids.shape[0] - numFFs
-        #print("RipUP & Greedy LG on ", num_remInsts, " insts (", numLUTs, " LUTs + ", numFFs, " FFs)")
-        #pdb.set_trace()
+        #DBG
+        #print("RipUp & Greedy LG on ", num_remInsts, "insts (neighbors within", self.nbrDistEnd, "distance)")
+        print("RipUP & Greedy LG on ", num_remInsts, " insts (", numLUTs, " LUTs + ", numFFs, " FFs)")
         #DBG
 
         if pos.is_cuda:
