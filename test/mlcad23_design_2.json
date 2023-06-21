@@ -11,7 +11,7 @@
     "density_weight" : 8e-5,
     "random_seed" : 1000,
     "scale_factor" : 1.0,
-    "global_place_flag" : 0,
+    "global_place_flag" : 1,
     "global_place_sol" : "debug_legalization/design.gp.pl",
     "legalize_flag" : 1,
     "detailed_place_flag" : 0,

@@ -369,9 +369,9 @@ class LegalizeCLB(nn.Module):
                 self.inst_next_bestScoreImprov, self.inst_next_bestSite, activeStatus, illegalStatus)
 
         ####DBG
-        print(dlIter,": ", (self.inst_curr_detSite[self.node2fence_region_map<2] > -1).sum().item(), "/", self.num_nodes)
-        print("\tactive Status : ", activeStatus.sum().item())
-        print("\tillegal Status : ", illegalStatus.sum().item())
+        # print(dlIter,": ", (self.inst_curr_detSite[self.node2fence_region_map<2] > -1).sum().item(), "/", self.num_nodes)
+        # print("\tactive Status : ", activeStatus.sum().item())
+        # print("\tillegal Status : ", illegalStatus.sum().item())
         #DBG
 
     def ripUP_Greedy_slotAssign(self, pos, wlPrecond, node_z, sorted_node_map, sorted_node_idx, sorted_net_map, sorted_net_idx, sorted_pin_map):
