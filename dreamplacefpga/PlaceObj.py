@@ -145,7 +145,8 @@ class PlaceObjFPGA(nn.Module):
         self.gamma = torch.tensor(self.base_gamma(params, placedb)[0],
                                   dtype=self.data_collections.pos[0].dtype,
                                   device=self.data_collections.pos[0].device)
-        initOverflow = torch.ones(4, dtype=self.gamma.dtype, device=self.gamma.device)
+        # initOverflow = torch.ones(4, dtype=self.gamma.dtype, device=self.gamma.device)
+        initOverflow = torch.ones(5, dtype=self.gamma.dtype, device=self.gamma.device)
         self.update_gamma(0, initOverflow, self.base_gamma(params, placedb))
 
         # compute weighted average wirelength from position

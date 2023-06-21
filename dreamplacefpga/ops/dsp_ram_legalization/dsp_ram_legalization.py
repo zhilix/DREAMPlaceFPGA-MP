@@ -45,8 +45,11 @@ class LegalizeDSPRAMFunction(Function):
             mask = model.data_collections.dsp_mask
             sites = placedb.dspSiteXYs
         elif region_id == 3:
-            mask = model.data_collections.ram_mask
-            sites = placedb.ramSiteXYs
+            mask = model.data_collections.bram_mask
+            sites = placedb.bramSiteXYs
+        elif region_id == 4:
+            mask = model.data_collections.uram_mask
+            sites = placedb.uramSiteXYs
 
         locX = pos[:placedb.num_physical_nodes][mask].cpu().detach().numpy()
         locY = pos[numNodes:numNodes+placedb.num_physical_nodes][mask].cpu().detach().numpy()

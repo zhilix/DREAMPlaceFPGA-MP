@@ -47,7 +47,7 @@ void PyPlaceDB::set(PlaceDB const& db)
     node_count.append(num_terminals);
 
     std::vector<double> fixed_node_size(num_terminals, 1.0); 
-    std::vector<PlaceDB::index_type> fixed_node2fence_region_map(num_terminals, 4); 
+    std::vector<PlaceDB::index_type> fixed_node2fence_region_map(num_terminals, 5); 
     std::vector<PlaceDB::index_type> fixed_lut_type(num_terminals, 0); 
     //Node Info
     node_names = pybind11::cast(std::move(db.movNodeNames())) + pybind11::cast(std::move(db.fixedNodeNames()));
@@ -449,6 +449,7 @@ void PyPlaceDB::set(PlaceDB const& db)
     std::unordered_set<PlaceDB::index_type> colSet2;
     std::unordered_set<PlaceDB::index_type> colSet3;
     std::unordered_set<PlaceDB::index_type> colSet4;
+    std::unordered_set<PlaceDB::index_type> colSet5;
 
     for (unsigned int i = 0, ie = db.siteRows(); i < ie; ++i)
     {
@@ -484,19 +485,28 @@ void PyPlaceDB::set(PlaceDB const& db)
                         colSet2.insert(i);
                         break;
                     }
-                case 3: //RAM
+                case 3: //BRAM
                     {
                         siteXY.append(i);
                         siteXY.append(std::round(j/5.0)*5.0);
-                        ramSiteXYs.append(siteXY);
+                        bramSiteXYs.append(siteXY);
                         colSet3.insert(i);
                         break;
                     }
-                case 4: //IO
+                case 4: //URAM
+                    {
+                        siteXY.append(i);
+                        siteXY.append(std::round(j/15.0)*15.0);
+                        uramSiteXYs.append(siteXY);
+                        colSet5.insert(i);
+                        break;
+                    }
+                case 5: //IO
                     {    
                         colSet4.insert((PlaceDB::index_type)i);
                         break;
                     }
+               
                 default: //Empty
                     {
                         break;
@@ -513,10 +523,11 @@ void PyPlaceDB::set(PlaceDB const& db)
     updCols.emplace_back(colSet2);
     updCols.emplace_back(colSet3);
     updCols.emplace_back(colSet4);
+    updCols.emplace_back(colSet5);
 
     unsigned int flat_len = 0;
     flat_region_boxes_start.append(flat_len);
-    for (unsigned int rgn = 0; rgn < 5; ++rgn)
+    for (unsigned int rgn = 0; rgn < 6; ++rgn)
     {
         for (unsigned int cEl = 0; cEl < updCols[rgn].size(); ++cEl)
         {

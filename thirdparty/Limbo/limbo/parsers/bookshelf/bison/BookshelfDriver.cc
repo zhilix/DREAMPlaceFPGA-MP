@@ -189,17 +189,17 @@ void Driver::setSiteTypeToDspCbk(int xIdx, int yIdx)
 {
     m_db.site_info_update(xIdx, yIdx, 2);
 }
-void Driver::setSiteTypeToRamCbk(int xIdx, int yIdx)
+void Driver::setSiteTypeToBRamCbk(int xIdx, int yIdx)
 {
     m_db.site_info_update(xIdx, yIdx, 3);
 }
 void Driver::setSiteTypeToURamCbk(int xIdx, int yIdx)
 {
-    m_db.site_info_update(xIdx, yIdx, 5);
+    m_db.site_info_update(xIdx, yIdx, 4);
 }
 void Driver::setSiteTypeToIoCbk(int xIdx, int yIdx)
 {
-    m_db.site_info_update(xIdx, yIdx, 4);
+    m_db.site_info_update(xIdx, yIdx, 5);
 }
 void Driver::initClockRegionsCbk(int xReg, int yReg)
 {

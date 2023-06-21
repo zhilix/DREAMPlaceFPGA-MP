@@ -22,7 +22,8 @@ int computeDemandMapCudaLauncher(
         const int deterministic_flag,
         T *binCapMap0,
         T *binCapMap2,
-        T *binCapMap3
+        T *binCapMap3,
+        T *binCapMap4
         );
 
 #define CHECK_FLAT(x) AT_ASSERTM(x.is_cuda() && x.ndimension() == 1, #x "must be a flat tensor on GPU")
@@ -41,7 +42,8 @@ void forward(
         int deterministic_flag,
         at::Tensor binCapMap0,
         at::Tensor binCapMap2,
-        at::Tensor binCapMap3)
+        at::Tensor binCapMap3,
+        at::Tensor binCapMap4)
 {
     CHECK_FLAT(site_type_map); 
     CHECK_CONTIGUOUS(site_type_map);
@@ -60,7 +62,8 @@ void forward(
                     deterministic_flag,
                     DREAMPLACE_TENSOR_DATA_PTR(binCapMap0, scalar_t),
                     DREAMPLACE_TENSOR_DATA_PTR(binCapMap2, scalar_t),
-                    DREAMPLACE_TENSOR_DATA_PTR(binCapMap3, scalar_t)
+                    DREAMPLACE_TENSOR_DATA_PTR(binCapMap3, scalar_t),
+                    DREAMPLACE_TENSOR_DATA_PTR(binCapMap4, scalar_t)
                     );
             });
 }

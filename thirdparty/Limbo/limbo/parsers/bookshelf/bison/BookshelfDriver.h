@@ -114,11 +114,11 @@ public:
     void setSiteTypeToSliceMCbk(int xIdx, int yIdx); 
     /// @brief from .scl file, add site (x, y) as DSP 
     void setSiteTypeToDspCbk(int xIdx, int yIdx); 
-    /// @brief from .scl file, add site (x, y) as RAM 
-    void setSiteTypeToRamCbk(int xIdx, int yIdx); 
-    /// @brief from .scl file, add site (x, y) as IO 
-    void setSiteTypeToURamCbk(int xIdx, int yIdx);
+    /// @brief from .scl file, add site (x, y) as BRAM 
+    void setSiteTypeToBRamCbk(int xIdx, int yIdx); 
     /// @brief from scl file, add site (x, y) as URAM
+    void setSiteTypeToURamCbk(int xIdx, int yIdx);
+    /// @brief from .scl file, add site (x, y) as IO 
     void setSiteTypeToIoCbk(int xIdx, int yIdx); 
     /// @brief from .scl file, initialize clock region information
     void initClockRegionsCbk(int xReg, int yReg); 

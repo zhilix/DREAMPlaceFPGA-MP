@@ -454,9 +454,13 @@ class NonLinearPlaceFPGA (BasicPlaceFPGA):
                             movVal = dsp_ram_legalization.LegalizeDSPRAMFunction.legalize(pos, placedb, 2, model)
                             logging.info("Legalized DSPs with maxMov = %g and avgMov = %g" % (movVal[0], movVal[1]))
 
-                            #Legalize RAM at the end of Global placement
+                            #Legalize BRAM at the end of Global placement
                             moVal = dsp_ram_legalization.LegalizeDSPRAMFunction.legalize(pos, placedb, 3, model)
-                            logging.info("Legalized RAMs with maxMov = %g and avgMov = %g" % (moVal[0], moVal[1]))
+                            logging.info("Legalized BRAMs with maxMov = %g and avgMov = %g" % (moVal[0], moVal[1]))
+
+                            #Legalize URAM at the end of Global placement
+                            moVal = dsp_ram_legalization.LegalizeDSPRAMFunction.legalize(pos, placedb, 4, model)
+                            logging.info("Legalized URAMs with maxMov = %g and avgMov = %g" % (moVal[0], moVal[1]))
 
                             #Lock DSP/RAM locations
                             model.lock_mask[2:4] = True

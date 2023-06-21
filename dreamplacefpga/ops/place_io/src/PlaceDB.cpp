@@ -241,7 +241,7 @@ void PlaceDB::add_bookshelf_node(std::string& name, std::string& type)
       node_name2id_map.insert(std::make_pair(name, mov_node_names.size()));
       mov_node_names.emplace_back(name);
       mov_node_types.emplace_back(type);
-      node2fence_region_map.emplace_back(3);
+      node2fence_region_map.emplace_back(4);
       mov_node_size_x.push_back(1.0);
       mov_node_size_y.push_back(15.0);  // 15.0? 
       mov_node_x.emplace_back(0.0);
@@ -469,6 +469,7 @@ void PlaceDB::add_ctrl_pin(std::string& pName)
 }
 void PlaceDB::add_region_constraint(int RegionIdx, int numBoxes)
 {
+    std::cout << "RegionIdx: " << RegionIdx << " numBoxes: " << numBoxes << std::endl;
     std::vector<index_type> regionBoxes;
     flat_constraint2box_start.emplace_back(flat_constraint2box.size());
     ++num_physical_constraints;
@@ -488,6 +489,8 @@ void PlaceDB::add_region_box(int xl, int yl, int xh, int yh)
 }
 void PlaceDB::add_instance_to_region(std::string const& instName, int regionIdx)
 {
+    std::cout << "instName: " << instName << " regionIdx: " << regionIdx << std::endl;
+    
     index_type nodeId;
     nodeId = node_name2id_map.at(instName);
     

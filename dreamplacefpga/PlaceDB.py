@@ -75,7 +75,9 @@ class PlaceDBFPGA (object):
         self.site_type_map = None # site type of each site 
         self.lg_siteXYs = None # site type of each site 
         self.dspSiteXYs = [] #Sites for DSP instances
-        self.ramSiteXYs = [] #Sites for RAM instances
+        # self.ramSiteXYs = [] #Sites for RAM instances
+        self.bramSiteXYs = [] #Sites for BRAM instances
+        self.uramSiteXYs = [] #Sites for URAM instances
 
         self.xWirelenWt = None #X-directed wirelength weight
         self.yWirelenWt = None #Y-directed wirelength weight
@@ -134,7 +136,7 @@ class PlaceDBFPGA (object):
         self.initial_vertical_demand_map = None # routing demand map from fixed cells, indexed by (grid x, grid y), projected to one layer  
         self.dtype = None
         #Use Fence region structure for different resource type placement
-        self.regions = 5 #FF, LUT, DSP, RAM & IO
+        self.regions = 6 #FF, LUT, DSP, BRAM, IO, URAM
         #self.regionsLimits = []# array of 1D array with column min/max of x & y locations
         self.flat_region_boxes = []# flat version of regionsLimits
         self.flat_region_boxes_start = []# start indices of regionsLimits, length of num regions + 1
@@ -144,7 +146,9 @@ class PlaceDBFPGA (object):
         self.flop_mask = None
         self.lut_mask = None
         self.lut_type = None
-        self.ram_mask = None
+        # self.ram_mask = None
+        self.bram_mask = None
+        self.uram_mask = None
         self.dsp_mask = None
 
         # for enhanced bookshelf format in MLCAD23 contest
@@ -248,8 +252,9 @@ class PlaceDBFPGA (object):
         self.lut_mask = self.node2fence_region_map == 0
         self.flop_mask = self.node2fence_region_map == 1
         self.dsp_mask = self.node2fence_region_map == 2
-        self.ram_mask = self.node2fence_region_map == 3
-        # self.uram_mask = self.node2fence_region_map == 4
+        # self.ram_mask = self.node2fence_region_map == 3
+        self.bram_mask = self.node2fence_region_map == 3
+        self.uram_mask = self.node2fence_region_map == 4
 
     def initialize_from_rawdb(self, params):
         """
@@ -317,7 +322,9 @@ class PlaceDBFPGA (object):
         self.lg_siteXYs = np.array(self.lg_siteXYs, dtype=self.dtype)
 
         self.dspSiteXYs = np.array(pydb.dspSiteXYs, dtype=self.dtype)
-        self.ramSiteXYs = np.array(pydb.ramSiteXYs, dtype=self.dtype)
+        # self.ramSiteXYs = np.array(pydb.ramSiteXYs, dtype=self.dtype)
+        self.bramSiteXYs = np.array(pydb.bramSiteXYs, dtype=self.dtype)
+        self.uramSiteXYs = np.array(pydb.uramSiteXYs, dtype=self.dtype)
 
         self.flat_region_boxes = np.array(pydb.flat_region_boxes, dtype=self.dtype)
         self.flat_region_boxes_start = np.array(pydb.flat_region_boxes_start, dtype=np.int32)
@@ -467,10 +474,11 @@ class PlaceDBFPGA (object):
         @brief initialize data members after reading 
         @param params parameters 
         """
-        self.resource_size_x = np.ones(4, dtype=datatypes[params.dtype])
-        self.resource_size_y = np.ones(4, dtype=datatypes[params.dtype])
+        self.resource_size_x = np.ones(5, dtype=datatypes[params.dtype])
+        self.resource_size_y = np.ones(5, dtype=datatypes[params.dtype])
         self.resource_size_y[2] = 2.5
         self.resource_size_y[3] = 5.0
+        self.resource_size_y[4] = 15.0
 
         #Parameter initialization - Can be changed later through params
         self.xWirelenWt = 0.7
@@ -494,12 +502,13 @@ class PlaceDBFPGA (object):
         #   0 - LUT
         #   1 - FF
         #   2 - DSP
-        #   3 - RAM
+        #   3 - BRAM
+        #   4 - URAM
 
-        self.filler_size_x = np.zeros(4)
-        self.filler_size_y = np.zeros(4)
-        self.targetOverflow = np.zeros(4)
-        self.overflowInstDensityStretchRatio = np.zeros(4)
+        self.filler_size_x = np.zeros(5)
+        self.filler_size_y = np.zeros(5)
+        self.targetOverflow = np.zeros(5)
+        self.overflowInstDensityStretchRatio = np.zeros(5)
 
         # 0 - LUT
         self.filler_size_x[0] = math.sqrt(0.125)
@@ -519,11 +528,17 @@ class PlaceDBFPGA (object):
         self.targetOverflow[2] = 0.2
         self.overflowInstDensityStretchRatio[2] = 0
 
-        # 3 - RAM
+        # 3 - BRAM
         self.filler_size_x[3] = 1.0
         self.filler_size_y[3] = 5.0
         self.targetOverflow[3] = 0.2
         self.overflowInstDensityStretchRatio[3] = 0
+
+        # 4 - URAM
+        self.filler_size_x[4] = 1.0
+        self.filler_size_y[4] = 15.0
+        self.targetOverflow[4] = 0.2
+        self.overflowInstDensityStretchRatio[4] = 0
 
         #set number of bins
         self.num_bins_x = 512

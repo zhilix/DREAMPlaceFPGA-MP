@@ -57,6 +57,7 @@ class DemandMap(nn.Module):
         binCapMap1 = torch.zeros_like(binCapMap0)
         binCapMap2 = torch.zeros_like(binCapMap0)
         binCapMap3 = torch.zeros_like(binCapMap0)
+        binCapMap4 = torch.zeros_like(binCapMap0)
         
         if binCapMap0.is_cuda:
             demandMap_cuda.forward(
@@ -70,7 +71,8 @@ class DemandMap(nn.Module):
                                    self.deterministic_flag,
                                    binCapMap0,
                                    binCapMap2,
-                                   binCapMap3)
+                                   binCapMap3,
+                                   binCapMap4)
         else:
             demandMap_cpp.forward(
                                    self.site_type_map.flatten(), 
@@ -83,6 +85,7 @@ class DemandMap(nn.Module):
                                    binCapMap0,
                                    binCapMap2,
                                    binCapMap3,
+                                   binCapMap4,
                                    self.num_threads,
                                    self.deterministic_flag)
 
@@ -92,6 +95,7 @@ class DemandMap(nn.Module):
         fixedDemMap1 = torch.zeros_like(binCapMap0)
         fixedDemMap2 = torch.zeros_like(binCapMap0)
         fixedDemMap3 = torch.zeros_like(binCapMap0)
+        fixedDemMap4 = torch.zeros_like(binCapMap0)
 
         binX = (self.xh - self.xl)/self.num_bins_x
         binY = (self.yh - self.yl)/self.num_bins_y
@@ -100,6 +104,7 @@ class DemandMap(nn.Module):
         fixedDemMap1 = binArea - binCapMap1
         fixedDemMap2 = binArea - binCapMap2
         fixedDemMap3 = binArea - binCapMap3
+        fixedDemMap4 = binArea - binCapMap4
 
-        return [fixedDemMap0, fixedDemMap1, fixedDemMap2, fixedDemMap3]
+        return [fixedDemMap0, fixedDemMap1, fixedDemMap2, fixedDemMap3, fixedDemMap4]
 

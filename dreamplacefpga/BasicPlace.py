@@ -89,7 +89,9 @@ class PlaceDataCollectionFPGA(object):
             self.net2pincount_map = torch.from_numpy(placedb.net2pincount_map).to(device)
 
             self.dspSiteXYs = torch.from_numpy(placedb.dspSiteXYs).to(dtype=datatypes[params.dtype],device=device)
-            self.ramSiteXYs = torch.from_numpy(placedb.ramSiteXYs).to(dtype=datatypes[params.dtype],device=device)
+            # self.ramSiteXYs = torch.from_numpy(placedb.ramSiteXYs).to(dtype=datatypes[params.dtype],device=device)
+            self.bramSiteXYs = torch.from_numpy(placedb.bramSiteXYs).to(dtype=datatypes[params.dtype],device=device)
+            self.uramSiteXYs = torch.from_numpy(placedb.uramSiteXYs).to(dtype=datatypes[params.dtype],device=device)
 
             # number of pins for each cell
             self.pin_weights = (self.flat_node2pin_start_map[1:] -
@@ -98,7 +100,10 @@ class PlaceDataCollectionFPGA(object):
             ## Resource type masks
             self.flop_mask = torch.from_numpy(placedb.flop_mask).to(device)
             self.lut_mask = torch.from_numpy(placedb.lut_mask).to(device)
-            self.ram_mask = torch.from_numpy(placedb.ram_mask).to(device)
+            # self.ram_mask = torch.from_numpy(placedb.ram_mask).to(device)
+            self.ram_mask = torch.from_numpy(placedb.bram_mask).to(device) | torch.from_numpy(placedb.uram_mask).to(device)
+            self.bram_mask = torch.from_numpy(placedb.bram_mask).to(device)
+            self.uram_mask = torch.from_numpy(placedb.uram_mask).to(device)
             self.dsp_mask = torch.from_numpy(placedb.dsp_mask).to(device)
             self.flop_lut_mask = self.flop_mask | self.lut_mask
             self.dsp_ram_mask = self.dsp_mask | self.ram_mask

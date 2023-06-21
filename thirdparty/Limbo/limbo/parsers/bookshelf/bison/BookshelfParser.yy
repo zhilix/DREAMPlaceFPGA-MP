@@ -530,7 +530,7 @@ sitemap_block_lines : sitemap_block_lines sitemap_block_line
 
 sitemap_block_line : INTEGER INTEGER KWD_SLICE EOL  { driver.setSiteTypeToSliceLCbk($1, $2); }
                    | INTEGER INTEGER KWD_DSP EOL    { driver.setSiteTypeToDspCbk($1, $2); }
-                   | INTEGER INTEGER KWD_BRAM EOL   { driver.setSiteTypeToRamCbk($1, $2); }
+                   | INTEGER INTEGER KWD_BRAM EOL   { driver.setSiteTypeToBRamCbk($1, $2); }
                    | INTEGER INTEGER KWD_URAM EOL   { driver.setSiteTypeToURamCbk($1, $2); }
                    | INTEGER INTEGER KWD_IO EOL     { driver.setSiteTypeToIoCbk($1, $2); }
                    ;

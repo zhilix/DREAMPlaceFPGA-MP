@@ -77,7 +77,9 @@ struct PyPlaceDB
     pybind11::list lg_siteXYs; ///< 2D array, site XYs for CLB at center (FPGA)
     //pybind11::list regions; ///< array of 1D array, each region contains rectangles 
     pybind11::list dspSiteXYs; ///< 1D array of DSP sites (FPGA)
-    pybind11::list ramSiteXYs; ///< 1D array of RAM sites (FPGA)
+    // pybind11::list ramSiteXYs; ///< 1D array of RAM sites (FPGA)
+    pybind11::list bramSiteXYs; ///< 1D array of BRAM sites (FPGA)
+    pybind11::list uramSiteXYs; ///< 1D array of URAM sites (FPGA)
     //pybind11::list regionsLimits; ///< array of 1D array, each region contains rectangles 
     pybind11::list flat_region_boxes; ///< flatten version of regions 
     pybind11::list flat_region_boxes_start; ///< starting index of each region in flat_region_boxes

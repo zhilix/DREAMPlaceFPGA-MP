@@ -404,7 +404,9 @@ class PlaceDB : public BookshelfParser::BookshelfDataBase
         string2index_map_type net_name2id_map;
 
         std::vector<double> dspSiteXYs;
-        std::vector<double> ramSiteXYs;
+        // std::vector<double> ramSiteXYs;
+        std::vector<double> bramSiteXYs;
+        std::vector<double> uramSiteXYs;
 
         std::vector<double> region_box2xl;
         std::vector<double> region_box2yl;
