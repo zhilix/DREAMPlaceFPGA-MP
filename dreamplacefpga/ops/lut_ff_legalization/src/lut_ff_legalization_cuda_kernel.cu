@@ -203,12 +203,9 @@ __device__ void lift(const int n, const int* g, const int* b, const int* bIndex,
 ///End of helper functions for Edmonds Blossom Implementation based on https://codeforces.com/blog/entry/92339
 
 //Clear entries in candidate
-void clear_cand_contents(
-        const int tsPQ, const int SIG_IDX, const int SLICE_CAPACITY,
-        const int CKSR_IN_CLB, const int CE_IN_CLB,
-        int* site_sig_idx, int* site_sig,
-        int* site_impl_lut, int* site_impl_ff,
-        int* site_impl_cksr, int* site_impl_ce)
+inline __device__ void clear_cand_contents(const int tsPQ, const int SIG_IDX,
+        const int CKSR_IN_CLB, const int CE_IN_CLB, int* site_sig_idx, int* site_sig,
+        int* site_impl_lut, int* site_impl_ff, int* site_impl_cksr, int* site_impl_ce)
 {
     int topIdx(tsPQ*SIG_IDX);
     int lutIdx = tsPQ*SLICE_CAPACITY;
@@ -1227,7 +1224,7 @@ __device__ void compute_candidate_score(const T* pos_x, const T* pos_y, const T*
             {
                 ++numNets;
                 numIntNets += (cNIPIdx == net2pincount[currNetId] ? 1 : 0);
-                netShareScore += net_weights[currNetId] * (currNetIntPins.size() - 1.0) / DREAMPLACE_STD_NAMESPACE::max(1.0, net2pincount[currNetId] - 1.0);
+                netShareScore += net_weights[currNetId] * (cNIPIdx - 1.0) / DREAMPLACE_STD_NAMESPACE::max(T(1.0), net2pincount[currNetId] - T(1.0));
             }
             if (net2pincount[currNetId] <= wlscoreMaxNetDegree)
             {
@@ -1249,7 +1246,7 @@ __device__ void compute_candidate_score(const T* pos_x, const T* pos_y, const T*
     {
         ++numNets;
         numIntNets += (cNIPIdx == net2pincount[currNetId] ? 1 : 0);
-        netShareScore += net_weights[currNetId] * (currNetIntPins.size() - 1.0) / DREAMPLACE_STD_NAMESPACE::max(1.0, net2pincount[currNetId] - 1.0);
+        netShareScore += net_weights[currNetId] * (cNIPIdx - 1.0) / DREAMPLACE_STD_NAMESPACE::max(T(1.0), net2pincount[currNetId] - T(1.0));
     }
     if (net2pincount[currNetId] <= wlscoreMaxNetDegree)
     {
@@ -1268,7 +1265,7 @@ inline __device__ bool compare_pq_tops(
         const int* site_next_pq_validIdx, const int* site_next_pq_siteId, const int* site_next_pq_sig_idx,
         const int* site_next_pq_sig, const int* site_next_pq_impl_lut, const int* site_next_pq_impl_ff,
         const int* site_next_pq_impl_cksr, const int* site_next_pq_impl_ce, const int siteId,
-        const int sPQ, const int SIG_IDX, const int CKSR_IN_CLB, const int CE_IN_CLB, const int SLICE_CAPACITY)
+        const int sPQ, const int SIG_IDX, const int CKSR_IN_CLB, const int CE_IN_CLB)
 {
     //Check site_curr_pq TOP == site_next_pq TOP
     int curr_pq_topId = sPQ+site_curr_pq_top_idx[siteId];
@@ -1820,7 +1817,7 @@ __global__ void runDLIteration(const T* pos_x,
                 //{
                 //Clear contents thoroughly
                 clear_cand_contents(
-                        nPQId, SIG_IDX, SLICE_CAPACITY, CKSR_IN_CLB, CE_IN_CLB,
+                        nPQId, SIG_IDX, CKSR_IN_CLB, CE_IN_CLB,
                         site_next_pq_sig_idx, site_next_pq_sig,
                         site_next_pq_impl_lut, site_next_pq_impl_ff,
                         site_next_pq_impl_cksr, site_next_pq_impl_ce);
@@ -1847,7 +1844,7 @@ __global__ void runDLIteration(const T* pos_x,
                 {
                     //Clear contents thoroughly
                     clear_cand_contents(
-                            cSclId, SIG_IDX, SLICE_CAPACITY, CKSR_IN_CLB, CE_IN_CLB,
+                            cSclId, SIG_IDX, CKSR_IN_CLB, CE_IN_CLB,
                             site_curr_scl_sig_idx, site_curr_scl_sig,
                             site_curr_scl_impl_lut, site_curr_scl_impl_ff,
                             site_curr_scl_impl_cksr, site_curr_scl_impl_ce);
@@ -1910,7 +1907,7 @@ __global__ void runDLIteration(const T* pos_x,
                         {
                             //Clear contents thoroughly
                             clear_cand_contents(
-                                    ssPQ, SIG_IDX, SLICE_CAPACITY, CKSR_IN_CLB, CE_IN_CLB,
+                                    ssPQ, SIG_IDX, CKSR_IN_CLB, CE_IN_CLB,
                                     site_next_pq_sig_idx, site_next_pq_sig,
                                     site_next_pq_impl_lut, site_next_pq_impl_ff,
                                     site_next_pq_impl_cksr, site_next_pq_impl_ce);
@@ -1935,8 +1932,8 @@ __global__ void runDLIteration(const T* pos_x,
 
                     if (site_next_pq_idx[sIdx] > 0)
                     {
-                        snCnt = 0;
-                        maxEntries = site_next_pq_idx[sIdx];
+                        int snCnt = 0;
+                        int maxEntries = site_next_pq_idx[sIdx];
                         T maxScore(-1000.0);
                         int maxScoreId(INVALID);
                         //Recompute top idx
@@ -1978,7 +1975,7 @@ __global__ void runDLIteration(const T* pos_x,
                         {
                             //Clear contents thoroughly
                             clear_cand_contents(
-                                    ssPQ, SIG_IDX, SLICE_CAPACITY, CKSR_IN_CLB, CE_IN_CLB,
+                                    ssPQ, SIG_IDX, CKSR_IN_CLB, CE_IN_CLB,
                                     site_curr_scl_sig_idx, site_curr_scl_sig,
                                     site_curr_scl_impl_lut, site_curr_scl_impl_ff,
                                     site_curr_scl_impl_cksr, site_curr_scl_impl_ce);
@@ -2406,7 +2403,7 @@ __global__ void runDLIteration(const T* pos_x,
                     {
                         //Clear contents thoroughly
                         clear_cand_contents(
-                                vId, SIG_IDX, SLICE_CAPACITY, CKSR_IN_CLB, CE_IN_CLB,
+                                vId, SIG_IDX, CKSR_IN_CLB, CE_IN_CLB,
                                 site_next_scl_sig_idx, site_next_scl_sig,
                                 site_next_scl_impl_lut, site_next_scl_impl_ff,
                                 site_next_scl_impl_cksr, site_next_scl_impl_ce);
@@ -2435,7 +2432,7 @@ __global__ void runDLIteration(const T* pos_x,
                     site_next_pq_top_idx, site_next_pq_validIdx, site_next_pq_siteId,
                     site_next_pq_sig_idx, site_next_pq_sig, site_next_pq_impl_lut,
                     site_next_pq_impl_ff, site_next_pq_impl_cksr, site_next_pq_impl_ce,
-                    sIdx, sPQ, SIG_IDX, CKSR_IN_CLB, CE_IN_CLB, SLICE_CAPACITY))
+                    sIdx, sPQ, SIG_IDX, CKSR_IN_CLB, CE_IN_CLB))
         {
             site_next_stable[sIdx] = site_curr_stable[sIdx] + 1;
         } else
@@ -2530,6 +2527,10 @@ __global__ void runDLIteration_kernel_1(
                    int* site_next_pq_siteId,
                    int* site_next_pq_sig_idx,
                    int* site_next_pq_sig,
+                   int* site_next_pq_impl_lut,
+                   int* site_next_pq_impl_ff,
+                   int* site_next_pq_impl_cksr,
+                   int* site_next_pq_impl_ce,
                    T* site_det_score,
                    int* site_det_siteId,
                    int* site_det_sig_idx,
@@ -2632,7 +2633,7 @@ __global__ void runDLIteration_kernel_1(
                 //{
                 //Clear contents thoroughly
                 clear_cand_contents(
-                        nPQId, SIG_IDX, SLICE_CAPACITY, CKSR_IN_CLB, CE_IN_CLB,
+                        nPQId, SIG_IDX, CKSR_IN_CLB, CE_IN_CLB,
                         site_next_pq_sig_idx, site_next_pq_sig,
                         site_next_pq_impl_lut, site_next_pq_impl_ff,
                         site_next_pq_impl_cksr, site_next_pq_impl_ce);
@@ -2660,7 +2661,7 @@ __global__ void runDLIteration_kernel_1(
                 {
                     //Clear contents thoroughly
                     clear_cand_contents(
-                            cSclId, SIG_IDX, SLICE_CAPACITY, CKSR_IN_CLB, CE_IN_CLB,
+                            cSclId, SIG_IDX, CKSR_IN_CLB, CE_IN_CLB,
                             site_curr_scl_sig_idx, site_curr_scl_sig,
                             site_curr_scl_impl_lut, site_curr_scl_impl_ff,
                             site_curr_scl_impl_cksr, site_curr_scl_impl_ce);
@@ -2723,7 +2724,7 @@ __global__ void runDLIteration_kernel_1(
                         {
                             //Clear contents thoroughly
                             clear_cand_contents(
-                                    ssPQ, SIG_IDX, SLICE_CAPACITY, CKSR_IN_CLB, CE_IN_CLB,
+                                    ssPQ, SIG_IDX, CKSR_IN_CLB, CE_IN_CLB,
                                     site_next_pq_sig_idx, site_next_pq_sig,
                                     site_next_pq_impl_lut, site_next_pq_impl_ff,
                                     site_next_pq_impl_cksr, site_next_pq_impl_ce);
@@ -2779,7 +2780,7 @@ __global__ void runDLIteration_kernel_1(
                         {
                             //Clear contents thoroughly
                             clear_cand_contents(
-                                    ssPQ, SIG_IDX, SLICE_CAPACITY, CKSR_IN_CLB, CE_IN_CLB,
+                                    ssPQ, SIG_IDX, CKSR_IN_CLB, CE_IN_CLB,
                                     site_curr_scl_sig_idx, site_curr_scl_sig,
                                     site_curr_scl_impl_lut, site_curr_scl_impl_ff,
                                     site_curr_scl_impl_cksr, site_curr_scl_impl_ce);
@@ -2935,6 +2936,10 @@ __global__ void runDLIteration_kernel_2(const T* pos_x,
                    int* site_curr_pq_validIdx,
                    int* site_curr_pq_sig_idx,
                    int* site_curr_pq_sig,
+                   int* site_curr_pq_impl_lut,
+                   int* site_curr_pq_impl_ff,
+                   int* site_curr_pq_impl_cksr,
+                   int* site_curr_pq_impl_ce,
                    int* site_curr_pq_idx,
                    int* site_curr_stable,
                    int* site_curr_pq_siteId,
@@ -3308,7 +3313,7 @@ __global__ void runDLIteration_kernel_2(const T* pos_x,
                     {
                         //Clear contents thoroughly
                         clear_cand_contents(
-                                vId, SIG_IDX, SLICE_CAPACITY, CKSR_IN_CLB, CE_IN_CLB,
+                                vId, SIG_IDX, CKSR_IN_CLB, CE_IN_CLB,
                                 site_next_scl_sig_idx, site_next_scl_sig,
                                 site_next_scl_impl_lut, site_next_scl_impl_ff,
                                 site_next_scl_impl_cksr, site_next_scl_impl_ce);
@@ -3337,7 +3342,7 @@ __global__ void runDLIteration_kernel_2(const T* pos_x,
                     site_next_pq_top_idx, site_next_pq_validIdx, site_next_pq_siteId,
                     site_next_pq_sig_idx, site_next_pq_sig, site_next_pq_impl_lut,
                     site_next_pq_impl_ff, site_next_pq_impl_cksr, site_next_pq_impl_ce,
-                    sIdx, sPQ, SIG_IDX, CKSR_IN_CLB, CE_IN_CLB, SLICE_CAPACITY))
+                    sIdx, sPQ, SIG_IDX, CKSR_IN_CLB, CE_IN_CLB))
         {
             site_next_stable[sIdx] = site_curr_stable[sIdx] + 1;
         } else
@@ -3594,7 +3599,7 @@ __global__ void runDLSyncSites(
             //{
             //Clear contents thoroughly
             clear_cand_contents(
-                    vIdx, SIG_IDX, SLICE_CAPACITY, CKSR_IN_CLB, CE_IN_CLB,
+                    vIdx, SIG_IDX, CKSR_IN_CLB, CE_IN_CLB,
                     site_next_scl_sig_idx, site_next_scl_sig,
                     site_next_scl_impl_lut, site_next_scl_impl_ff,
                     site_next_scl_impl_cksr, site_next_scl_impl_ce);
@@ -3920,7 +3925,8 @@ int runDLIterCuda(const T* pos_x,
 
     //DLkernel split Implementation to enable rearranging
     runDLIteration_kernel_1<<<block_count, THREAD_COUNT>>>(node2fence_region_map, flop_ctrlSets, flop2ctrlSetId_map, lut_type, flat_node2pin_start_map, flat_node2pin_map, node2pincount, net2pincount, pin2net_map, pin_typeIds, sorted_net_map, flat_node2prclstrCount, flat_node2precluster_map, site_nbrList, site_nbrRanges, site_nbrRanges_idx, addr2site_map,
-    num_clb_sites, minStableIter, maxList, HALF_SLICE_CAPACITY, NUM_BLE_PER_SLICE, minNeighbors, numGroups, CKSR_IN_CLB, CE_IN_CLB, SCL_IDX, SIG_IDX, site_nbr_idx, site_nbr, site_nbrGroup_idx, site_curr_pq_top_idx, site_curr_pq_sig_idx, site_curr_pq_sig, site_curr_pq_idx, site_curr_stable, site_curr_pq_siteId, site_curr_pq_score, site_curr_pq_impl_lut, site_curr_pq_impl_ff, site_curr_pq_impl_cksr, site_curr_pq_impl_ce, site_curr_scl_score, site_curr_scl_siteId, site_curr_scl_idx, site_curr_scl_validIdx, site_curr_scl_sig_idx, site_curr_scl_sig, site_curr_scl_impl_lut, site_curr_scl_impl_ff, site_curr_scl_impl_cksr, site_curr_scl_impl_ce, site_next_pq_idx, site_next_pq_validIdx, site_next_pq_top_idx, site_next_pq_score, site_next_pq_siteId, site_next_pq_sig_idx, site_next_pq_sig, site_det_score, site_det_siteId, site_det_sig_idx, site_det_sig, site_det_impl_lut, site_det_impl_ff, site_det_impl_cksr, site_det_impl_ce, inst_curr_detSite, inst_curr_bestSite, inst_next_detSite, validIndices_curr_scl, cumsum_curr_scl);
+    num_clb_sites, minStableIter, maxList, HALF_SLICE_CAPACITY, NUM_BLE_PER_SLICE, minNeighbors, numGroups, CKSR_IN_CLB, CE_IN_CLB, SCL_IDX, SIG_IDX, site_nbr_idx, site_nbr, site_nbrGroup_idx, site_curr_pq_top_idx, site_curr_pq_sig_idx, site_curr_pq_sig, site_curr_pq_idx, site_curr_stable, site_curr_pq_siteId, site_curr_pq_score, site_curr_pq_impl_lut, site_curr_pq_impl_ff, site_curr_pq_impl_cksr, site_curr_pq_impl_ce, site_curr_scl_score, site_curr_scl_siteId, site_curr_scl_idx, site_curr_scl_validIdx, site_curr_scl_sig_idx, site_curr_scl_sig, site_curr_scl_impl_lut, site_curr_scl_impl_ff, site_curr_scl_impl_cksr, site_curr_scl_impl_ce, site_next_pq_idx, site_next_pq_validIdx, site_next_pq_top_idx, site_next_pq_score, site_next_pq_siteId, site_next_pq_sig_idx, site_next_pq_sig, site_next_pq_impl_lut, site_next_pq_impl_ff, site_next_pq_impl_cksr, site_next_pq_impl_ce,
+    site_det_score, site_det_siteId, site_det_sig_idx, site_det_sig, site_det_impl_lut, site_det_impl_ff, site_det_impl_cksr, site_det_impl_ce, inst_curr_detSite, inst_curr_bestSite, inst_next_detSite, validIndices_curr_scl, cumsum_curr_scl);
     cudaDeviceSynchronize();
 
     //////Use thrust to sort cumsum_curr_scl to compute sorted siteIds based on load
@@ -3933,7 +3939,8 @@ int runDLIterCuda(const T* pos_x,
 
     runDLIteration_kernel_2<<<block_count, THREAD_COUNT>>>(pos_x, pos_y, pin_offset_x, pin_offset_y, net_bbox, site_xy, net_pinIdArrayX, net_pinIdArrayY,
     node2fence_region_map, flop_ctrlSets, flop2ctrlSetId_map, lut_type, flat_node2pin_start_map, flat_node2pin_map, node2pincount, net2pincount, pin2net_map, pin_typeIds, flat_net2pin_start_map, pin2node_map, sorted_node_map, sorted_net_map, flat_node2prclstrCount, flat_node2precluster_map, net_weights, addr2site_map, validIndices_curr_scl, sorted_clb_siteIds, 
-        intMinVal, num_clb_sites, maxList, HALF_SLICE_CAPACITY, NUM_BLE_PER_SLICE, netShareScoreMaxNetDegree, wlscoreMaxNetDegree, xWirelenWt, yWirelenWt, wirelenImprovWt, extNetCountWt, CKSR_IN_CLB, CE_IN_CLB, SCL_IDX, SIG_IDX, site_nbr_idx, site_nbr, site_curr_pq_top_idx, site_curr_pq_validIdx, site_curr_pq_sig_idx, site_curr_pq_sig, site_curr_pq_idx, site_curr_stable, site_curr_pq_siteId, site_curr_pq_score, site_curr_scl_score, site_curr_scl_siteId, site_curr_scl_idx, site_curr_scl_validIdx, site_curr_scl_sig_idx, site_curr_scl_sig, site_curr_scl_impl_lut, site_curr_scl_impl_ff, site_curr_scl_impl_cksr, site_curr_scl_impl_ce, site_next_pq_idx, site_next_pq_validIdx, site_next_pq_top_idx, site_next_pq_score, site_next_pq_siteId, site_next_pq_sig_idx, site_next_pq_sig, site_next_pq_impl_lut, site_next_pq_impl_ff, site_next_pq_impl_cksr, site_next_pq_impl_ce, site_next_scl_score, site_next_scl_siteId, site_next_scl_idx, site_next_scl_validIdx, site_next_scl_sig_idx, site_next_scl_sig, site_next_scl_impl_lut, site_next_scl_impl_ff, site_next_scl_impl_cksr, site_next_scl_impl_ce, site_next_stable, site_det_score, inst_curr_detSite, inst_next_bestScoreImprov, inst_next_bestSite, inst_score_improv, site_score_improv);
+        intMinVal, num_clb_sites, maxList, HALF_SLICE_CAPACITY, NUM_BLE_PER_SLICE, netShareScoreMaxNetDegree, wlscoreMaxNetDegree, xWirelenWt, yWirelenWt, wirelenImprovWt, extNetCountWt, CKSR_IN_CLB, CE_IN_CLB, SCL_IDX, SIG_IDX, site_nbr_idx, site_nbr, site_curr_pq_top_idx, site_curr_pq_validIdx, site_curr_pq_sig_idx, site_curr_pq_sig, site_curr_pq_impl_lut, site_curr_pq_impl_ff, site_curr_pq_impl_cksr, site_curr_pq_impl_ce,
+        site_curr_pq_idx, site_curr_stable, site_curr_pq_siteId, site_curr_pq_score, site_curr_scl_score, site_curr_scl_siteId, site_curr_scl_idx, site_curr_scl_validIdx, site_curr_scl_sig_idx, site_curr_scl_sig, site_curr_scl_impl_lut, site_curr_scl_impl_ff, site_curr_scl_impl_cksr, site_curr_scl_impl_ce, site_next_pq_idx, site_next_pq_validIdx, site_next_pq_top_idx, site_next_pq_score, site_next_pq_siteId, site_next_pq_sig_idx, site_next_pq_sig, site_next_pq_impl_lut, site_next_pq_impl_ff, site_next_pq_impl_cksr, site_next_pq_impl_ce, site_next_scl_score, site_next_scl_siteId, site_next_scl_idx, site_next_scl_validIdx, site_next_scl_sig_idx, site_next_scl_sig, site_next_scl_impl_lut, site_next_scl_impl_ff, site_next_scl_impl_cksr, site_next_scl_impl_ce, site_next_stable, site_det_score, inst_curr_detSite, inst_next_bestScoreImprov, inst_next_bestSite, inst_score_improv, site_score_improv);
     cudaDeviceSynchronize();
 
     ////TODO - Comment out single DLIter implementation - rearrange not possible
