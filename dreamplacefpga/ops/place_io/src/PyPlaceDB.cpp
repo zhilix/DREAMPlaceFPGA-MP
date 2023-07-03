@@ -94,6 +94,7 @@ void PyPlaceDB::set(PlaceDB const& db)
     region_box2yh = pybind11::cast(std::move(db.regionBoxYHighs()));
     flat_constraint2box = pybind11::cast(std::move(db.flatConstraint2Box()));
     flat_constraint2box_start = pybind11::cast(std::move(db.flatConstraint2BoxStart()));
+    constraint2node_map = pybind11::cast(std::move(db.constraint2NodeMap()));
     flat_constraint2node = pybind11::cast(std::move(db.flatConstraint2Node()));
     flat_constraint2node_start = pybind11::cast(std::move(db.flatConstraint2NodeStart()));
   

@@ -479,12 +479,14 @@ void PlaceDB::add_ctrl_pin(std::string& pName)
 }
 void PlaceDB::add_region_constraint(int RegionIdx, int numBoxes)
 {
-    std::cout << "RegionIdx: " << RegionIdx << " numBoxes: " << numBoxes << std::endl;
     std::vector<index_type> regionBoxes;
     flat_constraint2box_start.emplace_back(flat_constraint2box.size());
     ++num_physical_constraints;
     num_region_constraint_boxes += numBoxes;
 
+    std::vector<index_type> temp;
+    constraint2node_map.emplace_back(temp);
+    
 }
 void PlaceDB::add_region_box(int xl, int yl, int xh, int yh)
 {
@@ -499,25 +501,29 @@ void PlaceDB::add_region_box(int xl, int yl, int xh, int yh)
 }
 void PlaceDB::add_instance_to_region(std::string const& instName, int regionIdx)
 {
-    std::cout << "instName: " << instName << " regionIdx: " << regionIdx << std::endl;
-    
     index_type nodeId;
-    nodeId = node_name2id_map.at(instName);
+    string2index_map_type::iterator found = node_name2id_map.find(instName);
+
+    if (found != node_name2id_map.end())
+    {
+        nodeId = node_name2id_map.at(instName);
+    }
     
-    flat_constraint2node.emplace_back(nodeId);
-    flat_constraint2node_start.emplace_back(flat_constraint2node.size());
+    constraint2node_map[regionIdx].emplace_back(nodeId);
     
 }
 void PlaceDB::add_cascade_shape(std::string const& name, int numRows, int numCols)
-{
-    
-    cascade_shape_name2id_map.insert(std::make_pair(name, cascade_shape_names.size()));
-    cascade_shape_names.emplace_back(name);
+{   
+    //need to convert the cascade shape name to upper case due to the bookshelf file provided
+    std::string upper_name = limbo::toupper(name);
+
+    cascade_shape_name2id_map.insert(std::make_pair(upper_name, cascade_shape_names.size()));
+    cascade_shape_names.emplace_back(upper_name);
     cascade_shape_heights.emplace_back(numRows);
     cascade_shape_widths.emplace_back(numCols);
     
     ++m_numCascadeShape;
-    m_cascadeShapeTemp = name;
+    m_cascadeShapeTemp = upper_name;
     cascade_shape2macro_type.emplace_back(" ");
 
 }
@@ -529,9 +535,6 @@ void PlaceDB::add_cascade_shape_single_col(std::string macroType)
     string2index_map_type::iterator found = cascade_shape_name2id_map.find(m_cascadeShapeTemp);
     if (found != cascade_shape_name2id_map.end())
     {
-    //DBG
-    //std::cout << "Found " << m_cascadeShapeTemp << std::endl;
-    //DBG
         cascade_shape2macro_type.at(cascade_shape_name2id_map.at(m_cascadeShapeTemp)) = macroType;
     }
 
@@ -551,6 +554,10 @@ void PlaceDB::add_cascade_instance_to_shape(std::string const& shapeName, std::s
     
     //need to convert the cascade shape name to upper case due to the bookshelf file provided
     std::string upper_shapeName = limbo::toupper(shapeName);
+
+    // std::cout << "Add cascade instance " << instName << " to shape " << upper_shapeName << std::endl;
+    string2index_map_type::iterator found = cascade_shape_name2id_map.find(upper_shapeName);
+
     cascade_inst2shape.emplace_back(cascade_shape_name2id_map.at(upper_shapeName));
 
     flat_cascade_inst2node_start.emplace_back(flat_cascade_inst2node.size());
@@ -603,6 +610,14 @@ void PlaceDB::bookshelf_end() {
     }
 
     node_name2id_map.insert(fixed_node_name2id_map.begin(), fixed_node_name2id_map.end());
+
+    
+    flat_constraint2node_start.emplace_back(0);
+    for (const auto& sub : constraint2node_map)
+    {
+        flat_constraint2node.insert(flat_constraint2node.end(), sub.begin(), sub.end());
+        flat_constraint2node_start.emplace_back(flat_constraint2node.size());
+    }
 }
 
 bool PlaceDB::write(std::string const& filename) const {

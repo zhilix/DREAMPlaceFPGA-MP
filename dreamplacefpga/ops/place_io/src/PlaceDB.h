@@ -253,6 +253,9 @@ class PlaceDB : public BookshelfParser::BookshelfDataBase
         std::vector<index_type> const& flatConstraint2BoxStart() const {return flat_constraint2box_start;}
         std::vector<index_type>& flatConstraint2BoxStart() {return flat_constraint2box_start;}
 
+        std::vector<std::vector<index_type> > const& constraint2NodeMap() const {return constraint2node_map;}
+        std::vector<std::vector<index_type> >& constraint2NodeMap() {return constraint2node_map;}
+
         std::vector<index_type> const& flatConstraint2Node() const {return flat_constraint2node;}
         std::vector<index_type>& flatConstraint2Node() {return flat_constraint2node;}
 
@@ -415,6 +418,7 @@ class PlaceDB : public BookshelfParser::BookshelfDataBase
         
         std::vector<index_type> flat_constraint2box;
         std::vector<index_type> flat_constraint2box_start;
+        std::vector<std::vector<index_type> > constraint2node_map;
         std::vector<index_type> flat_constraint2node;
         std::vector<index_type> flat_constraint2node_start;
 
