@@ -112,6 +112,7 @@ struct PyPlaceDB
     pybind11::list region_box2yh; ///< yh of each physical region box
     pybind11::list flat_constraint2box; ///< flattened array of constraints2boxes_map
     pybind11::list flat_constraint2box_start; ///< starting point for each physical region box
+    pybind11::list constraint2node_map; ///< map constraint to nodes
     pybind11::list flat_constraint2node; ///< flattened array of constraint2node_map
     pybind11::list flat_constraint2node_start; ///< starting point for each node in each constraint
     

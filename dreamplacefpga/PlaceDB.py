@@ -159,7 +159,8 @@ class PlaceDBFPGA (object):
         self.region_box2xh = [] # xh of each physical region box
         self.region_box2yh = [] # yh of each physical region box
         self.flat_constraint2box = [] # flattened array of constraints2boxes_map
-        self.flat_constraint2box_start = [] # starting point for each physical region box 
+        self.flat_constraint2box_start = [] # starting point for each physical region box
+        self.constraint2box_map = [] # nested array of array to map constraint to physical region box 
         self.flat_constraint2node = [] # flattened array of constraint2node_map
         self.flat_constraint2node_start = [] # starting point for each node in each constraint
 
@@ -355,6 +356,7 @@ class PlaceDBFPGA (object):
         self.region_box2yh = pydb.region_box2yh
         self.flat_constraint2box = pydb.flat_constraint2box
         self.flat_constraint2box_start = pydb.flat_constraint2box_start
+        self.constraint2node_map = pydb.constraint2node_map
         self.flat_constraint2node = pydb.flat_constraint2node
         self.flat_constraint2node_start = pydb.flat_constraint2node_start
 
