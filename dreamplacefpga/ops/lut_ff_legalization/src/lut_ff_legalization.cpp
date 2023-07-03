@@ -78,6 +78,15 @@ struct RipUpCand
     T score = -10000.0; 
     bool legal = false;
     Candidate<T> cand;
+
+    void reset()
+    {
+        siteId = INVALID;
+        score = -10000.0; 
+        legal = false;
+        cand.reset();
+    }
+
 };
 
 //Struct for BLE
@@ -213,9 +222,6 @@ void clear_cand_contents(
     for(int sg = 0; sg < SLICE_CAPACITY; ++sg)
     {
         site_impl_lut[lutIdx + sg] = INVALID;
-    }
-    for(int sg = 0; sg < SLICE_CAPACITY; ++sg)
-    {
         site_impl_ff[lutIdx + sg] = INVALID;
     }
     for(int sg = 0; sg < CKSR_IN_CLB; ++sg)
@@ -226,6 +232,7 @@ void clear_cand_contents(
     {
         site_impl_ce[ceIdx + sg] = INVALID;
     }
+    site_sig_idx[tsPQ] = 0;
 }
 //DBG
 
@@ -2951,7 +2958,7 @@ int ripUp_Greedy_LG(
         int instPcl = instId*3;
 
         //RipUpCandidates
-        std::vector<RipUpCand<T> > ripUpCandidates(1);
+        std::vector<RipUpCand<T> > ripUpCandidates;
 
         int xLo = DREAMPLACE_STD_NAMESPACE::max(pos_x[instId] - nbrDistEnd, T(0));
         int yLo = DREAMPLACE_STD_NAMESPACE::max(pos_y[instId] - nbrDistEnd, T(0));
@@ -2970,6 +2977,7 @@ int ripUp_Greedy_LG(
                     if (dist < nbrDistEnd)
                     {
                         RipUpCand<T> rpCand;
+                        rpCand.reset();
                         int sIdx = site2addr_map[siteId];
 
                         rpCand.siteId = siteId;
@@ -3048,7 +3056,10 @@ int ripUp_Greedy_LG(
         }
 
         //Sort ripup candidate indices based on legal and score
-        std::sort(ripUpCandidates.begin(), ripUpCandidates.end());
+        if (ripUpCandidates.size() > 1)
+        {
+            std::sort(ripUpCandidates.begin(), ripUpCandidates.end());
+        }
 
         int ripupLegalizeInst(INVALID);
         int greedyLegalizeInst(INVALID);
@@ -3102,6 +3113,7 @@ int ripUp_Greedy_LG(
                 dets.reserve(site_det_sig_idx[stAdId]);
 
                 Candidate<T> tCand;
+                tCand.reset();
                 tCand.score = site_det_score[stAdId];
                 tCand.siteId = site_det_siteId[stAdId];
                 tCand.sigIdx = site_det_sig_idx[stAdId];
@@ -3132,6 +3144,11 @@ int ripUp_Greedy_LG(
                     inst_curr_detSite[site_det_sig[sdSGId + sg]] = INVALID;
                 }
 
+                //Clear contents of site_det_sig
+                clear_cand_contents(stAdId, SIG_IDX, SLICE_CAPACITY, CKSR_IN_CLB,
+                        CE_IN_CLB, site_det_sig_idx, site_det_sig, site_det_impl_lut,
+                        site_det_impl_ff, site_det_impl_cksr, site_det_impl_ce);
+
                 site_det_sig_idx[stAdId] = flat_node2prclstrCount[instId];
                 tCand.sigIdx = flat_node2prclstrCount[instId];
 
@@ -3141,23 +3158,16 @@ int ripUp_Greedy_LG(
                     site_det_sig[sdSGId + idx] = clInstId;
                     tCand.sig[idx] = clInstId;
                 }
-
-                for(int sg = 0; sg < SLICE_CAPACITY; ++sg)
-                {
-                    site_det_impl_lut[sdLutId+ sg] = INVALID;
-                    site_det_impl_ff[sdLutId+ sg] = INVALID;
-                }
-                for(int sg = 0; sg < CKSR_IN_CLB; ++sg)
-                {
-                    site_det_impl_cksr[sdCKId+ sg] = INVALID;
-                }
-                for(int sg = 0; sg < CE_IN_CLB; ++sg)
-                {
-                    site_det_impl_ce[sdCEId+ sg] = INVALID;
-                }
                 ///
 
-                if (add_inst_to_cand_impl(lut_type, flat_node2pin_start_map, flat_node2pin_map, node2pincount, net2pincount, pin2net_map, pin_typeIds, sorted_net_map, flat_node2prclstrCount, flat_node2precluster_map, flop2ctrlSetId_map, node2fence_region_map, flop_ctrlSets, instId, CKSR_IN_CLB, CE_IN_CLB, HALF_SLICE_CAPACITY, NUM_BLE_PER_SLICE, tCand.impl_lut, tCand.impl_ff, tCand.impl_cksr, tCand.impl_ce))
+                if (add_inst_to_cand_impl(lut_type, flat_node2pin_start_map,
+                            flat_node2pin_map, node2pincount, net2pincount, pin2net_map,
+                            pin_typeIds, sorted_net_map, flat_node2prclstrCount,
+                            flat_node2precluster_map, flop2ctrlSetId_map,
+                            node2fence_region_map, flop_ctrlSets, instId,
+                            CKSR_IN_CLB, CE_IN_CLB, HALF_SLICE_CAPACITY,
+                            NUM_BLE_PER_SLICE, tCand.impl_lut, tCand.impl_ff,
+                            tCand.impl_cksr, tCand.impl_ce))
                 {
                     ///
                     site_det_sig_idx[stAdId] = tCand.sigIdx;
@@ -3195,12 +3205,13 @@ int ripUp_Greedy_LG(
                 }
 
                 int sig[2*SLICE_CAPACITY];
+                int tmp_sigIdx = dets[0].sigIdx;
                 for (int sg = 0; sg < dets[0].sigIdx; ++sg)
                 {
                     sig[sg] = dets[0].sig[sg];
                 }
 
-                for (int rIdx = 0; rIdx < dets[0].sigIdx; ++rIdx)
+                for (int rIdx = 0; rIdx < tmp_sigIdx; ++rIdx)
                 {
                     int ruInst = sig[rIdx];
                     if (inst_curr_detSite[ruInst] != INVALID)
@@ -3234,6 +3245,7 @@ int ripUp_Greedy_LG(
 
                     //BestCandidate
                     Candidate<T> bestCand;
+                    bestCand.reset();
                     T bestScoreImprov(-10000.0);
 
                     for (int spId = beg; spId < end; ++spId)
@@ -3252,6 +3264,7 @@ int ripUp_Greedy_LG(
                         }
 
                         Candidate<T> cand;
+                        cand.reset();
                         cand.score = site_det_score[siteMapAIdx];
                         cand.siteId = site_det_siteId[siteMapAIdx];
                         cand.sigIdx = site_det_sig_idx[siteMapAIdx];
@@ -3361,6 +3374,7 @@ int ripUp_Greedy_LG(
                         int sbAId = site2addr_map[sbId];
 
                         Candidate<T> tCand;
+                        tCand.reset();
                         ///
                         tCand.score = site_det_score[sbAId];
                         tCand.siteId = site_det_siteId[sbAId];
@@ -3434,7 +3448,7 @@ int ripUp_Greedy_LG(
         if (ripupLegalizeInst != 1)
         {
             inst_curr_detSite[instId] = INVALID;
-            
+
             int beg(spiralBegin), end(spiralEnd);
 
             T cenX(pos_x[flat_node2precluster_map[instPcl]] * wlPrecond[flat_node2precluster_map[instPcl]]);
@@ -3454,6 +3468,7 @@ int ripUp_Greedy_LG(
 
             //BestCandidate
             Candidate<T> bestCand;
+            bestCand.reset();
             T bestScoreImprov(-10000.0);
 
             for (int sIdx = beg; sIdx < end; ++sIdx)
@@ -3470,6 +3485,7 @@ int ripUp_Greedy_LG(
                     continue;
                 }
                 Candidate<T> cand;
+                cand.reset();
                 cand.score = site_det_score[siteMapAIdx];
                 cand.siteId = site_det_siteId[siteMapAIdx];
                 cand.sigIdx = site_det_sig_idx[siteMapAIdx];
