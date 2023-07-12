@@ -514,16 +514,13 @@ void PlaceDB::add_instance_to_region(std::string const& instName, int regionIdx)
 }
 void PlaceDB::add_cascade_shape(std::string const& name, int numRows, int numCols)
 {   
-    //need to convert the cascade shape name to upper case due to the bookshelf file provided
-    std::string upper_name = limbo::toupper(name);
-
-    cascade_shape_name2id_map.insert(std::make_pair(upper_name, cascade_shape_names.size()));
-    cascade_shape_names.emplace_back(upper_name);
+    cascade_shape_name2id_map.insert(std::make_pair(name, cascade_shape_names.size()));
+    cascade_shape_names.emplace_back(name);
     cascade_shape_heights.emplace_back(numRows);
     cascade_shape_widths.emplace_back(numCols);
     
     ++m_numCascadeShape;
-    m_cascadeShapeTemp = upper_name;
+    m_cascadeShapeTemp = name;
     cascade_shape2macro_type.emplace_back(" ");
 
 }
@@ -551,14 +548,11 @@ void PlaceDB::add_cascade_instance_to_shape(std::string const& shapeName, std::s
 {
     cascade_inst_name2id_map.insert(std::make_pair(instName, cascade_inst_names.size()));
     cascade_inst_names.emplace_back(instName);
-    
-    //need to convert the cascade shape name to upper case due to the bookshelf file provided
-    std::string upper_shapeName = limbo::toupper(shapeName);
 
-    // std::cout << "Add cascade instance " << instName << " to shape " << upper_shapeName << std::endl;
-    string2index_map_type::iterator found = cascade_shape_name2id_map.find(upper_shapeName);
+    // std::cout << "Add cascade instance " << instName << " to shape " << shapeName << std::endl;
+    string2index_map_type::iterator found = cascade_shape_name2id_map.find(shapeName);
 
-    cascade_inst2shape.emplace_back(cascade_shape_name2id_map.at(upper_shapeName));
+    cascade_inst2shape.emplace_back(cascade_shape_name2id_map.at(shapeName));
 
     flat_cascade_inst2node_start.emplace_back(flat_cascade_inst2node.size());
     ++m_numCascadeInst;
@@ -587,6 +581,10 @@ void PlaceDB::set_bookshelf_node_pos(std::string const& name, double x, double y
         mov_node_z.at(node_name2id_map.at(name)) = z;
     }
 
+}
+
+void PlaceDB::add_macro(std::string const& name) {
+    macro_inst.emplace_back(node_name2id_map.at(name));
 }
 
 void PlaceDB::set_bookshelf_design(std::string& name) {

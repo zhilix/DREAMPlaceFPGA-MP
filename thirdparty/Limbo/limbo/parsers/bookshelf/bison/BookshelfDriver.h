@@ -156,6 +156,8 @@ public:
     void addCascadeInstToShapeCbk(const std::string& shapeName, const std::string& instName);
     /// @brief from cascade_shape_inst file, add node to instance entry
     void addNodeToCascadeInstCbk(const std::string& nodeName);
+    /// @brief from macro file, add macro entry
+    void addMacroCbk(const std::string& name);
 
     /// @brief control m_plFlag
     /// @param flag control flag 
@@ -258,6 +260,7 @@ public:
     void setRegionFileCbk(const std::string &str);
     void setCascadeShapeFileCbk(const std::string &str);
     void setCascadeInstFileCbk(const std::string &str);
+    void setMacroFileCbk(const std::string &str);
 
     /// get all bookshelf files except .aux 
     /// @return bookshelf files except .aux 
@@ -271,6 +274,7 @@ public:
     string const& regionFile() const {return m_regionFile;}
     string const& cascadeShapeFile() const {return m_cascadeShapeFile;}
     string const& cascadeInstFile() const {return m_cascadeInstFile;}
+    string const& macroFile() const {return m_macroFile;}
 protected:
 	Net m_net; ///< temporary storage of net 
 	//Row m_row; ///< temporary storage of row 
@@ -285,6 +289,7 @@ protected:
     string m_regionFile;
     string m_cascadeShapeFile;
     string m_cascadeInstFile;
+    string m_macroFile;
     //bool m_plFlag; ///< if true, indicate that only reads .pl file, this will result in different callbacks in the database 
 };
 

@@ -36,7 +36,7 @@ Driver::Driver(BookshelfDataBase& db)
     m_regionFile.clear();
     m_cascadeShapeFile.clear();
     m_cascadeInstFile.clear();
-
+    m_macroFile.clear();
 }
 
 bool Driver::parse_stream(std::istream& in, const std::string& sname)
@@ -425,6 +425,10 @@ void Driver::addNodeToCascadeInstCbk(const std::string& nodeName)
 {
     m_db.add_node_to_cascade_inst(nodeName);
 }
+void Driver::addMacroCbk(const std::string& name)
+{
+    m_db.add_macro(name);
+}
 // .aux file 
 void Driver::auxCbk(std::string& design_name, vector<std::string>& vBookshelfFiles)
 {
@@ -493,6 +497,13 @@ void Driver::setCascadeInstFileCbk(const std::string &str)
 {
     //std::cout << "Cascade Inst File: " << str << std::endl; 
     m_cascadeInstFile = str;
+    m_vBookshelfFiles.push_back(str);
+}
+
+void Driver::setMacroFileCbk(const std::string &str)
+{
+    //std::cout << "Macro File: " << str << std::endl; 
+    m_macroFile = str;
     m_vBookshelfFiles.push_back(str);
 }
 
@@ -588,7 +599,7 @@ bool read(BookshelfDataBase& db, const std::string& auxFile)
     input_bookshelf_files.emplace_back(driverAux.nodeFile());
     input_bookshelf_files.emplace_back(driverAux.plFile());
     input_bookshelf_files.emplace_back(driverAux.netFile());
-    input_bookshelf_files.emplace_back(driverAux.wtFile());
+    // input_bookshelf_files.emplace_back(driverAux.wtFile());
     input_bookshelf_files.emplace_back(driverAux.regionFile());
     input_bookshelf_files.emplace_back(driverAux.cascadeShapeFile());
 
@@ -599,6 +610,22 @@ bool read(BookshelfDataBase& db, const std::string& auxFile)
         //std::cout << "cascade inst file exists" << std::endl;
         //DBG
         input_bookshelf_files.emplace_back(driverAux.cascadeInstFile());
+    }
+
+    if (driverAux.wtFile() != "")
+    {
+        //DBG
+        //std::cout << "wt file exists" << std::endl;
+        //DBG
+        input_bookshelf_files.emplace_back(driverAux.wtFile());
+    }
+
+    if(driverAux.macroFile() != "")
+    {
+        //DBG
+        //std::cout << "sdc file exists" << std::endl;
+        //DBG
+        input_bookshelf_files.emplace_back(driverAux.macroFile());
     }
 
     //for (auto file : {driverAux.libFile(), driverAux.sclFile(), driverAux.nodeFile(), driverAux.plFile(), driverAux.netFile(), driverAux.wtFile(), driverAux.regionFile(), driverAux.cascadeShapeFile(), driverAux.cascadeInstFile()})

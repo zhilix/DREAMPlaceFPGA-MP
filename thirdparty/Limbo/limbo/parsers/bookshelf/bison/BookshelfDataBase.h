@@ -436,6 +436,8 @@ class BookshelfDataBase
         virtual void add_cascade_instance_to_shape(string const&, string const&) = 0;
         /// @brief add cascade instance to shape
         virtual void add_node_to_cascade_inst(string const&) = 0;
+        /// @brief add macro
+        virtual void add_macro(string const&) = 0;
 //        /// @brief set number of terminals 
 //        virtual void resize_bookshelf_node_terminals(int, int) = 0;
 //        /// @brief set number of nets 

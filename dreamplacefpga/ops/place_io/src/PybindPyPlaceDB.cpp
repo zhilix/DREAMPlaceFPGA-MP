@@ -92,6 +92,7 @@ void bind_PyPlaceDB(pybind11::module& m)
         .def_readwrite("cascade_inst2shape", &DREAMPLACE_NAMESPACE::PyPlaceDB::cascade_inst2shape)
         .def_readwrite("flat_cascade_inst2node", &DREAMPLACE_NAMESPACE::PyPlaceDB::flat_cascade_inst2node)
         .def_readwrite("flat_cascade_inst2node_start", &DREAMPLACE_NAMESPACE::PyPlaceDB::flat_cascade_inst2node_start)
+        .def_readwrite("macro_inst", &DREAMPLACE_NAMESPACE::PyPlaceDB::macro_inst)
         ;
 
 }

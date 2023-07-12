@@ -159,6 +159,7 @@
 %token          KWD_REGIONS                     "regions"
 %token          KWD_CASCADE_SHAPE               "cascade_shape"
 %token          KWD_CASCADE_SHAPE_INSTANCES     "cascade_shape_instances"
+%token          KWD_MACROS                      "macros"      
 
 %token <stringVal> 	LIB_FILE  
 %token <stringVal> 	SCL_FILE  
@@ -169,6 +170,7 @@
 %token <stringVal> 	REGION_FILE
 %token <stringVal> 	CASCADE_SHAPE_FILE
 %token <stringVal> 	CASCADE_INST_FILE  
+%token <stringVal> 	MACRO_FILE
 
 /* %token			KWD_LUT1		"LUT1"
  *%token			KWD_LUT2		"LUT2"
@@ -265,6 +267,7 @@ sub_top : aux_top
         | region_top
         | cascade_shape_top
         | cascade_inst_top
+        | macro_top
         ;
 
 /***** aux file *****/
@@ -295,6 +298,7 @@ aux_file : LIB_FILE   { driver.setLibFileCbk(*$1); delete $1; }
          | REGION_FILE { driver.setRegionFileCbk(*$1); delete $1; }
          | CASCADE_SHAPE_FILE { driver.setCascadeShapeFileCbk(*$1); delete $1; }
          | CASCADE_INST_FILE { driver.setCascadeInstFileCbk(*$1); delete $1; }
+         | MACRO_FILE { driver.setMacroFileCbk(*$1); delete $1; }
          ;
 
 /***** .nodes file *****/
@@ -899,6 +903,16 @@ cascade_inst_block_lines  : cascade_inst_block_lines cascade_inst_block_line
 
 cascade_inst_block_line : STRING EOL { driver.addNodeToCascadeInstCbk(*$1); delete $1; }
 
+/***** macros file *****/
+macro_top : macro_lines
+          ;
+
+macro_lines : macro_lines macro_line
+           | macro_line
+           ;
+
+macro_line : STRING EOL_STAR { driver.addMacroCbk(*$1); delete $1; }
+          ;
 
  /*** END EXAMPLE - Change the example grammar rules above ***/
 

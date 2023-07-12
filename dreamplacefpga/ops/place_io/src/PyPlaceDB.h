@@ -127,6 +127,8 @@ struct PyPlaceDB
     pybind11::list cascade_inst2shape; ///< shape id of cascade instances
     pybind11::list flat_cascade_inst2node; ///< flattened array of cascade_inst2node_map
     pybind11::list flat_cascade_inst2node_start; ///< starting point for each cascade instance
+
+    pybind11::list macro_inst; ///< 1D array, macro instance (FPGA)
     
     //pybind11::list node2orig_node_map; ///< due to some fixed nodes may have non-rectangular shapes, we flat the node list; 
     //                                    ///< this map maps the new indices back to the original ones 

@@ -112,6 +112,8 @@ void PyPlaceDB::set(PlaceDB const& db)
     flat_cascade_inst2node = pybind11::cast(std::move(db.flatCascadeInst2Node()));
     flat_cascade_inst2node_start = pybind11::cast(std::move(db.flatCascadeInst2NodeStart()));
 
+    macro_inst = pybind11::cast(std::move(db.macroInst()));
+
     //num_terminals = db.numFixed(); //IOs
     //num_movable_nodes = db.numMovable();  // Movable cells
     //num_physical_nodes = num_terminals + num_movable_nodes;

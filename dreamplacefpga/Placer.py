@@ -73,6 +73,10 @@ def placeFPGA(params):
     
     logging.info("Completed Placement in %.3f seconds" % (time.time()-start))
 
+    # write macro placement solution
+    logging.info("Writing macro placement solution")
+    placedb.writeMacroPl(params, os.path.join(path, "%s.macro.pl" % (params.design_name())))
+
     if params.enable_if == 1:
         tt = time.time()
         logging.info("Start writing solution to Interchange Format(IF)")

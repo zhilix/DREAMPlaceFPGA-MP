@@ -94,7 +94,7 @@ typedef BookshelfParser::Parser::token_type token_type;
 [A-Za-z0-9_]+\.regions                  { yylval->stringVal = new std::string(yytext, yyleng); return token::REGION_FILE; }
 [A-Za-z0-9_]+\.cascade_shape            { yylval->stringVal = new std::string(yytext, yyleng); return token::CASCADE_SHAPE_FILE; }
 [A-Za-z0-9_]+\.cascade_shape_instances  { yylval->stringVal = new std::string(yytext, yyleng); return token::CASCADE_INST_FILE; }
-
+[A-Za-z0-9_]+\.macros                   { yylval->stringVal = new std::string(yytext, yyleng); return token::MACRO_FILE; }
 
 [\+\-]?[0-9]+ {
     yylval->integerVal = atol(yytext);

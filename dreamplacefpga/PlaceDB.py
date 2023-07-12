@@ -176,6 +176,7 @@ class PlaceDBFPGA (object):
         self.flat_cascade_inst2node = [] # flattened array of cascade_inst2node_map
         self.flat_cascade_inst2node_start = [] # starting point for each cascade instance
 
+        self.macro_inst = [] # macro instances
 
     """
     @return number of nodes
@@ -371,6 +372,8 @@ class PlaceDBFPGA (object):
         self.cascade_inst2shape = pydb.cascade_inst2shape
         self.flat_cascade_inst2node = pydb.flat_cascade_inst2node
         self.flat_cascade_inst2node_start = pydb.flat_cascade_inst2node_start
+
+        self.macro_inst = pydb.macro_inst
 
         self.num_routing_layers = 1
         self.unit_horizontal_capacity = 0.95 * params.unit_horizontal_capacity
@@ -666,6 +669,31 @@ class PlaceDBFPGA (object):
         with open(pl_file, "w") as f:
             f.write(content)
         logging.info("write placement solution takes %.3f seconds" % (time.time()-tt))
+
+    def writeMacroPl(self, params, pl_file):
+        """
+        @brief write placement solution as .pl file
+        @param pl_file .pl file 
+        """
+        tt = time.time()
+        logging.info("writing to %s" % (pl_file))
+
+        node_x = self.node_x
+        node_y = self.node_y
+        node_z = self.node_z
+
+        content = ""
+        str_node_names = self.node_names
+        for i in self.macro_inst:
+            content += "%s %d %d %g\n" % (
+                    str_node_names[i],
+                    node_x[i], 
+                    node_y[i], 
+                    node_z[i]
+                    )
+        with open(pl_file, "w") as f:
+            f.write(content)
+        logging.info("write macro placement takes %.3f seconds" % (time.time()-tt))
 
     def read_pl(self, params, pl_file):
         """
