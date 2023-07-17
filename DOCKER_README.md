@@ -1,5 +1,4 @@
-# DREAMPlace_MLCAD
-- [How to Build](#how-to-build)
+# DREAMPlaceFPGA_mlcad
 
 ## Build with Docker
 
@@ -22,7 +21,7 @@ You can use the Docker container to avoid building all the dependencies yourself
     docker run -it   -v $(pwd):/DREAMPlaceFPGA_mlcad   -v $(pwd)/../Designs:/Designs   your_username/dreamplace_fpga:1.0 bash
     ```
     Replace `your_username` with your name
-    Replace `$(pwd)/../Designs` with the absolute path of the Designs folder, which containing `Design_1`, `Design_2`, `Design 3`, etc...
+    Replace `$(pwd)/../Designs` with the absolute path of the Designs folder, which containing `Design_1`, `Design_2`, `Design_3`, etc...
 5. go to the `DREAMPlaceFPGA_mlcad` directory
     ```
     cd /DREAMPlaceFPGA_mlcad

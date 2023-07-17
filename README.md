@@ -86,7 +86,7 @@ pip install -r requirements.txt
 ```
 > For example, if the repository was cloned in directory ***~/Downloads***, then the root directory is ***~/Downloads/DREAMPlaceFPGA_mlcad***
 
-> You can also use a [python virtual environment](https://docs.python.org/3/library/venv.html) to install all the required packages to run ``DREAMPlaceFPGA``
+> You can also use a [python virtual environment](https://docs.python.org/3/library/venv.html) to install all the required packages to run ``DREAMPlaceFPGA_mlcad``
 
 ### <a name="build_dreamplacefpga"></a>To Build 
 
@@ -102,13 +102,13 @@ Third party submodules are automatically built except for [Boost](https://www.bo
 
 > For example,
 
-> ***~/Downloads/DREAMPlaceFPGA:*** *mkdir build; cd build*
+> ***~/Downloads/DREAMPlaceFPGA_mlcad:*** *mkdir build; cd build*
 
-> ***~/Downloads/DREAMPlaceFPGA/build:***  *cmake . . -DCMAKE_INSTALL_PREFIX=~/Downloads/DREAMPlaceFPGA*
+> ***~/Downloads/DREAMPlaceFPGA_mlcad/build:***  *cmake . . -DCMAKE_INSTALL_PREFIX=~/Downloads/DREAMPlaceFPGA_mlcad*
 
-> ***~/Downloads/DREAMPlaceFPGA/build:*** *make; make install*
+> ***~/Downloads/DREAMPlaceFPGA_mlcad/build:*** *make; make install*
 
-> The directory ***~/Downloads/DREAMPlaceFPGA/build*** is the install dir
+> The directory ***~/Downloads/DREAMPlaceFPGA_mlcad/build*** is the install dir
 
 When there are changes to packages or parser code, it is necessary to delete contents of ***build*** directory for a clean build and proper operation.
 ```
@@ -116,7 +116,7 @@ rm -r build
 ```
 > For example,
 
-> ***~/Downloads/DREAMPlaceFPGA:*** *rm -r build*
+> ***~/Downloads/DREAMPlaceFPGA_mlcad:*** *rm -r build*
 
 ### <a name="cmake"></a>Cmake Options 
 
@@ -136,13 +136,14 @@ Here are the available options for CMake.
 Before running, ensure that all python dependent packages have been installed. 
 Go to the ***benchmark directory***, and run:
 ```
-source <path/to/root/directory>/run_mlcad_design.sh <path/to/root/directory>
+source <path_to_root_dir>/run_mlcad_design.sh <path_to_root_dir> <gpu_flag>
 ```
 > Run from ***~/Downloads/DREAMPlaceFPGA_mlcad/benchmarks/mlcad2023_benchmarks/Design_181*** directory
 
 For example:
-> ***~/Downloads/DREAMPlaceFPGA:*** *source ~/Downloads/DREAMPlaceFPGA_mlcad/run_mlcad_design.sh ~/Downloads/DREAMPlaceFPGA_mlcad*
+> ***~/Downloads/DREAMPlaceFPGA_mlcad:*** *source ~/Downloads/DREAMPlaceFPGA_mlcad/run_mlcad_design.sh ~/Downloads/DREAMPlaceFPGA_mlcad 1*
 
+For Docker usage, please go to [DOCKER_README.md](DOCKER_README.md)
 
 ## <a name="copyright"></a>Copyright
 

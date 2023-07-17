@@ -80,5 +80,3 @@ EOF
 
 #run the design
 python ${DREAMPlaceFPGA_dir}/dreamplacefpga/Placer.py $(pwd)/design.json
-# mv results/design/design.macro.pl macroplacement.pl
-# rm -rf results
