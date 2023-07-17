@@ -98,7 +98,7 @@
     },
 "legalize_flag" : {
     "descripton" : "whether use internal legalization", 
-    "default" : 1
+    "default" : 0
     },
 "stop_overflow" : {
     "descripton" : "stopping criteria, consider stop when the overflow reaches to a ratio", 
@@ -115,6 +115,10 @@
 "detailed_place_command" : {
     "descripton" : "commands for external detailed placement engine", 
     "default" : "-nolegal -nodetail"
+    },
+"detailed_place_flag" : {
+    "descripton" : "whether to run external detailed placement engine", 
+    "default" : 0
     },
 "plot_flag" : {
     "descripton" : "whether to plot solution or not (Increases runtime)", 
@@ -158,7 +162,7 @@
     },
 "routability_opt_flag" : {
     "descripton" : "whether enable routability optimization", 
-    "default" : 0
+    "default" : 1
     },
 "route_num_bins_x" : {
     "descripton" : "number of routing grids/tiles", 

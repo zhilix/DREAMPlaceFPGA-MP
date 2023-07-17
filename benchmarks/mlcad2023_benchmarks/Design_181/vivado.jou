@@ -1,0 +1,12 @@
+#-----------------------------------------------------------
+# Vivado v2021.1 (64-bit)
+# SW Build (by ismailb) on Mon Jun 19 14:35:35 MDT 2023
+# 
+# Start of session at: Fri Jul  7 20:02:41 2023
+# Process ID: 190286
+# Current directory: /wrk/dese1/ismailb/myDesignSelectRuns/mlcad_2023_contest/benchmark/benchmark_12_07_2022/All_designs/Public_Released/Design_181
+# Command line: vivado -mode tcl -so place.tcl
+# Log file: /wrk/dese1/ismailb/myDesignSelectRuns/mlcad_2023_contest/benchmark/benchmark_12_07_2022/All_designs/Public_Released/Design_181/vivado.log
+# Journal file: /wrk/dese1/ismailb/myDesignSelectRuns/mlcad_2023_contest/benchmark/benchmark_12_07_2022/All_designs/Public_Released/Design_181/vivado.jou
+#-----------------------------------------------------------
+source place.tcl

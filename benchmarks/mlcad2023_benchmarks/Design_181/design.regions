@@ -1,0 +1,13 @@
+# RegionConstraint BEGIN <region constraint ID> <num of boxes in this region constraint>
+#   box <xLo> <yLo> <xHi> <yHi>
+#   ......
+# RegionConstraint END
+#
+# InstanceToRegionConstraintMapping BEGIN
+#   <instance name> <region constraint ID>
+#   ......
+# InstanceToRegionConstraintMapping END
+#
+# Note 1: all region constraints boxes are exclusive, i.e., xLo <= x < xHi and yLo <= y < yHi
+# Note 2: instances not showing in the InstanceToRegionCosntraintMapping session are not subject to any region constraint
+

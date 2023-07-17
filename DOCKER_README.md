@@ -42,23 +42,3 @@ You can use the Docker container to avoid building all the dependencies yourself
     ```
 
 
-7. Before running, ensure to prepare the `.json` and `.aux` file in each Design.
-    ```
-    cp /DREAMPlaceFPGA_mlcad/create_aux_file.sh /Designs/.
-    cp /DREAMPlaceFPGA_mlcad/create_json_file.sh /Designs/.
-    cd /Designs
-    bash create_aux_file.sh
-    bash create_json_file.sh
-    ```
-
-8. Go to the root directory, DREAMPlaceFPGA_mlcad`, and run with JSON configuration file.
-    ```
-    cd /DREAMPlaceFPGA_mlcad
-    ```
-    ```
-    for dir in Design_*; do
-      python /DREAMPlaceFPGA_mlcad/dreamplacefpga/Placer.py /Designs/${dir}/design.json
-    done
-    ```
-
-
