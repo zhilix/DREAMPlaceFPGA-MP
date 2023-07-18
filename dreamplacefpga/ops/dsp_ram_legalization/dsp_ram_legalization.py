@@ -58,6 +58,10 @@ class LegalizeDSPRAMFunction(Function):
         precondWL = model.precondWL[:placedb.num_physical_nodes][mask].cpu().detach().numpy()
         movVal = np.zeros(2, dtype=np.float32).tolist()
 
+        # Skip if num_inst > num_sites
+        if num_inst > num_sites:
+            return movVal
+
         legalize_cpp.legalize(locX, locY, num_inst, num_sites, sites.flatten(), precondWL, lg_max_dist_init, lg_max_dist_incr, lg_flow_cost_scale, movVal, outLoc)
 
         outLoc = np.array(outLoc)

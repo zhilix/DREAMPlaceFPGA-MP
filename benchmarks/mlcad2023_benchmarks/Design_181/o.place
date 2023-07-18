@@ -1,0 +1,56 @@
+     **** ENVIRONMENT DEBUG INFO ****
+ XILINX_COMMON_TOOLS: ""
+              XILINX: "/proj/xbuilds/2021.1_daily_latest/installs/lin64/Vivado/2021.1/ids_lite/ISE"
+          XILINX_HLS: "/proj/xbuilds/SWIP/2021.1_0610_2318/installs/lin64/Vitis_HLS/2021.1"
+       XILINX_VIVADO: "/wrk/dese1/ismailb/myDesignSelectRuns/work/mlcad_2022_release/REL/MLCAD/prep/rdi/vivado"
+          XILINX_SDK: "/proj/xbuilds/2021.1_daily_latest/installs/lin64/Vitis/2021.1"
+         XILINX_PATH: ""
+         RDI_APPROOT: "/wrk/dese1/ismailb/myDesignSelectRuns/work/mlcad_2022_release/REL/MLCAD/prep/rdi/vivado"
+         HDI_APPROOT: "/wrk/dese1/ismailb/myDesignSelectRuns/work/mlcad_2022_release/REL/MLCAD/prep/rdi/vivado"
+        RDI_BASEROOT: "/wrk/dese1/ismailb/myDesignSelectRuns/work/mlcad_2022_release/REL/MLCAD/prep/rdi"
+         RDI_DATADIR: "/wrk/dese1/ismailb/myDesignSelectRuns/work/mlcad_2022_release/REL/MLCAD/prep/rdi/vivado/data:/wrk/dese1/ismailb/myDesignSelectRuns/work/mlcad_2022_release/REL/MLCAD/data"
+          RDI_LIBDIR: "/wrk/dese1/ismailb/myDesignSelectRuns/work/mlcad_2022_release/REL/MLCAD/prep/rdi/vivado/lib/lnx64.o/Default:/wrk/dese1/ismailb/myDesignSelectRuns/work/mlcad_2022_release/REL/MLCAD/prep/rdi/vivado/lib/lnx64.o"
+          RDI_BINDIR: "/wrk/dese1/ismailb/myDesignSelectRuns/work/mlcad_2022_release/REL/MLCAD/prep/rdi/vivado/bin"
+        RDI_JAVAROOT: "/wrk/dese1/ismailb/myDesignSelectRuns/work/mlcad_2022_release/REL/MLCAD/prep/rdi/vivado/tps/lnx64/jre11.0.2"
+     LD_LIBRARY_PATH: "/wrk/dese1/ismailb/myDesignSelectRuns/work/mlcad_2022_release/REL/MLCAD/prep/rdi/vivado/tps/lnx64/python-3.8.3/lib:/wrk/dese1/ismailb/myDesignSelectRuns/work/mlcad_2022_release/REL/MLCAD/prep/rdi/vivado/tps/lnx64/javafx-sdk-11.0.2/lib:/wrk/dese1/ismailb/myDesignSelectRuns/work/mlcad_2022_release/REL/MLCAD/prep/rdi/vivado/lib/lnx64.o/Default:/wrk/dese1/ismailb/myDesignSelectRuns/work/mlcad_2022_release/REL/MLCAD/prep/rdi/vivado/lib/lnx64.o:/wrk/dese1/ismailb/myDesignSelectRuns/work/mlcad_2022_release/REL/MLCAD/prep/rdi/vivado/tps/lnx64/jre11.0.2/lib/:/wrk/dese1/ismailb/myDesignSelectRuns/work/mlcad_2022_release/REL/MLCAD/prep/rdi/vivado/tps/lnx64/jre11.0.2/lib//server:/wrk/hdstaff/wuxili/.local/lib:/proj/rdi-xsj/staff/ismailb/tools/taco/taco-master/build/lib:/group/xsjfarm/lsf/10.1/linux2.6-glibc2.3-x86_64/lib:/tools/batonroot/rodin/devkits/lnx64/cloog-ppl-0.15.11/lib:/tools/batonroot/rodin/devkits/lnx64/gmp-5.0.3/lib:/tools/batonroot/rodin/devkits/lnx64/ppl-0.11/lib:/tools/batonroot/rodin/devkits/python/libyaml-0.1.4/lib:/tools/batonroot/rodin/devkits/lnx64/gcc-6.2.0/lib64:/tools/gensys/matlab/R2017a/sys/os/glnxa64:/wrk/dese1/ismailb/myDesignSelectRuns/work/mlcad_2022_release/REL/MLCAD/prep/rdi/vivado/bin/../lnx64/tools/dot/lib"
+                PATH: "/wrk/dese1/ismailb/myDesignSelectRuns/work/mlcad_2022_release/REL/MLCAD/prep/rdi/vivado/tps/lnx64/python-3.8.3:/wrk/dese1/ismailb/myDesignSelectRuns/work/mlcad_2022_release/REL/MLCAD/prep/rdi/vivado/tps/lnx64/python-3.8.3/bin:/wrk/dese1/ismailb/myDesignSelectRuns/work/mlcad_2022_release/REL/MLCAD/prep/rdi/vivado/tps/lnx64/python-3.8.3/lib:/wrk/dese1/ismailb/myDesignSelectRuns/work/mlcad_2022_release/REL/MLCAD/prep/rdi/vivado/tps/lnx64/python-3.8.3/lib/python3.8/site-packages:/tools/batonroot/rodin/devkits/python/libyaml-0.1.4/lib:/tools/batonroot/rodin/devkits/python/texttable-0.7.0/lib:/tools/batonroot/rodin/devkits/python/simplejson-2.1.6/lib:/tools/batonroot/rodin/devkits/python/setuptools-0.6c11/lib:/tools/batonroot/rodin/devkits/python/pyyaml-3.10/lib:/tools/batonroot/rodin/devkits/python/pyparsing-1.5.6/lib:/tools/batonroot/rodin/devkits/python/ply-3.4/lib:/tools/batonroot/rodin/devkits/python/jinja2-2.5.5/lib:/tools/batonroot/rodin/devkits/python/docutils-0.8/lib:/tools/batonroot/rodin/devkits/python/sphinx-1.1.3/lib:/tools/batonroot/rodin/devkits/python/pygments-1.4/lib:/tools/batonroot/rodin/devkits/python/argparse-1.2.1/lib:/tools/batonroot/rodin/devkits/python/requests-0.10.0/lib:/tools/batonroot/rodin/devkits/python/python-dateutil-1.5/lib:/tools/batonroot/rodin/devkits/python/pytz-2012d/lib:/tools/batonroot/rodin/devkits/lnx64/p4python-2014.2/lib/python2.7/site-packages:/tools/batonroot/rodin/devkits/lnx64/spark-1.5.0/python:/wrk/dese1/ismailb/myDesignSelectRuns/work/mlcad_2022_release/REL/MLCAD/prep/rdi/vivado/gnu/microblaze/lin/bin:/wrk/dese1/ismailb/myDesignSelectRuns/work/mlcad_2022_release/REL/MLCAD/prep/rdi/vivado/bin:/wrk/dese1/ismailb/myDesignSelectRuns/work/mlcad_2022_release/REL/MLCAD/prep/rdi/vivado/tps/lnx64/jre11.0.2/bin:/proj/xbuilds/2021.1_daily_latest/installs/lin64/Vitis/2021.1/bin:/proj/xbuilds/2021.1_daily_latest/installs/lin64/Vivado/2021.1/ids_lite/ISE/bin/lin64:/proj/xbuilds/SWIP/2021.1_0610_2318/installs/lin64/Vitis_HLS/2021.1/bin:/proj/xbuilds/2021.1_daily_latest/installs/lin64/Vitis/2021.1/gnu/microblaze/lin/bin:/proj/xbuilds/2021.1_daily_latest/installs/lin64/Vitis/2021.1/gnu/microblaze/linux_toolchain/lin64_le/bin:/proj/xbuilds/2021.1_daily_latest/installs/lin64/Vitis/2021.1/gnu/arm/lin/bin:/proj/xbuilds/2021.1_daily_latest/installs/lin64/Vitis/2021.1/gnu/aarch64/lin/aarch64-none/bin:/proj/xbuilds/2021.1_daily_latest/installs/lin64/Vitis/2021.1/gnu/aarch32/lin/gcc-arm-none-eabi/bin:/proj/xbuilds/2021.1_daily_latest/installs/lin64/Vitis/2021.1/gnu/aarch64/lin/aarch64-linux/bin:/proj/xbuilds/2021.1_daily_latest/installs/lin64/Vitis/2021.1/gnu/aarch32/lin/gcc-arm-linux-gnueabi/bin:/proj/dese/users/ismailb/anaconda3/bin:/proj/dese/users/ismailb/anaconda3/condabin:/wrk/hdstaff/wuxili/.local/include:/wrk/hdstaff/wuxili/.local/bin:/usr/sbin:/usr/lib64/qt-3.3/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/opt/puppetlabs/bin"
+/wrk/dese1/ismailb/myDesignSelectRuns/work/mlcad_2022_release/REL/MLCAD/prep/rdi/vivado/bin/unwrapped/lnx64.o/vivado -mode tcl -so place.tcl
+
+****** Vivado v2021.1 (64-bit)
+  **** SW Build (by ismailb) on Mon Jun 19 14:35:35 MDT 2023
+    ** Copyright 1986-2023 Xilinx, Inc. All Rights Reserved.
+
+Sourcing tcl script '/wrk/dese1/ismailb/myDesignSelectRuns/work/mlcad_2022_release/REL/MLCAD/prep/rdi/vivado/scripts/Vivado_init.tcl'
+source place.tcl
+# open_checkpoint ./design.dcp
+Command: open_checkpoint ./design.dcp
+
+Starting open_checkpoint Task
+
+Time (s): cpu = 00:00:00.02 ; elapsed = 00:00:00.02 . Memory (MB): peak = 2898.695 ; gain = 0.000 ; free physical = 23284 ; free virtual = 207099
+INFO: [Device 21-403] Loading part xcvu3p-ffvc1517-1-i
+Netlist sorting complete. Time (s): cpu = 00:00:02 ; elapsed = 00:00:02 . Memory (MB): peak = 3434.820 ; gain = 0.000 ; free physical = 21588 ; free virtual = 205624
+INFO: [Netlist 29-17] Analyzing 2077 Unisim elements for replacement
+INFO: [Netlist 29-28] Unisim Transformation completed in 13 CPU seconds
+WARNING: [Netlist 29-43] Netlist 'Design_1_65' is not ideal for floorplanning, since the cellview 'Design_1_65' defined in file 'Design_1_65.v' contains large number of primitives.  Please consider enabling hierarchy in synthesis if you want to do floorplanning.
+INFO: [Project 1-479] Netlist was created with Vivado 2021.1
+INFO: [Project 1-570] Preparing netlist for logic optimization
+INFO: [Timing 38-478] Restoring timing data from binary archive.
+WARNING: [Timing 38-476] Binary timing data restore encountered an issue: found differing software versions (data written by Vivado 2021.1 3247384, read by Vivado 2021.1 0)
+WARNING: [Timing 38-477] Binary timing data restore failed. Reverting to non-binary load.
+Parsing XDC File [/wrk/dese1/ismailb/myDesignSelectRuns/mlcad_2023_contest/benchmark/benchmark_12_07_2022/All_designs/Public_Released/Design_181/design/Design_1_65_late.xdc]
+Finished Parsing XDC File [/wrk/dese1/ismailb/myDesignSelectRuns/mlcad_2023_contest/benchmark/benchmark_12_07_2022/All_designs/Public_Released/Design_181/design/Design_1_65_late.xdc]
+Netlist sorting complete. Time (s): cpu = 00:00:00.07 ; elapsed = 00:00:00.07 . Memory (MB): peak = 4119.594 ; gain = 0.000 ; free physical = 20965 ; free virtual = 205062
+INFO: [Project 1-111] Unisim Transformation Summary:
+  A total of 2077 instances were transformed.
+  DSP48E2 => DSP48E2 (DSP_ALU, DSP_A_B_DATA, DSP_C_DATA, DSP_MULTIPLIER, DSP_M_DATA, DSP_OUTPUT, DSP_PREADD, DSP_PREADD_DATA): 1824 instances
+  IBUF => IBUF (IBUFCTRL, INBUF): 253 instances
+
+INFO: [Project 1-604] Checkpoint was created with Vivado v2021.1 (64-bit) build 3247384
+open_checkpoint: Time (s): cpu = 00:01:11 ; elapsed = 00:01:15 . Memory (MB): peak = 4119.594 ; gain = 1220.902 ; free physical = 20965 ; free virtual = 205063
+# set_param place.timingDriven false
+# place_design  -macro_placement sample.pl -verbose
+Command: place_design -macro_placement sample.pl -verbose
+Attempting to get a license for feature 'Implementation' and/or device 'xcvu3p'
+INFO: [Common 17-349] Got license for feature 'Implementation' and/or device 'xcvu3p'
+INFO: [Timing 38-35] Done setting XDC timing constraints.

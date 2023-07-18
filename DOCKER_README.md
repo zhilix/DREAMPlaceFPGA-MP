@@ -1,5 +1,4 @@
-# DREAMPlace_MLCAD
-- [How to Build](#how-to-build)
+# DREAMPlaceFPGA_mlcad
 
 ## Build with Docker
 
@@ -22,7 +21,7 @@ You can use the Docker container to avoid building all the dependencies yourself
     docker run -it   -v $(pwd):/DREAMPlaceFPGA_mlcad   -v $(pwd)/../Designs:/Designs   your_username/dreamplace_fpga:1.0 bash
     ```
     Replace `your_username` with your name
-    Replace `$(pwd)/../Designs` with the absolute path of the Designs folder, which containing `Design_1`, `Design_2`, `Design 3`, etc...
+    Replace `$(pwd)/../Designs` with the absolute path of the Designs folder, which containing `Design_1`, `Design_2`, `Design_3`, etc...
 5. go to the `DREAMPlaceFPGA_mlcad` directory
     ```
     cd /DREAMPlaceFPGA_mlcad
@@ -39,26 +38,6 @@ You can use the Docker container to avoid building all the dependencies yourself
     Note: When there are changes to packages or parser code, it is necessary to delete contents of ***build*** directory for a clean build and proper operation.
     ```
     rm -r build
-    ```
-
-
-7. Before running, ensure to prepare the `.json` and `.aux` file in each Design.
-    ```
-    cp /DREAMPlaceFPGA_mlcad/create_aux_file.sh /Designs/.
-    cp /DREAMPlaceFPGA_mlcad/create_json_file.sh /Designs/.
-    cd /Designs
-    bash create_aux_file.sh
-    bash create_json_file.sh
-    ```
-
-8. Go to the root directory, DREAMPlaceFPGA_mlcad`, and run with JSON configuration file.
-    ```
-    cd /DREAMPlaceFPGA_mlcad
-    ```
-    ```
-    for dir in Design_*; do
-      python /DREAMPlaceFPGA_mlcad/dreamplacefpga/Placer.py /Designs/${dir}/design.json
-    done
     ```
 
 

@@ -1,0 +1,45 @@
+#-----------------------------------------------------------
+# Vivado v2021.1 (64-bit)
+# SW Build (by ismailb) on Mon Jun 19 14:35:35 MDT 2023
+# 
+# Start of session at: Fri Jul  7 20:02:41 2023
+# Process ID: 190286
+# Current directory: /wrk/dese1/ismailb/myDesignSelectRuns/mlcad_2023_contest/benchmark/benchmark_12_07_2022/All_designs/Public_Released/Design_181
+# Command line: vivado -mode tcl -so place.tcl
+# Log file: /wrk/dese1/ismailb/myDesignSelectRuns/mlcad_2023_contest/benchmark/benchmark_12_07_2022/All_designs/Public_Released/Design_181/vivado.log
+# Journal file: /wrk/dese1/ismailb/myDesignSelectRuns/mlcad_2023_contest/benchmark/benchmark_12_07_2022/All_designs/Public_Released/Design_181/vivado.jou
+#-----------------------------------------------------------
+Sourcing tcl script '/wrk/dese1/ismailb/myDesignSelectRuns/work/mlcad_2022_release/REL/MLCAD/prep/rdi/vivado/scripts/Vivado_init.tcl'
+source place.tcl
+# open_checkpoint ./design.dcp
+Command: open_checkpoint ./design.dcp
+
+Starting open_checkpoint Task
+
+Time (s): cpu = 00:00:00.02 ; elapsed = 00:00:00.02 . Memory (MB): peak = 2898.695 ; gain = 0.000 ; free physical = 23284 ; free virtual = 207099
+INFO: [Device 21-403] Loading part xcvu3p-ffvc1517-1-i
+Netlist sorting complete. Time (s): cpu = 00:00:02 ; elapsed = 00:00:02 . Memory (MB): peak = 3434.820 ; gain = 0.000 ; free physical = 21588 ; free virtual = 205624
+INFO: [Netlist 29-17] Analyzing 2077 Unisim elements for replacement
+INFO: [Netlist 29-28] Unisim Transformation completed in 13 CPU seconds
+WARNING: [Netlist 29-43] Netlist 'Design_1_65' is not ideal for floorplanning, since the cellview 'Design_1_65' defined in file 'Design_1_65.v' contains large number of primitives.  Please consider enabling hierarchy in synthesis if you want to do floorplanning.
+INFO: [Project 1-479] Netlist was created with Vivado 2021.1
+INFO: [Project 1-570] Preparing netlist for logic optimization
+INFO: [Timing 38-478] Restoring timing data from binary archive.
+WARNING: [Timing 38-476] Binary timing data restore encountered an issue: found differing software versions (data written by Vivado 2021.1 3247384, read by Vivado 2021.1 0)
+WARNING: [Timing 38-477] Binary timing data restore failed. Reverting to non-binary load.
+Parsing XDC File [/wrk/dese1/ismailb/myDesignSelectRuns/mlcad_2023_contest/benchmark/benchmark_12_07_2022/All_designs/Public_Released/Design_181/design/Design_1_65_late.xdc]
+Finished Parsing XDC File [/wrk/dese1/ismailb/myDesignSelectRuns/mlcad_2023_contest/benchmark/benchmark_12_07_2022/All_designs/Public_Released/Design_181/design/Design_1_65_late.xdc]
+Netlist sorting complete. Time (s): cpu = 00:00:00.07 ; elapsed = 00:00:00.07 . Memory (MB): peak = 4119.594 ; gain = 0.000 ; free physical = 20965 ; free virtual = 205062
+INFO: [Project 1-111] Unisim Transformation Summary:
+  A total of 2077 instances were transformed.
+  DSP48E2 => DSP48E2 (DSP_ALU, DSP_A_B_DATA, DSP_C_DATA, DSP_MULTIPLIER, DSP_M_DATA, DSP_OUTPUT, DSP_PREADD, DSP_PREADD_DATA): 1824 instances
+  IBUF => IBUF (IBUFCTRL, INBUF): 253 instances
+
+INFO: [Project 1-604] Checkpoint was created with Vivado v2021.1 (64-bit) build 3247384
+open_checkpoint: Time (s): cpu = 00:01:11 ; elapsed = 00:01:15 . Memory (MB): peak = 4119.594 ; gain = 1220.902 ; free physical = 20965 ; free virtual = 205063
+# set_param place.timingDriven false
+# place_design  -macro_placement sample.pl -verbose
+Command: place_design -macro_placement sample.pl -verbose
+Attempting to get a license for feature 'Implementation' and/or device 'xcvu3p'
+INFO: [Common 17-349] Got license for feature 'Implementation' and/or device 'xcvu3p'
+INFO: [Timing 38-35] Done setting XDC timing constraints.

@@ -46,50 +46,12 @@ def placeFPGA(params):
 
     # write placement solution 
     path = "%s/%s" % (params.result_dir, params.design_name())
-    if not os.path.exists(path):
-        os.system("mkdir -p %s" % (path))
-    if params.global_place_flag and params.legalize_flag == 0: ##Only global placement is run
-        gp_out_file = os.path.join(path, "%s.gp.pl" % (params.design_name()))
-        placedb.write(params, gp_out_file)
-        
-        ##Use elfPlace binary to run legalization and detatiled placement
-        #elfPlace binary picks file named gp.pl in the current directory
-        if os.path.exists("thirdparty/elfPlace_LG_DP"):
-            cp_cmd = "cp %s gp.pl" %(gp_out_file)
-            os.system(cp_cmd)
-            out_file = os.path.join(path, "%s_final.%s" % (params.design_name(), params.solution_file_suffix()))
-            cmd = "./thirdparty/elfPlace_LG_DP --aux %s --numThreads %s --pl %s" % (params.aux_input, params.num_threads, out_file)
-            logging.info("Legalization and Detailed Placement run using elfPlace (CPU): %s" % (cmd))
-            tt = time.time()
-            os.system(cmd)
-            logging.info("Legalization and detailed placement completed in %.3f seconds" % (time.time()-tt))
-        else:
-            logging.warning("External legalization & detailed placement engine NOT found at thirdparty/elfPlace_LG_DP")
-
-    elif params.legalize_flag: ## Write out placement solution after legalization
-        final_out_file = os.path.join(path, "%s.final.%s" % (params.design_name(), params.solution_file_suffix()))
-        placedb.writeFinalSolution(params, final_out_file)
-        logging.info("Detailed Placement not run")
     
     logging.info("Completed Placement in %.3f seconds" % (time.time()-start))
 
     # write macro placement solution
     logging.info("Writing macro placement solution")
-    placedb.writeMacroPl(params, os.path.join(path, "%s.macro.pl" % (params.design_name())))
-
-    if params.enable_if == 1:
-        tt = time.time()
-        logging.info("Start writing solution to Interchange Format(IF)")
-        part_name = params.part_name
-        schema_dir = os.path.join(os.path.dirname(__file__), '../thirdparty/fpga-interchange-schema/interchange')
-        db2phys = db_to_physicalnetlist(placedb, schema_dir, part_name)  
-        phys_netlist = db2phys.build_physicalnetlist(placedb, final_out_file)
-        # tcl_generator().write_tcl(phys_netlist)
-        if_writer = IFWriter(schema_dir)
-        physical_netlist = if_writer.build_IF(phys_netlist)
-        if_file = os.path.join(path, "%s.phys" % (params.design_name()))
-        if_writer.write_IF(physical_netlist, if_file)
-        logging.info("Interchange Format(IF) Writer completed in %.3f seconds" % (time.time()-tt))
+    placedb.writeMacroPl(params, "macroplacement.pl")
                
 
 if __name__ == "__main__":

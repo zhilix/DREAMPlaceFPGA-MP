@@ -1,0 +1,1625 @@
+#-----------------------------------------------------------
+# Vivado v2021.1 (64-bit)
+# SW Build (by ismailb) on Mon Jun 19 14:35:35 MDT 2023
+# 
+# Start of session at: Fri Jul  7 11:14:48 2023
+# Process ID: 142292
+# Current directory: /wrk/dese1/ismailb/myDesignSelectRuns/mlcad_2023_contest/benchmark/benchmark_12_07_2022/All_designs/Public_Run/Design_181
+# Command line: vivado -mode tcl -so run.tcl
+# Log file: /wrk/dese1/ismailb/myDesignSelectRuns/mlcad_2023_contest/benchmark/benchmark_12_07_2022/All_designs/Public_Run/Design_181/vivado.log
+# Journal file: /wrk/dese1/ismailb/myDesignSelectRuns/mlcad_2023_contest/benchmark/benchmark_12_07_2022/All_designs/Public_Run/Design_181/vivado.jou
+#-----------------------------------------------------------
+Sourcing tcl script '/wrk/dese1/ismailb/myDesignSelectRuns/work/mlcad_2022_release/REL/MLCAD/prep/rdi/vivado/scripts/Vivado_init.tcl'
+source run.tcl
+# set_param -name place.hardVerbose -value 735361
+# set_param place.dumpHintMLCADPlacer true
+# open_checkpoint ./design.dcp
+Command: open_checkpoint ./design.dcp
+
+Starting open_checkpoint Task
+
+Time (s): cpu = 00:00:00.02 ; elapsed = 00:00:00.02 . Memory (MB): peak = 2915.473 ; gain = 0.000 ; free physical = 424096 ; free virtual = 431633
+----- open_checkpoint                          | CPU:    0.0 | HCPU:    0.0 | TclCPU:    0.0 | PACPU:    0.1 | Wall:    0.0 | TclWall:    0.0 | PAWall:    0.1 | Mem:    0.0 MB | TMem: 2915.5 MB
+INFO: [Device 21-403] Loading part xcvu3p-ffvc1517-1-i
+Netlist sorting complete. Time (s): cpu = 00:00:02 ; elapsed = 00:00:02 . Memory (MB): peak = 3403.410 ; gain = 0.000 ; free physical = 409366 ; free virtual = 417071
+INFO: [Netlist 29-17] Analyzing 2077 Unisim elements for replacement
+INFO: [Netlist 29-28] Unisim Transformation completed in 16 CPU seconds
+Checksum Context: open design.dcp~>Funnel complete
+Phase 0 Funnel complete | Netlist Checksum: a9865c5d
+WARNING: [Netlist 29-43] Netlist 'Design_1_65' is not ideal for floorplanning, since the cellview 'Design_1_65' defined in file 'Design_1_65.v' contains large number of primitives.  Please consider enabling hierarchy in synthesis if you want to do floorplanning.
+INFO: [Project 1-479] Netlist was created with Vivado 2021.1
+INFO: [Project 1-570] Preparing netlist for logic optimization
+INFO: [Timing 38-478] Restoring timing data from binary archive.
+WARNING: [Timing 38-476] Binary timing data restore encountered an issue: found differing software versions (data written by Vivado 2021.1 3247384, read by Vivado 2021.1 0)
+WARNING: [Timing 38-477] Binary timing data restore failed. Reverting to non-binary load.
+Parsing XDC File [/wrk/dese1/ismailb/myDesignSelectRuns/mlcad_2023_contest/benchmark/benchmark_12_07_2022/All_designs/Public_Run/Design_181/design/Design_1_65_late.xdc]
+Finished Parsing XDC File [/wrk/dese1/ismailb/myDesignSelectRuns/mlcad_2023_contest/benchmark/benchmark_12_07_2022/All_designs/Public_Run/Design_181/design/Design_1_65_late.xdc]
+
+guideDataArchive Version : ver1.7
+Netlist sorting complete. Time (s): cpu = 00:00:00.08 ; elapsed = 00:00:00.08 . Memory (MB): peak = 4088.145 ; gain = 0.000 ; free physical = 382603 ; free virtual = 390718
+INFO: [Project 1-111] Unisim Transformation Summary:
+  A total of 2077 instances were transformed.
+  DSP48E2 => DSP48E2 (DSP_ALU, DSP_A_B_DATA, DSP_C_DATA, DSP_MULTIPLIER, DSP_M_DATA, DSP_OUTPUT, DSP_PREADD, DSP_PREADD_DATA): 1824 instances
+  IBUF => IBUF (IBUFCTRL, INBUF): 253 instances
+
+Checksum Context: open design.dcp~>post read netlist
+Phase 0 post read netlist | Netlist Checksum: a9865c5d
+INFO: [Project 1-604] Checkpoint was created with Vivado v2021.1 (64-bit) build 3247384
+open_checkpoint: Time (s): cpu = 00:01:16 ; elapsed = 00:01:27 . Memory (MB): peak = 4088.145 ; gain = 1172.672 ; free physical = 383474 ; free virtual = 391590
+# set_param place.timingDriven false
+# place_design  -macro_placement sample.pl -verbose
+Command: place_design -macro_placement sample.pl -verbose
+Attempting to get a license for feature 'Implementation' and/or device 'xcvu3p'
+INFO: [Common 17-349] Got license for feature 'Implementation' and/or device 'xcvu3p'
+----- Read_Xdc_Constraints                     | CPU:    0.0 | HCPU:    0.0 | TclCPU:    0.0 | PACPU:   78.6 | Wall:    0.0 | TclWall:    0.0 | PAWall:   86.6 | Mem:    0.0 MB | TMem: 4088.1 MB
+currState=0
+----- Pre-Place_incrECO                        | CPU:    0.0 | HCPU:    0.0 | TclCPU:    0.0 | PACPU:   78.6 | Wall:    0.0 | TclWall:    0.0 | PAWall:   86.6 | Mem:    0.0 MB | TMem: 4088.1 MB
+----- MIG_Cores                                | CPU:    0.1 | HCPU:    0.1 | TclCPU:    0.1 | PACPU:   78.6 | Wall:    0.1 | TclWall:    0.1 | PAWall:   86.7 | Mem:    0.0 MB | TMem: 4088.1 MB
+----- ChipScore_Debug_Core                     | CPU:    0.0 | HCPU:    0.0 | TclCPU:    0.0 | PACPU:   78.6 | Wall:    0.0 | TclWall:    0.0 | PAWall:   86.7 | Mem:    0.0 MB | TMem: 4088.1 MB
+----- Pre-Place_migGenerator                   | CPU:    0.1 | HCPU:    0.1 | TclCPU:    0.1 | PACPU:   78.8 | Wall:    0.1 | TclWall:    0.1 | PAWall:   86.8 | Mem:    0.0 MB | TMem: 4088.1 MB
+stats:    1.77/  34.77e    1.06/  92.26u   152.67/ 3064.86/ 4123.10/ 4123.10MB createDlyMed
+stats:    2.36/  37.13e    2.29/  94.54u   112.30/ 3177.66/ 4215.10/ 4215.10MB Preprocess Graph
+stats:    0.14/  37.27e    0.13/  94.68u     4.51/ 3182.16/ 4219.57/ 4219.57MB  - Partitioning
+stats:   27.47/  64.74e  192.17/ 286.84u   743.65/ 3925.81/ 5048.77/ 5048.77MB  - Make vertices and edges
+stats:    5.06/  69.80e   11.99/ 298.84u   153.62/ 4079.45/ 5246.88/ 5246.88MB  - Make wire edges
+stats:   32.67/  69.80e  204.29/ 298.84u   891.85/ 4069.51/ 5246.88/ 5246.88MB Make graph
+stats:    0.00/  69.81e    0.00/ 298.84u     0.00/ 4065.04/ 5246.88/ 5246.88MB Annotate constraints to graph
+INFO: [Timing 38-35] Done setting XDC timing constraints.
+stats:    0.09/  69.89e    0.07/ 298.91u     0.00/ 4065.04/ 5246.88/ 5246.88MB Populate Constraints
+stats:    0.05/  69.94e    0.04/ 298.95u     4.20/ 4069.25/ 5246.88/ 5246.88MB initDevFiles
+stats:    0.00/  70.90e    0.00/ 299.89u     0.00/ 4069.37/ 5246.88/ 5246.88MB  - Clear Sim Values
+stats:    1.16/  74.28e    5.56/ 307.60u     3.10/ 4102.57/ 5310.88/ 5310.88MB  - Annotate Graph Edges MT
+stats:    0.00/  74.28e    0.00/ 307.60u     0.00/ 4102.57/ 5310.88/ 5310.88MB  - Dly Med Annotate Graph Edges MT
+stats:    4.24/  74.28e    8.55/ 307.60u    33.32/ 4102.57/ 5310.88/ 5310.88MB Propagate constants
+stats:    0.00/  74.28e    0.00/ 307.60u     0.00/ 4102.57/ 5310.88/ 5310.88MB  - Clear Loop Edges
+stats:    0.00/  74.28e    0.00/ 307.60u     0.00/ 4102.57/ 5310.88/ 5310.88MB  - Delete Loops
+stats:    1.82/  76.10e    1.68/ 309.28u    21.68/ 4124.25/ 5310.88/ 5310.88MB  - Find Roots
+stats:    1.91/  76.19e    1.76/ 309.36u    26.78/ 4129.35/ 5310.88/ 5310.88MB  - Sort Roots
+stats:    5.92/  80.20e    5.14/ 312.74u    26.78/ 4129.35/ 5310.88/ 5310.88MB  - Levelize From
+stats:    6.67/  80.95e    5.84/ 313.44u    26.78/ 4129.35/ 5310.88/ 5310.88MB  - Levelize Cycles
+stats:    6.67/  80.95e    5.84/ 313.44u    26.78/ 4129.35/ 5310.88/ 5310.88MB  - Ensure Latch Levels
+stats:    6.67/  80.95e    5.84/ 313.44u    26.78/ 4129.35/ 5310.88/ 5310.88MB Levelize
+stats:    0.00/  81.35e    0.00/ 313.84u     0.00/ 4139.10/ 5310.88/ 5310.88MB Find generated clk insertion delays
+stats:    3.17/  84.23e   13.98/ 327.53u    58.02/ 4182.77/ 5369.88/ 5369.88MB Find clk arrivals
+stats:    0.44/  84.46e    0.36/ 327.67u     0.06/ 4182.83/ 5369.88/ 5369.88MB Auto Derive Clocks
+stats:    0.63/  85.09e    0.59/ 328.26u     3.32/ 4186.27/ 5384.88/ 5384.88MB Compute Clock Uncertainties
+stats:    0.46/  85.55e    0.43/ 328.70u   -38.24/ 4148.03/ 5384.88/ 5384.88MB Generate Clock Uncertainty Constraints
+stats:   14.46/ 102.40e   53.38/ 384.14u   433.16/ 4594.28/ 5841.26/ 5841.26MB  - Set Inst Delays
+stats:   28.56/ 131.04e   57.07/ 441.27u   510.66/ 4954.29/ 6502.14/ 6502.14MB  - Set Net Delays
+stats:    0.00/ 131.06e    0.00/ 441.28u     0.00/ 4925.07/ 6502.14/ 6502.14MB  - Reset LutRam Delays
+stats:   45.69/ 131.24e  112.68/ 441.38u   777.04/ 4925.07/ 6502.14/ 6502.14MB Set Delays
+stats:    0.00/ 131.24e    0.00/ 441.38u     0.00/ 4925.07/ 6502.14/ 6502.14MB Find generated clk insertion delays
+stats:    0.71/ 131.95e    1.61/ 443.00u    26.12/ 4951.19/ 6502.14/ 6502.14MB   - Seed arrivals
+stats:    9.90/ 141.14e   52.90/ 494.28u   350.59/ 5275.66/ 6502.14/ 6502.14MB Find arrivals
+stats:    1.63/ 142.77e    1.16/ 495.44u     0.02/ 5275.68/ 6502.14/ 6502.14MB Check Lut Rules
+TMG_DEBUG TA - Inst Dly Calc  : YES
+TMG_DEBUG TA - Wire Dly Calc  : YES
+TMG_DEBUG TA - Updt Req Time  : NO
+TMG_DEBUG TA - Multi Corner   : YES
+TMG_DEBUG TA - CRPR           : Common Node
+TMG_DEBUG TA - AP Count       : 4
+TMG_DEBUG TA - Rise Only      : NO
+stats:  109.88/ 142.88e  404.33/ 495.53u  2363.49/ 5275.68/ 6502.14/ 6502.14MB UpdateTimingTA
+INFO: [DRC 23-27] Running DRC with 8 threads
+INFO: [Vivado_Tcl 4-198] DRC finished with 0 Errors
+INFO: [Vivado_Tcl 4-199] Please refer to the DRC report (report_drc) for more information.
+----- Pre-Place_Netlist_ECO_DRC                | CPU:  419.5 | HCPU:  419.5 | TclCPU:  419.5 | PACPU:  498.2 | Wall:  115.9 | TclWall:  115.9 | PAWall:  202.7 | Mem: 2516.4 MB | TMem: 6604.6 MB
+Running DRC as a precondition to command place_design
+INFO: [DRC 23-27] Running DRC with 8 threads
+DeviceGetNumSLR = 1
+Place Box:
+((0, 0), (21500, 30000))
+SLR BBoxes:
+((0, 0), (21500, 30000))
+
+SLR Coord-Rects:
+((0, 0), (21500, 29999))
+
+SLR Unscaled Coord-Rects:
+((0, 0), (215, 299))
+
+SLR Rpm Rects:
+((48, 2), (3816, 619))
+
+SLR Tile Rects:
+((0, 0), (669, 310))
+
+----- Build_CellView_Core                      | CPU:    0.0 | HCPU:    0.0 | TclCPU:    0.1 | PACPU:  512.9 | Wall:    0.0 | TclWall:    0.1 | PAWall:  208.7 | Mem:    0.0 MB | TMem: 6649.0 MB
+----- Add_User_PBlocks                         | CPU:    0.0 | HCPU:    0.0 | TclCPU:    0.1 | PACPU:  512.9 | Wall:    0.0 | TclWall:    0.1 | PAWall:  208.7 | Mem:    0.0 MB | TMem: 6649.0 MB
+----- Apply_User_PBlocks                       | CPU:    0.0 | HCPU:    0.0 | TclCPU:    0.1 | PACPU:  512.9 | Wall:    0.0 | TclWall:    0.1 | PAWall:  208.7 | Mem:    0.0 MB | TMem: 6649.0 MB
+----- Add_terminal_Constraints                 | CPU:    0.0 | HCPU:    0.0 | TclCPU:    0.1 | PACPU:  512.9 | Wall:    0.0 | TclWall:    0.1 | PAWall:  208.7 | Mem:    0.0 MB | TMem: 6649.0 MB
+----- Add_Constraints_new_method               | CPU:    0.0 | HCPU:    0.0 | TclCPU:    0.1 | PACPU:  512.9 | Wall:    0.0 | TclWall:    0.1 | PAWall:  208.7 | Mem:    0.0 MB | TMem: 6649.0 MB
+----- Constructing_HAPIClkRuleMgr              | CPU:   12.0 | HCPU:   12.0 | TclCPU:   12.1 | PACPU:  525.0 | Wall:   14.2 | TclWall:   14.2 | PAWall:  222.8 | Mem:    0.0 MB | TMem: 6649.0 MB
+Only checking DRCs
+----- IO/Clock_Placer                          | CPU:    0.2 | HCPU:   12.3 | TclCPU:   12.3 | PACPU:  525.1 | Wall:   14.5 | TclWall:   14.5 | PAWall:  223.1 | Mem:    0.0 MB | TMem: 6649.0 MB
+INFO: [Vivado_Tcl 4-198] DRC finished with 0 Errors
+INFO: [Vivado_Tcl 4-199] Please refer to the DRC report (report_drc) for more information.
+----- Pre-Place_Mandatory_DRC                  | CPU:   29.0 | HCPU:   29.0 | TclCPU:   29.0 | PACPU:  527.3 | Wall:   23.9 | TclWall:   23.9 | PAWall:  226.7 | Mem:   44.4 MB | TMem: 6649.0 MB
+
+Starting Placer Task
+TP: Placer starts at 2023-07-07 11:18:44
+Placer is running in non-timing driven mode
+Host Name: xcolc220286
+Total number of threads available: 64
+Total number of OpenMP threads available: 2147483647
+Total number of logical processors available: 64
+Total number of physical processors: 2
+Total number of physical cores per processor: 16
+INFO: [Place 30-611] Multithreading enabled for place_design using a maximum of 8 CPUs
+Placer is setting the GRAPH/ARR/REQ of timer Num Threads to :7/8/8
+
+Phase 1 Placer Initialization
+----- Reset_Flow_Initializer                   | CPU:    0.1 | HCPU:    0.1 | TclCPU:    0.1 | PACPU:  527.4 | Wall:    0.3 | TclWall:    0.3 | PAWall:  226.9 | Mem:    0.0 MB | TMem: 6649.0 MB
+
+Phase 1.1 Placer Initialization Netlist Sorting
+Netlist sorting complete. Time (s): cpu = 00:00:00.09 ; elapsed = 00:00:00.15 . Memory (MB): peak = 6648.977 ; gain = 0.000 ; free physical = 323028 ; free virtual = 331894
+Phase 1.1 Placer Initialization Netlist Sorting | Checksum: 9b4746ca
+----- Checksum: PlaceDB: 00000000 ConstDB: 00000000 ShapeSum: 9b4746ca 
+----- Number of instance placed: 0 fixed: 0----- Number of Shapes: 2277
+
+Time (s): cpu = 00:00:00.22 ; elapsed = 00:00:00.43 . Memory (MB): peak = 6648.977 ; gain = 0.000 ; free physical = 323031 ; free virtual = 331897
+----- Placer_Initialization_Netlist_Sorting    | CPU:    0.1 | HCPU:    0.1 | TclCPU:    0.2 | PACPU:  527.5 | Wall:    0.1 | TclWall:    0.4 | PAWall:  227.1 | Mem:    0.0 MB | TMem: 6649.0 MB
+Infrastructure netlist checksum at beginning of placer: a9865c5d
+INFO: [Opt 31-282] Attempting to intialize OptMgr.
+INFO: [Opt 31-300] Running Late MLO
+INFO: [Opt 31-217] Enabled Batch Mode
+INFO: [Opt 31-216] Disabled Batch Mode
+INFO: [Opt 31-1005] Skipping actual placer MLO as netlist checksums are identical
+Infrastructure netlist checksum after mandatory logic opt: a9865c5d
+Netlist sorting complete. Time (s): cpu = 00:00:00.08 ; elapsed = 00:00:00.14 . Memory (MB): peak = 6648.977 ; gain = 0.000 ; free physical = 322167 ; free virtual = 331033
+----- Mandatory_Logic_Optimization             | CPU:    1.4 | HCPU:    1.4 | TclCPU:    1.6 | PACPU:  528.9 | Wall:    1.9 | TclWall:    2.3 | PAWall:  228.9 | Mem:    0.0 MB | TMem: 6649.0 MB
+----- Close_Imported_Sites                     | CPU:    0.0 | HCPU:    0.0 | TclCPU:    1.6 | PACPU:  528.9 | Wall:    0.0 | TclWall:    2.3 | PAWall:  228.9 | Mem:    0.0 MB | TMem: 6649.0 MB
+----- Routing_Based_Site_Exclusion             | CPU:    0.4 | HCPU:    0.5 | TclCPU:    2.0 | PACPU:  529.3 | Wall:    0.7 | TclWall:    3.0 | PAWall:  229.7 | Mem:    0.0 MB | TMem: 6649.0 MB
+----- Make_Bin_Plane                           | CPU:    0.0 | HCPU:    0.0 | TclCPU:    2.1 | PACPU:  529.4 | Wall:    0.1 | TclWall:    3.1 | PAWall:  229.7 | Mem:    0.0 MB | TMem: 6649.0 MB
+DeviceGetNumSLR = 1
+Place Box:
+((0, 0), (21500, 30000))
+SLR BBoxes:
+((0, 0), (21500, 30000))
+
+SLR Coord-Rects:
+((0, 0), (21500, 29999))
+
+SLR Unscaled Coord-Rects:
+((0, 0), (215, 299))
+
+SLR Rpm Rects:
+((48, 2), (3816, 619))
+
+SLR Tile Rects:
+((0, 0), (669, 310))
+
+----- Make_SLR_Info                            | CPU:    0.0 | HCPU:    0.0 | TclCPU:    2.1 | PACPU:  529.4 | Wall:    0.0 | TclWall:    3.1 | PAWall:  229.7 | Mem:    0.0 MB | TMem: 6649.0 MB
+----- Build_Super_Logic_Region_(SLR)_Database  | CPU:    0.0 | HCPU:    0.0 | TclCPU:    2.1 | PACPU:  529.4 | Wall:    0.1 | TclWall:    3.1 | PAWall:  229.7 | Mem:    0.0 MB | TMem: 6649.0 MB
+----- Add_Constraints                          | CPU:    0.0 | HCPU:    0.0 | TclCPU:    2.1 | PACPU:  529.4 | Wall:    0.0 | TclWall:    3.1 | PAWall:  229.7 | Mem:    0.0 MB | TMem: 6649.0 MB
+----- Build_CellView_Core                      | CPU:    0.0 | HCPU:    0.0 | TclCPU:    2.1 | PACPU:  529.4 | Wall:    0.0 | TclWall:    3.1 | PAWall:  229.7 | Mem:    0.0 MB | TMem: 6649.0 MB
+----- Add_User_PBlocks                         | CPU:    0.0 | HCPU:    0.0 | TclCPU:    2.1 | PACPU:  529.4 | Wall:    0.0 | TclWall:    3.1 | PAWall:  229.7 | Mem:    0.0 MB | TMem: 6649.0 MB
+----- Apply_User_PBlocks                       | CPU:    0.0 | HCPU:    0.0 | TclCPU:    2.1 | PACPU:  529.4 | Wall:    0.0 | TclWall:    3.1 | PAWall:  229.7 | Mem:    0.0 MB | TMem: 6649.0 MB
+----- Add_terminal_Constraints                 | CPU:    0.0 | HCPU:    0.0 | TclCPU:    2.1 | PACPU:  529.4 | Wall:    0.0 | TclWall:    3.1 | PAWall:  229.7 | Mem:    0.0 MB | TMem: 6649.0 MB
+----- Add_Constraints_new_method               | CPU:    0.0 | HCPU:    0.0 | TclCPU:    2.1 | PACPU:  529.4 | Wall:    0.0 | TclWall:    3.1 | PAWall:  229.7 | Mem:    0.0 MB | TMem: 6649.0 MB
+----- Place_Init_Pre-Parallel                  | CPU:    0.2 | HCPU:    2.1 | TclCPU:    2.3 | PACPU:  529.5 | Wall:    2.9 | TclWall:    3.3 | PAWall:  229.9 | Mem:    0.0 MB | TMem: 6649.0 MB
+----- Place_Init_Before_IO-CLK                 | CPU:    0.0 | HCPU:    2.1 | TclCPU:    2.3 | PACPU:  529.5 | Wall:    2.9 | TclWall:    3.3 | PAWall:  229.9 | Mem:    0.0 MB | TMem: 6649.0 MB
+HAPLFFlowInitializer::placeIOClockAndInit()
+
+Phase 1.2 IO Placement/ Clock Placement/ Build Placer Device
+BUFG info for the design:
+Total BUFGCE instances: 3
+Total global clock instances: 3
+Tool inserted BUFGCE instances: 0
+Tool inserted clock BUFGCE instances: 0
+BUFGCEs driving only clock pins: 1
+BUFGCEs driving only data pins: 2
+BUFGCEs driving both clock and data pins: 0
+PrePlacement starts
+INFO: [Opt 31-282] Attempting to intialize OptMgr.
+Could not find a site type matching PCIE_3_2 in the device. No preplacement is done for cells of this type.
+Could not find a site type matching PCIE4CE4 in the device. No preplacement is done for cells of this type.
+Could not find a site type matching SYSMONE2 in the device. No preplacement is done for cells of this type.
+Could not find a site type matching HDLOGIC_CSSD in the device. No preplacement is done for cells of this type.
+Found 0 leaf instances that need preplacement
+PREPLACE_NOC: Start
+PREPLACE_NOC: Placing constrained NOC instances
+PREPLACE_NOC: No NOC traffic, constraints or results
+PREPLACE_NOC: End
+PrePlacement ends.  val: 1
+----- Pre-Place_Cells                          | CPU:    1.4 | HCPU:    1.4 | TclCPU:    6.8 | PACPU:  534.0 | Wall:    1.8 | TclWall:    9.4 | PAWall:  236.0 | Mem:    0.0 MB | TMem: 6649.0 MB
+----- Constructing_HAPIClkRuleMgr              | CPU:   11.5 | HCPU:   11.5 | TclCPU:   18.3 | PACPU:  545.5 | Wall:   13.3 | TclWall:   22.7 | PAWall:  249.4 | Mem:    0.0 MB | TMem: 6649.0 MB
+----- Rebuild_Generic_Shapes                   | CPU:    0.1 | HCPU:    0.1 | TclCPU:   18.4 | PACPU:  545.7 | Wall:    0.1 | TclWall:   22.9 | PAWall:  249.5 | Mem:    0.0 MB | TMem: 6649.0 MB
+----- ControlSet_DB                            | CPU:    1.6 | HCPU:    1.6 | TclCPU:   20.0 | PACPU:  547.2 | Wall:    1.6 | TclWall:   24.4 | PAWall:  251.1 | Mem:    0.0 MB | TMem: 6649.0 MB
+----- LUTRAM_Clustering                        | CPU:    0.2 | HCPU:    0.2 | TclCPU:   20.2 | PACPU:  547.4 | Wall:    0.2 | TclWall:   24.6 | PAWall:  251.2 | Mem:    0.0 MB | TMem: 6649.0 MB
+Regular placer flow, shape building starting from shapeId 9224
+Found 302603 flops, found 68166 LUT-FF pairs; created 68166 shapes (0.225265)
+Bus Clusters = 0 Name Clusters = 302603
+----- Process_FF_Clusters                      | CPU:    0.7 | HCPU:    0.7 | TclCPU:   22.5 | PACPU:  549.8 | Wall:    0.4 | TclWall:   26.7 | PAWall:  253.4 | Mem:    0.0 MB | TMem: 6649.0 MB
+----- Process_LUTRAM_Flop_Insts                | CPU:    0.0 | HCPU:    0.0 | TclCPU:   22.5 | PACPU:  549.8 | Wall:    0.0 | TclWall:   26.7 | PAWall:  253.4 | Mem:    0.0 MB | TMem: 6649.0 MB
+----- Build_LUTRAMMUX_Shapes                   | CPU:    0.0 | HCPU:    0.0 | TclCPU:   22.5 | PACPU:  549.8 | Wall:    0.0 | TclWall:   26.7 | PAWall:  253.4 | Mem:    0.0 MB | TMem: 6649.0 MB
+Creating SRL shapes
+SRL Bus Shape Creation: Found 0 SRLs, 0 in shapes, 0 single
+Inferring SRL Buses from Netlist Structure
+Inferring SRL Buses from SRL Instances Names
+Creating SRL shapes needed 1.24 secs
+----- Create_SRL_Shapes                        | CPU:    1.2 | HCPU:    1.2 | TclCPU:   23.8 | PACPU:  551.0 | Wall:    1.3 | TclWall:   28.0 | PAWall:  254.7 | Mem:    0.0 MB | TMem: 6649.0 MB
+Created 68166 placer shapes
+----- Shapebuilder_Build_Shapes                | CPU:    1.7 | HCPU:    3.6 | TclCPU:   23.8 | PACPU:  551.0 | Wall:    3.4 | TclWall:   28.0 | PAWall:  254.7 | Mem:    0.0 MB | TMem: 6649.0 MB
+
+------------------------------------------------------------------------------
+ShapeDB Information
+------------------------------------------------------------------------------
+Number of shapes                                           70443
+Number of data driven shapes                               0
+Number of PM specific shapes                               70443
+Average shape size (number of elements)                     2
+
+Shape Tag                                                  num         height_max       min       avg   width_max       min       avg
+-------------------------------------------------------------------------------------------------------------------------------------
+INBUF-IBUFCTRL                                             253                  1         1       1.0           3         3       3.0
+LUT-FF                                                     68166                1         1       1.0           1         1       1.0
+DSP                                                        1824                 1         1       1.0           1         1       1.0
+I/OLOGIC_RouteThrough                                      453                  1         1       1.0           3         3       3.0
+----- Build_Macros                             | CPU:    0.0 | HCPU:    5.5 | TclCPU:   23.8 | PACPU:  551.1 | Wall:    5.3 | TclWall:   28.0 | PAWall:  254.7 | Mem:    0.0 MB | TMem: 6649.0 MB
+----- ParallelPlaceIOClockAndInitTop_-_BuildMa | CPU:    0.0 | HCPU:    5.5 | TclCPU:   23.8 | PACPU:  551.1 | Wall:    5.3 | TclWall:   28.0 | PAWall:  254.7 | Mem:    0.0 MB | TMem: 6649.0 MB
+IO Placer runtime: After term collection and param setting: 0
+IO Placer runtime: After skipping unbuffered and dangling terms: 0
+IO Placement is feasible on package ffvc1517. Unplaced Terminals:453 Available Pins:722
++--------------------------+
+|      Terminal Types      |
++-----------------+--------+
+| Inputs          |    253 |
+| Outputs         |    200 |
+| Inouts          |      0 |
+| Differential    |      0 |
++-----------------+--------+
+
++-------------------------------+
+|     Terminal Constraints      |
++----------------------+--------+
+| To be placed         |    453 |
+| Locked               |      0 |
+| Unlocked             |    453 |
+| RangeConstrained     |      0 |
+| Unconnected          |      0 |
++----------------------+--------+
+
++-----------------------------------------+
+|           Terminal Standards            |
++--------------------------------+--------+
+| IO Standard : LVCMOS18         |    453 |
++--------------------------------+--------+
+
+IO Placer runtime: After checking initial feasibility: 0.01
+ DRC is now running with 5 Threads
+----- DesLockPlacementChecker                  | CPU:    0.0 | HCPU:    0.0 | TclCPU:   23.9 | PACPU:  551.2 | Wall:    0.0 | TclWall:   28.1 | PAWall:  254.7 | Mem:    0.0 MB | TMem: 6673.0 MB
+----- GTChecker                                | CPU:    0.3 | HCPU:    0.3 | TclCPU:   24.2 | PACPU:  551.5 | Wall:    0.1 | TclWall:   28.1 | PAWall:  254.8 | Mem:    0.0 MB | TMem: 6673.0 MB
+----- DanglingIBUFDSChecker                    | CPU:    0.3 | HCPU:    0.3 | TclCPU:   24.6 | PACPU:  551.8 | Wall:    0.1 | TclWall:   28.2 | PAWall:  254.8 | Mem:    0.0 MB | TMem: 6673.0 MB
+----- Constrain_BUFCE_Loads                    | CPU:    1.2 | HCPU:    1.2 | TclCPU:   25.1 | PACPU:  552.4 | Wall:    0.2 | TclWall:   28.3 | PAWall:  254.9 | Mem:   24.0 MB | TMem: 6673.0 MB
+HAPLFFlowInitializer::analyzeClockPlacer()
+
+Site type mappings
+ABUS_SWITCH is mapped to ABUS_SWITCH
+BIAS is mapped to BIAS
+BITSLICE_COMPONENT_RX_TX is mapped to BITSLICE_RX_TX
+BITSLICE_CONTROL is mapped to BITSLICE_CONTROL
+BITSLICE_RXTX_RX is mapped to BITSLICE_RX_TX
+BITSLICE_RXTX_TX is mapped to BITSLICE_RX_TX
+BITSLICE_RX_TX is mapped to BITSLICE_RX_TX
+BITSLICE_TX is mapped to BITSLICE_TX
+BUFCE_LEAF is mapped to BUFCE_LEAF
+BUFCE_ROW is mapped to BUFCE_ROW
+BUFCE_ROW_FSR is mapped to BUFCE_ROW_FSR
+BUFGCE is mapped to BUFGCE
+BUFGCE_DIV is mapped to BUFGCE_DIV
+BUFGCTRL is mapped to BUFGCTRL
+BUFG_GT is mapped to BUFG_GT
+BUFG_GT_SYNC is mapped to BUFG_GT_SYNC
+CFGIO_SITE is mapped to CFGIO_SITE
+CMACE4 is mapped to CMACE4
+CONFIG_SITE is mapped to CONFIG_SITE
+DSP48E2 is mapped to DSP48E2
+FIFO18_0 is mapped to FIFO18_0
+FIFO36 is mapped to RAMBFIFO36
+GCLK_TEST_BUFE3 is mapped to GCLK_TEST_BUFE3
+GTYE4_CHANNEL is mapped to GTYE4_CHANNEL
+GTYE4_COMMON is mapped to GTYE4_COMMON
+HARD_SYNC is mapped to HARD_SYNC
+HPIOBDIFFINBUF is mapped to HPIOBDIFFINBUF
+HPIOBDIFFOUTBUF is mapped to HPIOBDIFFOUTBUF
+HPIOB_DCI_SNGL is mapped to HPIOB_DCI_SNGL
+HPIOB_M is mapped to HPIOB_M
+HPIOB_S is mapped to HPIOB_S
+HPIOB_SNGL is mapped to HPIOB_SNGL
+HPIO_RCLK_PRBS is mapped to HPIO_RCLK_PRBS
+HPIO_VREF_SITE is mapped to HPIO_VREF_SITE
+HPIO_ZMATCH_BLK_HCLK is mapped to HPIO_ZMATCH_BLK_HCLK
+ILKNE4 is mapped to ILKNE4
+LAGUNA is mapped to LAGUNAL
+MMCM is mapped to MMCM
+MTBF3 is mapped to MTBF3
+PCIE40E4 is mapped to PCIE40E4
+PLL is mapped to PLL
+PLL_SELECT_SITE is mapped to PLL_SELECT_SITE
+PMV is mapped to PMV
+PMV2 is mapped to PMV2
+PMVIOB is mapped to PMVIOB
+RAMB180 is mapped to RAMB180
+RAMB181 is mapped to RAMB180
+RAMB18_L is mapped to RAMB18_L
+RAMB18_U is mapped to RAMB18_L
+RAMB36 is mapped to RAMBFIFO36
+RAMBFIFO18 is mapped to RAMB180
+RAMBFIFO36 is mapped to RAMBFIFO36
+RIU_OR is mapped to RIU_OR
+SLICEL is mapped to SLICEL
+SLICEM is mapped to SLICEM
+SYSMONE4 is mapped to SYSMONE4
+URAM288 is mapped to URAM288
+VBUS_SWITCH is mapped to VBUS_SWITCH
+XIPHY_FEEDTHROUGH is mapped to XIPHY_FEEDTHROUGH
+
+----- DSPChecker                               | CPU:    2.1 | HCPU:    2.1 | TclCPU:   25.9 | PACPU:  553.2 | Wall:    0.4 | TclWall:   28.4 | PAWall:  255.1 | Mem:    8.0 MB | TMem: 6681.0 MB
+----- V7IOVoltageChecker                       | CPU:    0.0 | HCPU:    0.0 | TclCPU:   25.9 | PACPU:  553.2 | Wall:    0.0 | TclWall:   28.4 | PAWall:  255.1 | Mem:    0.0 MB | TMem: 6681.0 MB
+----- OverlappingPBlocksChecker                | CPU:    0.0 | HCPU:    0.0 | TclCPU:   25.9 | PACPU:  553.2 | Wall:    0.0 | TclWall:   28.4 | PAWall:  255.1 | Mem:    0.0 MB | TMem: 6681.0 MB
+----- FloatingOSERDESChecker                   | CPU:    0.3 | HCPU:    0.3 | TclCPU:   26.3 | PACPU:  553.5 | Wall:    0.1 | TclWall:   28.5 | PAWall:  255.1 | Mem:    0.0 MB | TMem: 6681.0 MB
+----- IOLockPlacementChecker                   | CPU:    2.7 | HCPU:    2.7 | TclCPU:   26.6 | PACPU:  553.9 | Wall:    0.5 | TclWall:   28.6 | PAWall:  255.2 | Mem:    8.0 MB | TMem: 6681.0 MB
+----- CheckerForMandatoryPrePlacedCells        | CPU:    0.2 | HCPU:    0.2 | TclCPU:   26.8 | PACPU:  554.1 | Wall:    0.1 | TclWall:   28.6 | PAWall:  255.2 | Mem:    0.0 MB | TMem: 6681.0 MB
+----- CascadeElementConstraintsChecker         | CPU:    0.1 | HCPU:    0.1 | TclCPU:   26.9 | PACPU:  554.1 | Wall:    0.0 | TclWall:   28.6 | PAWall:  255.3 | Mem:    0.0 MB | TMem: 6681.0 MB
+----- Make_Capacity_Meshes                     | CPU:    3.9 | HCPU:    3.9 | TclCPU:   27.7 | PACPU:  554.9 | Wall:    0.8 | TclWall:   28.8 | PAWall:  255.4 | Mem:   32.0 MB | TMem: 6681.0 MB
+----- Make_Timing_Helper                       | CPU:    0.0 | HCPU:    0.0 | TclCPU:   27.7 | PACPU:  554.9 | Wall:    0.0 | TclWall:   28.8 | PAWall:  255.4 | Mem:    0.0 MB | TMem: 6681.0 MB
+----- Make_Clock_Routing_Grid                  | CPU:    0.0 | HCPU:    0.0 | TclCPU:   27.7 | PACPU:  554.9 | Wall:    0.0 | TclWall:   28.8 | PAWall:  255.4 | Mem:    0.0 MB | TMem: 6681.0 MB
+----- Place_Init_Device                        | CPU:    0.1 | HCPU:    4.0 | TclCPU:   27.8 | PACPU:  555.1 | Wall:    0.8 | TclWall:   28.8 | PAWall:  255.4 | Mem:   32.0 MB | TMem: 6681.0 MB
+----- Build_Placer_Device_Model                | CPU:    0.0 | HCPU:    4.0 | TclCPU:   27.8 | PACPU:  555.1 | Wall:    0.8 | TclWall:   28.8 | PAWall:  255.4 | Mem:   32.0 MB | TMem: 6681.0 MB
+----- ParallelPlaceIOClockAndInitTop_-_BuildTi | CPU:    0.0 | HCPU:    4.0 | TclCPU:   27.8 | PACPU:  555.1 | Wall:    0.8 | TclWall:   28.8 | PAWall:  255.4 | Mem:   32.0 MB | TMem: 6681.0 MB
+----- IOBufferPlacementChecker                 | CPU:    4.4 | HCPU:    4.4 | TclCPU:   28.3 | PACPU:  555.5 | Wall:    0.8 | TclWall:   28.9 | PAWall:  255.6 | Mem:   16.0 MB | TMem: 6689.0 MB
+----- DisallowedInsts                          | CPU:    0.3 | HCPU:    0.3 | TclCPU:   28.6 | PACPU:  555.8 | Wall:    0.1 | TclWall:   29.0 | PAWall:  255.6 | Mem:    0.0 MB | TMem: 6689.0 MB
+Laguna Edge (0,0,1,61)
+Laguna Edge (0,1,249,309)
+----- Laguna_PBlock_Checker                    | CPU:    0.0 | HCPU:    0.0 | TclCPU:   28.6 | PACPU:  555.8 | Wall:    0.0 | TclWall:   29.0 | PAWall:  255.6 | Mem:    0.0 MB | TMem: 6689.0 MB
+----- HdioRelatedChecker                       | CPU:    2.1 | HCPU:    2.1 | TclCPU:   29.0 | PACPU:  556.3 | Wall:    0.5 | TclWall:   29.1 | PAWall:  255.7 | Mem:    8.0 MB | TMem: 6689.0 MB
+----- Analyze_Clock_Placer                     | CPU:    7.2 | HCPU:    7.2 | TclCPU:   32.3 | PACPU:  559.6 | Wall:    1.5 | TclWall:   29.8 | PAWall:  256.5 | Mem:   45.4 MB | TMem: 6718.4 MB
+----- ParallelPlaceIOClockAndInit_-_clockAnaly | CPU:    0.0 | HCPU:    8.5 | TclCPU:   32.3 | PACPU:  559.6 | Wall:    1.8 | TclWall:   29.8 | PAWall:  256.5 | Mem:   69.4 MB | TMem: 6718.4 MB
+----- ResourceUtilizationChecker               | CPU:   12.0 | HCPU:   12.0 | TclCPU:   36.5 | PACPU:  563.8 | Wall:    2.7 | TclWall:   30.9 | PAWall:  257.6 | Mem:   45.4 MB | TMem: 6718.4 MB
+----- Multi-driver_SRL                         | CPU:    0.3 | HCPU:    0.3 | TclCPU:   36.8 | PACPU:  564.1 | Wall:    0.1 | TclWall:   31.0 | PAWall:  257.6 | Mem:    0.0 MB | TMem: 6718.4 MB
+----- ClockRegionPlacementChecker              | CPU:   14.4 | HCPU:   14.4 | TclCPU:   38.3 | PACPU:  565.5 | Wall:    3.5 | TclWall:   31.5 | PAWall:  258.1 | Mem:   45.4 MB | TMem: 6718.4 MB
+----- ShapePlacementValidityChecker            | CPU:    9.8 | HCPU:    9.8 | TclCPU:   38.4 | PACPU:  565.6 | Wall:    2.6 | TclWall:   31.5 | PAWall:  258.2 | Mem:   29.4 MB | TMem: 6718.4 MB
+----- CheckerForUnsupportedConstraints         | CPU:    2.0 | HCPU:    2.0 | TclCPU:   40.3 | PACPU:  567.5 | Wall:    1.0 | TclWall:   32.5 | PAWall:  259.1 | Mem:    0.0 MB | TMem: 6718.4 MB
+----- ShapesExcludeCompatibilityChecker        | CPU:    0.1 | HCPU:    0.1 | TclCPU:   40.3 | PACPU:  567.6 | Wall:    0.0 | TclWall:   32.5 | PAWall:  259.2 | Mem:    0.0 MB | TMem: 6718.4 MB
+----- IOStdCompatabilityChecker                | CPU:    0.0 | HCPU:    0.0 | TclCPU:   40.4 | PACPU:  567.6 | Wall:    0.0 | TclWall:   32.5 | PAWall:  259.2 | Mem:    0.0 MB | TMem: 6718.4 MB
+----- Check_Design_MT                          | CPU:    3.6 | HCPU:   16.5 | TclCPU:   40.4 | PACPU:  567.6 | Wall:    4.5 | TclWall:   32.5 | PAWall:  259.2 | Mem:   69.4 MB | TMem: 6718.4 MB
+----- Implementation_Feasibility_check         | CPU:    0.0 | HCPU:   16.5 | TclCPU:   40.4 | PACPU:  567.6 | Wall:    4.5 | TclWall:   32.5 | PAWall:  259.2 | Mem:   69.4 MB | TMem: 6718.4 MB
+----- ParallelPlaceIOClockAndInit_-_prePlaceDr | CPU:    0.1 | HCPU:   16.6 | TclCPU:   40.4 | PACPU:  567.6 | Wall:    4.5 | TclWall:   32.5 | PAWall:  259.2 | Mem:   69.4 MB | TMem: 6718.4 MB
+there are 0 locked/pblock'ed instances 
+----- Greedy_IO_Placement                      | CPU:  133.9 | HCPU:  133.9 | TclCPU:  160.4 | PACPU:  687.7 | Wall:  132.6 | TclWall:  161.1 | PAWall:  387.8 | Mem:  120.0 MB | TMem: 6801.0 MB
+IO Placer runtime: After greedy IO placement: 133.12
+IO Placer runtime: After building sioProblem for effort level 2: 135.98
+ILP Pre-solve Checksum: 420671987
+ILP Solver Checksum: 2101983887
+IO Placer runtime: After solving sioProblem for effort level 2: 136.92
+----- ILP_Level_2                              | CPU:    3.8 | HCPU:    3.8 | TclCPU:  164.2 | PACPU:  691.5 | Wall:    3.8 | TclWall:  164.9 | PAWall:  391.6 | Mem:    0.0 MB | TMem: 6801.0 MB
+IO Placer runtime: After effort level 2: 136.92
+IO Placer runtime: After computing diff set: 136.92
+IO Placer runtime: At the end: 136.92
+----- IO_Placer                                | CPU:    2.7 | HCPU:  140.4 | TclCPU:  164.2 | PACPU:  691.5 | Wall:  136.9 | TclWall:  164.9 | PAWall:  391.6 | Mem:  152.0 MB | TMem: 6801.0 MB
+----- Clockplacer_initial_legality_check       | CPU:    0.1 | HCPU:    0.1 | TclCPU:  165.0 | PACPU:  692.3 | Wall:    0.1 | TclWall:  165.7 | PAWall:  392.4 | Mem:    0.0 MB | TMem: 6801.0 MB
+----- Clk_Random_Placer                        | CPU:    0.0 | HCPU:    0.0 | TclCPU:  165.0 | PACPU:  692.3 | Wall:    0.0 | TclWall:  165.8 | PAWall:  392.4 | Mem:    0.0 MB | TMem: 6801.0 MB
+Skipping Clock Load placer because all clock load related instances are locked or placed legally
+Clock Placer Rule Status
+----------------------------------------------------------------------
+| Legal  | Rule Name                           | Score      | Active |
+----------------------------------------------------------------------
+| yes    | io_interaction (0)                  | 0          | yes    |
+| yes    | rule_bufgce_bufg_conflict (0)       | 0          | NO     |
+| yes    | rule_bufgce_bufg_conflict (1)       | 0          | NO     |
+| yes    | rule_bufgce_bufg_conflict (2)       | 0          | NO     |
+| yes    | rule_gclkio_bufg (0)                | 0          | NO     |
+| yes    | rule_gclkio_bufg (1)                | 0          | NO     |
+| yes    | rule_gclkio_bufg (2)                | 0          | NO     |
+----------------------------------------------------------------------
+Clock Load placer generated a legal placement
+----- Clk_Load_Placer                          | CPU:    1.7 | HCPU:    1.7 | TclCPU:  166.8 | PACPU:  694.0 | Wall:    1.7 | TclWall:  167.5 | PAWall:  394.1 | Mem:    0.0 MB | TMem: 6801.0 MB
+Skipping clock source placer because IO / Clock placement is legal
+Skipping clock count placer because IO / Clock placement is legal
+----- IO_/_Clock_Placement                     | CPU:    1.0 | HCPU:  143.3 | TclCPU:  167.1 | PACPU:  694.3 | Wall:  139.8 | TclWall:  167.8 | PAWall:  394.4 | Mem:  152.0 MB | TMem: 6801.0 MB
+----- ParallelPlaceIOClockAndInit_-_placeIOClo | CPU:    0.0 | HCPU:  143.3 | TclCPU:  167.1 | PACPU:  694.3 | Wall:  139.8 | TclWall:  167.8 | PAWall:  394.4 | Mem:  152.0 MB | TMem: 6801.0 MB
+----- FixIDCReqs                               | CPU:    0.9 | HCPU:    0.9 | TclCPU:  167.9 | PACPU:  695.2 | Wall:    0.8 | TclWall:  168.6 | PAWall:  395.3 | Mem:    0.0 MB | TMem: 6801.0 MB
+
++-------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+|                                                                     IO Placement : Bank Stats                                                                           |
++----+-------+-------+------------------------------------------------------------------------+------------------------------------------+--------+--------+--------+-----+
+| Id | Pins  | Terms |                               Standards                                |                IDelayCtrls               |  VREF  |  VCCO  |   VR   | DCI |
++----+-------+-------+------------------------------------------------------------------------+------------------------------------------+--------+--------+--------+-----+
+|  0 |     0 |     0 |                                                                        |                                          |        |        |        |     |
+| 44 |    52 |     0 |                                                                        |                                          |        |        |        |     |
+| 45 |    52 |    44 | LVCMOS18(44)                                                           |                                          |        |  +1.80 |    YES |     |
+| 46 |    52 |    52 | LVCMOS18(52)                                                           |                                          |        |  +1.80 |    YES |     |
+| 47 |    52 |    52 | LVCMOS18(52)                                                           |                                          |        |  +1.80 |    YES |     |
+| 48 |    52 |    52 | LVCMOS18(52)                                                           |                                          |        |  +1.80 |    YES |     |
+| 64 |    52 |    45 | LVCMOS18(45)                                                           |                                          |        |  +1.80 |    YES |     |
+| 65 |    52 |    52 | LVCMOS18(52)                                                           |                                          |        |  +1.80 |    YES |     |
+| 66 |    52 |    52 | LVCMOS18(52)                                                           |                                          |        |  +1.80 |    YES |     |
+| 67 |    52 |    52 | LVCMOS18(52)                                                           |                                          |        |  +1.80 |    YES |     |
+| 68 |    52 |    52 | LVCMOS18(52)                                                           |                                          |        |  +1.80 |    YES |     |
++----+-------+-------+------------------------------------------------------------------------+------------------------------------------+--------+--------+--------+-----+
+|    |   520 |   453 |                                                                        |                                          |        |        |        |     |
++----+-------+-------+------------------------------------------------------------------------+------------------------------------------+--------+--------+--------+-----+
+
+IO Placement:
++--------+----------------------+-----------------+----------------------+----------------------+----------------------+
+| BankId |             Terminal | Standard        | Site                 | Pin                  | Attributes           |
++--------+----------------------+-----------------+----------------------+----------------------+----------------------+
+| 45     | op_406               | LVCMOS18        | IOB_X0Y101           | N26                  |                      |
+|        | op_407               | LVCMOS18        | IOB_X0Y102           | M26                  |                      |
+|        | op_408               | LVCMOS18        | IOB_X0Y99            | L23                  |                      |
+|        | op_409               | LVCMOS18        | IOB_X0Y100           | K23                  |                      |
+|        | op_410               | LVCMOS18        | IOB_X0Y97            | M24                  |                      |
+|        | op_411               | LVCMOS18        | IOB_X0Y98            | M25                  |                      |
+|        | op_412               | LVCMOS18        | IOB_X0Y95            | P24                  |                      |
+|        | op_413               | LVCMOS18        | IOB_X0Y96            | N24                  |                      |
+|        | op_414               | LVCMOS18        | IOB_X0Y93            | L24                  |                      |
+|        | op_415               | LVCMOS18        | IOB_X0Y94            | L25                  |                      |
+|        | op_416               | LVCMOS18        | IOB_X0Y91            | P25                  |                      |
+|        | op_417               | LVCMOS18        | IOB_X0Y92            | P26                  |                      |
+|        | op_418               | LVCMOS18        | IOB_X0Y88            | J23                  |                      |
+|        | op_419               | LVCMOS18        | IOB_X0Y89            | J24                  |                      |
+|        | op_420               | LVCMOS18        | IOB_X0Y86            | K25                  |                      |
+|        | op_421               | LVCMOS18        | IOB_X0Y87            | J25                  |                      |
+|        | op_422               | LVCMOS18        | IOB_X0Y84            | H23                  |                      |
+|        | op_423               | LVCMOS18        | IOB_X0Y85            | H24                  |                      |
+|        | op_424               | LVCMOS18        | IOB_X0Y82            | K26                  |                      |
+|        | op_425               | LVCMOS18        | IOB_X0Y83            | J26                  |                      |
+|        | op_426               | LVCMOS18        | IOB_X0Y80            | G26                  |                      |
+|        | op_427               | LVCMOS18        | IOB_X0Y81            | G27                  |                      |
+|        | op_428               | LVCMOS18        | IOB_X0Y78            | H26                  |                      |
+|        | op_429               | LVCMOS18        | IOB_X0Y79            | H27                  |                      |
+|        | op_430               | LVCMOS18        | IOB_X0Y75            | F24                  |                      |
+|        | op_431               | LVCMOS18        | IOB_X0Y76            | F25                  |                      |
+|        | op_432               | LVCMOS18        | IOB_X0Y73            | G24                  |                      |
+|        | op_433               | LVCMOS18        | IOB_X0Y74            | G25                  |                      |
+|        | op_434               | LVCMOS18        | IOB_X0Y71            | F23                  |                      |
+|        | op_435               | LVCMOS18        | IOB_X0Y72            | E23                  |                      |
+|        | op_436               | LVCMOS18        | IOB_X0Y69            | E25                  |                      |
+|        | op_437               | LVCMOS18        | IOB_X0Y70            | E26                  |                      |
+|        | op_438               | LVCMOS18        | IOB_X0Y67            | F27                  |                      |
+|        | op_439               | LVCMOS18        | IOB_X0Y68            | E27                  |                      |
+|        | op_440               | LVCMOS18        | IOB_X0Y65            | D25                  |                      |
+|        | op_441               | LVCMOS18        | IOB_X0Y66            | D26                  |                      |
+|        | op_442               | LVCMOS18        | IOB_X0Y62            | C26                  |                      |
+|        | op_443               | LVCMOS18        | IOB_X0Y63            | C27                  |                      |
+|        | op_444               | LVCMOS18        | IOB_X0Y60            | D23                  |                      |
+|        | op_445               | LVCMOS18        | IOB_X0Y61            | C23                  |                      |
+|        | op_446               | LVCMOS18        | IOB_X0Y58            | B25                  |                      |
+|        | op_447               | LVCMOS18        | IOB_X0Y59            | A25                  |                      |
+|        | op_448               | LVCMOS18        | IOB_X0Y56            | C24                  |                      |
+|        | op_449               | LVCMOS18        | IOB_X0Y57            | B24                  |                      |
++--------+----------------------+-----------------+----------------------+----------------------+----------------------+
+| 46     | op_354               | LVCMOS18        | IOB_X0Y153           | M22                  |                      |
+|        | op_355               | LVCMOS18        | IOB_X0Y154           | M21                  |                      |
+|        | op_356               | LVCMOS18        | IOB_X0Y151           | N19                  |                      |
+|        | op_357               | LVCMOS18        | IOB_X0Y152           | M19                  |                      |
+|        | op_358               | LVCMOS18        | IOB_X0Y149           | L22                  |                      |
+|        | op_359               | LVCMOS18        | IOB_X0Y150           | K22                  |                      |
+|        | op_360               | LVCMOS18        | IOB_X0Y147           | M20                  |                      |
+|        | op_361               | LVCMOS18        | IOB_X0Y148           | L20                  |                      |
+|        | op_362               | LVCMOS18        | IOB_X0Y145           | L19                  |                      |
+|        | op_363               | LVCMOS18        | IOB_X0Y146           | L18                  |                      |
+|        | op_364               | LVCMOS18        | IOB_X0Y143           | N22                  |                      |
+|        | op_365               | LVCMOS18        | IOB_X0Y144           | N21                  |                      |
+|        | op_366               | LVCMOS18        | IOB_X0Y140           | H19                  |                      |
+|        | op_367               | LVCMOS18        | IOB_X0Y141           | H18                  |                      |
+|        | op_368               | LVCMOS18        | IOB_X0Y138           | K18                  |                      |
+|        | op_369               | LVCMOS18        | IOB_X0Y139           | J18                  |                      |
+|        | op_370               | LVCMOS18        | IOB_X0Y136           | K21                  |                      |
+|        | op_371               | LVCMOS18        | IOB_X0Y137           | K20                  |                      |
+|        | op_372               | LVCMOS18        | IOB_X0Y134           | J20                  |                      |
+|        | op_373               | LVCMOS18        | IOB_X0Y135           | J19                  |                      |
+|        | op_374               | LVCMOS18        | IOB_X0Y132           | G22                  |                      |
+|        | op_375               | LVCMOS18        | IOB_X0Y133           | G21                  |                      |
+|        | op_376               | LVCMOS18        | IOB_X0Y130           | H22                  |                      |
+|        | op_377               | LVCMOS18        | IOB_X0Y131           | H21                  |                      |
+|        | op_378               | LVCMOS18        | IOB_X0Y127           | F20                  |                      |
+|        | op_379               | LVCMOS18        | IOB_X0Y128           | F19                  |                      |
+|        | op_380               | LVCMOS18        | IOB_X0Y125           | G20                  |                      |
+|        | op_381               | LVCMOS18        | IOB_X0Y126           | G19                  |                      |
+|        | op_382               | LVCMOS18        | IOB_X0Y123           | F22                  |                      |
+|        | op_383               | LVCMOS18        | IOB_X0Y124           | E22                  |                      |
+|        | op_384               | LVCMOS18        | IOB_X0Y121           | F18                  |                      |
+|        | op_385               | LVCMOS18        | IOB_X0Y122           | E18                  |                      |
+|        | op_386               | LVCMOS18        | IOB_X0Y119           | E21                  |                      |
+|        | op_387               | LVCMOS18        | IOB_X0Y120           | D21                  |                      |
+|        | op_388               | LVCMOS18        | IOB_X0Y117           | E20                  |                      |
+|        | op_389               | LVCMOS18        | IOB_X0Y118           | D20                  |                      |
+|        | op_390               | LVCMOS18        | IOB_X0Y114           | C19                  |                      |
+|        | op_391               | LVCMOS18        | IOB_X0Y115           | B19                  |                      |
+|        | op_392               | LVCMOS18        | IOB_X0Y112           | D18                  |                      |
+|        | op_393               | LVCMOS18        | IOB_X0Y113           | C18                  |                      |
+|        | op_394               | LVCMOS18        | IOB_X0Y110           | C21                  |                      |
+|        | op_395               | LVCMOS18        | IOB_X0Y111           | B21                  |                      |
+|        | op_396               | LVCMOS18        | IOB_X0Y108           | A19                  |                      |
+|        | op_397               | LVCMOS18        | IOB_X0Y109           | A18                  |                      |
+|        | op_398               | LVCMOS18        | IOB_X0Y106           | B22                  |                      |
+|        | op_399               | LVCMOS18        | IOB_X0Y107           | A22                  |                      |
+|        | op_400               | LVCMOS18        | IOB_X0Y104           | B20                  |                      |
+|        | op_401               | LVCMOS18        | IOB_X0Y105           | A20                  |                      |
+|        | op_402               | LVCMOS18        | IOB_X0Y155           | P20                  |                      |
+|        | op_403               | LVCMOS18        | IOB_X0Y142           | J21                  |                      |
+|        | op_404               | LVCMOS18        | IOB_X0Y129           | D19                  |                      |
+|        | op_405               | LVCMOS18        | IOB_X0Y116           | C22                  | +                    |
++--------+----------------------+-----------------+----------------------+----------------------+----------------------+
+| 47     | op_302               | LVCMOS18        | IOB_X0Y205           | A13                  |                      |
+|        | op_303               | LVCMOS18        | IOB_X0Y206           | A12                  |                      |
+|        | op_304               | LVCMOS18        | IOB_X0Y203           | C12                  |                      |
+|        | op_305               | LVCMOS18        | IOB_X0Y204           | B12                  |                      |
+|        | op_306               | LVCMOS18        | IOB_X0Y201           | B10                  |                      |
+|        | op_307               | LVCMOS18        | IOB_X0Y202           | A10                  |                      |
+|        | op_308               | LVCMOS18        | IOB_X0Y199           | C11                  |                      |
+|        | op_309               | LVCMOS18        | IOB_X0Y200           | B11                  |                      |
+|        | op_310               | LVCMOS18        | IOB_X0Y197           | B9                   |                      |
+|        | op_311               | LVCMOS18        | IOB_X0Y198           | A9                   |                      |
+|        | op_312               | LVCMOS18        | IOB_X0Y195           | D9                   |                      |
+|        | op_313               | LVCMOS18        | IOB_X0Y196           | C9                   |                      |
+|        | op_314               | LVCMOS18        | IOB_X0Y192           | F12                  |                      |
+|        | op_315               | LVCMOS18        | IOB_X0Y193           | E12                  |                      |
+|        | op_316               | LVCMOS18        | IOB_X0Y190           | E11                  |                      |
+|        | op_317               | LVCMOS18        | IOB_X0Y191           | D11                  |                      |
+|        | op_318               | LVCMOS18        | IOB_X0Y188           | G7                   |                      |
+|        | op_319               | LVCMOS18        | IOB_X0Y189           | F7                   |                      |
+|        | op_320               | LVCMOS18        | IOB_X0Y186           | F8                   |                      |
+|        | op_321               | LVCMOS18        | IOB_X0Y187           | E8                   |                      |
+|        | op_322               | LVCMOS18        | IOB_X0Y184           | G9                   |                      |
+|        | op_323               | LVCMOS18        | IOB_X0Y185           | F9                   |                      |
+|        | op_324               | LVCMOS18        | IOB_X0Y182           | F10                  |                      |
+|        | op_325               | LVCMOS18        | IOB_X0Y183           | E10                  |                      |
+|        | op_326               | LVCMOS18        | IOB_X0Y179           | G11                  |                      |
+|        | op_327               | LVCMOS18        | IOB_X0Y180           | G10                  |                      |
+|        | op_328               | LVCMOS18        | IOB_X0Y177           | J11                  |                      |
+|        | op_329               | LVCMOS18        | IOB_X0Y178           | H11                  |                      |
+|        | op_330               | LVCMOS18        | IOB_X0Y175           | H12                  |                      |
+|        | op_331               | LVCMOS18        | IOB_X0Y176           | G12                  |                      |
+|        | op_332               | LVCMOS18        | IOB_X0Y173           | J10                  |                      |
+|        | op_333               | LVCMOS18        | IOB_X0Y174           | J9                   |                      |
+|        | op_334               | LVCMOS18        | IOB_X0Y171           | H9                   |                      |
+|        | op_335               | LVCMOS18        | IOB_X0Y172           | H8                   |                      |
+|        | op_336               | LVCMOS18        | IOB_X0Y169           | J8                   |                      |
+|        | op_337               | LVCMOS18        | IOB_X0Y170           | H7                   |                      |
+|        | op_338               | LVCMOS18        | IOB_X0Y166           | K11                  |                      |
+|        | op_339               | LVCMOS18        | IOB_X0Y167           | K10                  |                      |
+|        | op_340               | LVCMOS18        | IOB_X0Y164           | L10                  |                      |
+|        | op_341               | LVCMOS18        | IOB_X0Y165           | L9                   |                      |
+|        | op_342               | LVCMOS18        | IOB_X0Y162           | M12                  |                      |
+|        | op_343               | LVCMOS18        | IOB_X0Y163           | L12                  |                      |
+|        | op_344               | LVCMOS18        | IOB_X0Y160           | M11                  |                      |
+|        | op_345               | LVCMOS18        | IOB_X0Y161           | M10                  |                      |
+|        | op_346               | LVCMOS18        | IOB_X0Y158           | N9                   |                      |
+|        | op_347               | LVCMOS18        | IOB_X0Y159           | M9                   |                      |
+|        | op_348               | LVCMOS18        | IOB_X0Y156           | N12                  |                      |
+|        | op_349               | LVCMOS18        | IOB_X0Y157           | N11                  |                      |
+|        | op_350               | LVCMOS18        | IOB_X0Y207           | C13                  |                      |
+|        | op_351               | LVCMOS18        | IOB_X0Y194           | D10                  |                      |
+|        | op_352               | LVCMOS18        | IOB_X0Y181           | K12                  |                      |
+|        | op_353               | LVCMOS18        | IOB_X0Y168           | N13                  | +                    |
++--------+----------------------+-----------------+----------------------+----------------------+----------------------+
+| 48     | op_250               | LVCMOS18        | IOB_X0Y257           | B17                  |                      |
+|        | op_251               | LVCMOS18        | IOB_X0Y258           | A17                  |                      |
+|        | op_252               | LVCMOS18        | IOB_X0Y255           | B14                  |                      |
+|        | op_253               | LVCMOS18        | IOB_X0Y256           | A14                  |                      |
+|        | op_254               | LVCMOS18        | IOB_X0Y253           | B15                  |                      |
+|        | op_255               | LVCMOS18        | IOB_X0Y254           | A15                  |                      |
+|        | op_256               | LVCMOS18        | IOB_X0Y251           | C16                  |                      |
+|        | op_257               | LVCMOS18        | IOB_X0Y252           | B16                  |                      |
+|        | op_258               | LVCMOS18        | IOB_X0Y249           | D16                  |                      |
+|        | op_259               | LVCMOS18        | IOB_X0Y250           | D15                  |                      |
+|        | op_260               | LVCMOS18        | IOB_X0Y247           | D14                  |                      |
+|        | op_261               | LVCMOS18        | IOB_X0Y248           | C14                  |                      |
+|        | op_262               | LVCMOS18        | IOB_X0Y244           | F17                  |                      |
+|        | op_263               | LVCMOS18        | IOB_X0Y245           | E17                  |                      |
+|        | op_264               | LVCMOS18        | IOB_X0Y242           | E16                  |                      |
+|        | op_265               | LVCMOS18        | IOB_X0Y243           | E15                  |                      |
+|        | op_266               | LVCMOS18        | IOB_X0Y240           | F13                  |                      |
+|        | op_267               | LVCMOS18        | IOB_X0Y241           | E13                  |                      |
+|        | op_268               | LVCMOS18        | IOB_X0Y238           | G17                  |                      |
+|        | op_269               | LVCMOS18        | IOB_X0Y239           | G16                  |                      |
+|        | op_270               | LVCMOS18        | IOB_X0Y236           | F15                  |                      |
+|        | op_271               | LVCMOS18        | IOB_X0Y237           | F14                  |                      |
+|        | op_272               | LVCMOS18        | IOB_X0Y234           | G15                  |                      |
+|        | op_273               | LVCMOS18        | IOB_X0Y235           | G14                  |                      |
+|        | op_274               | LVCMOS18        | IOB_X0Y231           | J16                  |                      |
+|        | op_275               | LVCMOS18        | IOB_X0Y232           | H16                  |                      |
+|        | op_276               | LVCMOS18        | IOB_X0Y229           | K15                  |                      |
+|        | op_277               | LVCMOS18        | IOB_X0Y230           | J15                  |                      |
+|        | op_278               | LVCMOS18        | IOB_X0Y227           | K17                  |                      |
+|        | op_279               | LVCMOS18        | IOB_X0Y228           | K16                  |                      |
+|        | op_280               | LVCMOS18        | IOB_X0Y225           | J14                  |                      |
+|        | op_281               | LVCMOS18        | IOB_X0Y226           | H14                  |                      |
+|        | op_282               | LVCMOS18        | IOB_X0Y223           | L13                  |                      |
+|        | op_283               | LVCMOS18        | IOB_X0Y224           | K13                  |                      |
+|        | op_284               | LVCMOS18        | IOB_X0Y221           | J13                  |                      |
+|        | op_285               | LVCMOS18        | IOB_X0Y222           | H13                  |                      |
+|        | op_286               | LVCMOS18        | IOB_X0Y218           | M17                  |                      |
+|        | op_287               | LVCMOS18        | IOB_X0Y219           | L17                  |                      |
+|        | op_288               | LVCMOS18        | IOB_X0Y216           | M15                  |                      |
+|        | op_289               | LVCMOS18        | IOB_X0Y217           | M14                  |                      |
+|        | op_290               | LVCMOS18        | IOB_X0Y214           | L15                  |                      |
+|        | op_291               | LVCMOS18        | IOB_X0Y215           | L14                  |                      |
+|        | op_292               | LVCMOS18        | IOB_X0Y212           | N16                  |                      |
+|        | op_293               | LVCMOS18        | IOB_X0Y213           | M16                  |                      |
+|        | op_294               | LVCMOS18        | IOB_X0Y210           | N18                  |                      |
+|        | op_295               | LVCMOS18        | IOB_X0Y211           | N17                  |                      |
+|        | op_296               | LVCMOS18        | IOB_X0Y208           | P14                  |                      |
+|        | op_297               | LVCMOS18        | IOB_X0Y209           | N14                  |                      |
+|        | op_298               | LVCMOS18        | IOB_X0Y259           | C17                  |                      |
+|        | op_299               | LVCMOS18        | IOB_X0Y246           | D13                  |                      |
+|        | op_300               | LVCMOS18        | IOB_X0Y233           | H17                  |                      |
+|        | op_301               | LVCMOS18        | IOB_X0Y220           | P16                  | +                    |
++--------+----------------------+-----------------+----------------------+----------------------+----------------------+
+| 64     | clk1                 | LVCMOS18        | IOB_X1Y28            | AL25                 |                      |
+|        | ip_450               | LVCMOS18        | IOB_X1Y21            | AN25                 |                      |
+|        | ip_451               | LVCMOS18        | IOB_X1Y26            | AM27                 |                      |
+|        | ip_61                | LVCMOS18        | IOB_X1Y49            | AG22                 |                      |
+|        | ip_62                | LVCMOS18        | IOB_X1Y50            | AG23                 |                      |
+|        | ip_63                | LVCMOS18        | IOB_X1Y47            | AF23                 |                      |
+|        | ip_64                | LVCMOS18        | IOB_X1Y48            | AG24                 |                      |
+|        | ip_65                | LVCMOS18        | IOB_X1Y45            | AJ23                 |                      |
+|        | ip_66                | LVCMOS18        | IOB_X1Y46            | AJ24                 |                      |
+|        | ip_67                | LVCMOS18        | IOB_X1Y43            | AG25                 |                      |
+|        | ip_68                | LVCMOS18        | IOB_X1Y44            | AH26                 |                      |
+|        | ip_69                | LVCMOS18        | IOB_X1Y41            | AH24                 |                      |
+|        | ip_7                 | LVCMOS18        | IOB_X1Y42            | AH25                 |                      |
+|        | ip_70                | LVCMOS18        | IOB_X1Y39            | AJ26                 |                      |
+|        | ip_71                | LVCMOS18        | IOB_X1Y40            | AJ27                 |                      |
+|        | ip_72                | LVCMOS18        | IOB_X1Y36            | AK24                 |                      |
+|        | ip_73                | LVCMOS18        | IOB_X1Y37            | AK25                 |                      |
+|        | ip_74                | LVCMOS18        | IOB_X1Y34            | AK23                 |                      |
+|        | ip_75                | LVCMOS18        | IOB_X1Y35            | AL23                 |                      |
+|        | ip_76                | LVCMOS18        | IOB_X1Y32            | AK26                 |                      |
+|        | ip_77                | LVCMOS18        | IOB_X1Y33            | AL26                 |                      |
+|        | ip_78                | LVCMOS18        | IOB_X1Y30            | AM23                 |                      |
+|        | ip_79                | LVCMOS18        | IOB_X1Y31            | AM24                 |                      |
+|        | ip_8                 | LVCMOS18        | IOB_X1Y29            | AM25                 |                      |
+|        | ip_80                | LVCMOS18        | IOB_X1Y27            | AN27                 |                      |
+|        | ip_81                | LVCMOS18        | IOB_X1Y23            | AP26                 |                      |
+|        | ip_82                | LVCMOS18        | IOB_X1Y24            | AP27                 |                      |
+|        | ip_83                | LVCMOS18        | IOB_X1Y22            | AN26                 |                      |
+|        | ip_84                | LVCMOS18        | IOB_X1Y19            | AR25                 |                      |
+|        | ip_85                | LVCMOS18        | IOB_X1Y20            | AR26                 |                      |
+|        | ip_86                | LVCMOS18        | IOB_X1Y17            | AP23                 |                      |
+|        | ip_87                | LVCMOS18        | IOB_X1Y18            | AR23                 |                      |
+|        | ip_88                | LVCMOS18        | IOB_X1Y15            | AT25                 |                      |
+|        | ip_89                | LVCMOS18        | IOB_X1Y16            | AT26                 |                      |
+|        | ip_9                 | LVCMOS18        | IOB_X1Y13            | AP24                 |                      |
+|        | ip_90                | LVCMOS18        | IOB_X1Y14            | AR24                 |                      |
+|        | ip_91                | LVCMOS18        | IOB_X1Y10            | AT27                 |                      |
+|        | ip_92                | LVCMOS18        | IOB_X1Y11            | AU27                 |                      |
+|        | ip_93                | LVCMOS18        | IOB_X1Y8             | AU24                 |                      |
+|        | ip_94                | LVCMOS18        | IOB_X1Y9             | AU25                 |                      |
+|        | ip_95                | LVCMOS18        | IOB_X1Y6             | AV24                 |                      |
+|        | ip_96                | LVCMOS18        | IOB_X1Y7             | AV25                 |                      |
+|        | ip_97                | LVCMOS18        | IOB_X1Y4             | AV26                 |                      |
+|        | ip_98                | LVCMOS18        | IOB_X1Y5             | AW26                 |                      |
+|        | ip_99                | LVCMOS18        | IOB_X1Y2             | AW23                 |                      |
++--------+----------------------+-----------------+----------------------+----------------------+----------------------+
+| 65     | ip_239               | LVCMOS18        | IOB_X1Y101           | AJ28                 |                      |
+|        | ip_24                | LVCMOS18        | IOB_X1Y102           | AJ29                 |                      |
+|        | ip_240               | LVCMOS18        | IOB_X1Y99            | AG29                 |                      |
+|        | ip_241               | LVCMOS18        | IOB_X1Y100           | AH29                 |                      |
+|        | ip_242               | LVCMOS18        | IOB_X1Y97            | AF30                 |                      |
+|        | ip_243               | LVCMOS18        | IOB_X1Y98            | AG30                 |                      |
+|        | ip_244               | LVCMOS18        | IOB_X1Y95            | AF28                 |                      |
+|        | ip_245               | LVCMOS18        | IOB_X1Y96            | AG28                 |                      |
+|        | ip_246               | LVCMOS18        | IOB_X1Y93            | AH30                 |                      |
+|        | ip_247               | LVCMOS18        | IOB_X1Y94            | AH31                 |                      |
+|        | ip_248               | LVCMOS18        | IOB_X1Y91            | AG27                 |                      |
+|        | ip_249               | LVCMOS18        | IOB_X1Y92            | AH27                 |                      |
+|        | ip_25                | LVCMOS18        | IOB_X1Y88            | AK31                 |                      |
+|        | ip_26                | LVCMOS18        | IOB_X1Y89            | AL31                 |                      |
+|        | ip_27                | LVCMOS18        | IOB_X1Y86            | AM28                 |                      |
+|        | ip_28                | LVCMOS18        | IOB_X1Y87            | AM29                 |                      |
+|        | ip_29                | LVCMOS18        | IOB_X1Y84            | AK29                 |                      |
+|        | ip_3                 | LVCMOS18        | IOB_X1Y85            | AK30                 |                      |
+|        | ip_30                | LVCMOS18        | IOB_X1Y82            | AK28                 |                      |
+|        | ip_31                | LVCMOS18        | IOB_X1Y83            | AL28                 |                      |
+|        | ip_32                | LVCMOS18        | IOB_X1Y80            | AL30                 |                      |
+|        | ip_33                | LVCMOS18        | IOB_X1Y81            | AM30                 |                      |
+|        | ip_34                | LVCMOS18        | IOB_X1Y78            | AL32                 |                      |
+|        | ip_35                | LVCMOS18        | IOB_X1Y79            | AM32                 |                      |
+|        | ip_36                | LVCMOS18        | IOB_X1Y75            | AP31                 |                      |
+|        | ip_37                | LVCMOS18        | IOB_X1Y76            | AP32                 |                      |
+|        | ip_38                | LVCMOS18        | IOB_X1Y73            | AN30                 |                      |
+|        | ip_39                | LVCMOS18        | IOB_X1Y74            | AN31                 |                      |
+|        | ip_4                 | LVCMOS18        | IOB_X1Y71            | AN29                 |                      |
+|        | ip_40                | LVCMOS18        | IOB_X1Y72            | AP29                 |                      |
+|        | ip_41                | LVCMOS18        | IOB_X1Y69            | AN32                 |                      |
+|        | ip_42                | LVCMOS18        | IOB_X1Y70            | AN33                 |                      |
+|        | ip_43                | LVCMOS18        | IOB_X1Y67            | AR29                 |                      |
+|        | ip_44                | LVCMOS18        | IOB_X1Y68            | AR30                 |                      |
+|        | ip_45                | LVCMOS18        | IOB_X1Y65            | AP28                 |                      |
+|        | ip_46                | LVCMOS18        | IOB_X1Y66            | AR28                 |                      |
+|        | ip_47                | LVCMOS18        | IOB_X1Y62            | AR31                 |                      |
+|        | ip_48                | LVCMOS18        | IOB_X1Y63            | AT31                 |                      |
+|        | ip_49                | LVCMOS18        | IOB_X1Y60            | AV31                 |                      |
+|        | ip_5                 | LVCMOS18        | IOB_X1Y61            | AW31                 |                      |
+|        | ip_50                | LVCMOS18        | IOB_X1Y58            | AT30                 |                      |
+|        | ip_51                | LVCMOS18        | IOB_X1Y59            | AU30                 |                      |
+|        | ip_52                | LVCMOS18        | IOB_X1Y56            | AT28                 |                      |
+|        | ip_53                | LVCMOS18        | IOB_X1Y57            | AU28                 |                      |
+|        | ip_54                | LVCMOS18        | IOB_X1Y54            | AV29                 |                      |
+|        | ip_55                | LVCMOS18        | IOB_X1Y55            | AV30                 |                      |
+|        | ip_56                | LVCMOS18        | IOB_X1Y52            | AW28                 |                      |
+|        | ip_57                | LVCMOS18        | IOB_X1Y53            | AW29                 |                      |
+|        | ip_58                | LVCMOS18        | IOB_X1Y103           | AJ31                 |                      |
+|        | ip_59                | LVCMOS18        | IOB_X1Y90            | AM33                 |                      |
+|        | ip_6                 | LVCMOS18        | IOB_X1Y77            | AP33                 |                      |
+|        | ip_60                | LVCMOS18        | IOB_X1Y64            | AU29                 | +                    |
++--------+----------------------+-----------------+----------------------+----------------------+----------------------+
+| 66     | ip_192               | LVCMOS18        | IOB_X1Y153           | AW22                 |                      |
+|        | ip_193               | LVCMOS18        | IOB_X1Y154           | AW21                 |                      |
+|        | ip_194               | LVCMOS18        | IOB_X1Y151           | AU19                 |                      |
+|        | ip_195               | LVCMOS18        | IOB_X1Y152           | AU18                 |                      |
+|        | ip_196               | LVCMOS18        | IOB_X1Y149           | AV22                 |                      |
+|        | ip_197               | LVCMOS18        | IOB_X1Y150           | AV21                 |                      |
+|        | ip_198               | LVCMOS18        | IOB_X1Y147           | AV19                 |                      |
+|        | ip_199               | LVCMOS18        | IOB_X1Y148           | AW19                 |                      |
+|        | ip_2                 | LVCMOS18        | IOB_X1Y145           | AT22                 |                      |
+|        | ip_20                | LVCMOS18        | IOB_X1Y146           | AU22                 |                      |
+|        | ip_200               | LVCMOS18        | IOB_X1Y143           | AU20                 |                      |
+|        | ip_201               | LVCMOS18        | IOB_X1Y144           | AV20                 |                      |
+|        | ip_202               | LVCMOS18        | IOB_X1Y140           | AP19                 |                      |
+|        | ip_203               | LVCMOS18        | IOB_X1Y141           | AP18                 |                      |
+|        | ip_204               | LVCMOS18        | IOB_X1Y138           | AR20                 |                      |
+|        | ip_205               | LVCMOS18        | IOB_X1Y139           | AT20                 |                      |
+|        | ip_206               | LVCMOS18        | IOB_X1Y136           | AN22                 |                      |
+|        | ip_207               | LVCMOS18        | IOB_X1Y137           | AP22                 |                      |
+|        | ip_208               | LVCMOS18        | IOB_X1Y134           | AR19                 |                      |
+|        | ip_209               | LVCMOS18        | IOB_X1Y135           | AR18                 |                      |
+|        | ip_21                | LVCMOS18        | IOB_X1Y132           | AN21                 |                      |
+|        | ip_210               | LVCMOS18        | IOB_X1Y133           | AN20                 |                      |
+|        | ip_211               | LVCMOS18        | IOB_X1Y130           | AP21                 |                      |
+|        | ip_212               | LVCMOS18        | IOB_X1Y131           | AR21                 |                      |
+|        | ip_213               | LVCMOS18        | IOB_X1Y127           | AL20                 |                      |
+|        | ip_214               | LVCMOS18        | IOB_X1Y128           | AM20                 |                      |
+|        | ip_215               | LVCMOS18        | IOB_X1Y125           | AM19                 |                      |
+|        | ip_216               | LVCMOS18        | IOB_X1Y126           | AN19                 |                      |
+|        | ip_217               | LVCMOS18        | IOB_X1Y123           | AK21                 |                      |
+|        | ip_218               | LVCMOS18        | IOB_X1Y124           | AL21                 |                      |
+|        | ip_219               | LVCMOS18        | IOB_X1Y121           | AL22                 |                      |
+|        | ip_22                | LVCMOS18        | IOB_X1Y122           | AM22                 |                      |
+|        | ip_220               | LVCMOS18        | IOB_X1Y119           | AK20                 |                      |
+|        | ip_221               | LVCMOS18        | IOB_X1Y120           | AK19                 |                      |
+|        | ip_222               | LVCMOS18        | IOB_X1Y117           | AL18                 |                      |
+|        | ip_223               | LVCMOS18        | IOB_X1Y118           | AM18                 |                      |
+|        | ip_224               | LVCMOS18        | IOB_X1Y114           | AH22                 |                      |
+|        | ip_225               | LVCMOS18        | IOB_X1Y115           | AJ22                 |                      |
+|        | ip_226               | LVCMOS18        | IOB_X1Y112           | AH21                 |                      |
+|        | ip_227               | LVCMOS18        | IOB_X1Y113           | AJ21                 |                      |
+|        | ip_228               | LVCMOS18        | IOB_X1Y110           | AG20                 |                      |
+|        | ip_229               | LVCMOS18        | IOB_X1Y111           | AH20                 |                      |
+|        | ip_23                | LVCMOS18        | IOB_X1Y108           | AH19                 |                      |
+|        | ip_230               | LVCMOS18        | IOB_X1Y109           | AJ19                 |                      |
+|        | ip_231               | LVCMOS18        | IOB_X1Y106           | AF21                 |                      |
+|        | ip_232               | LVCMOS18        | IOB_X1Y107           | AF20                 |                      |
+|        | ip_233               | LVCMOS18        | IOB_X1Y104           | AG19                 |                      |
+|        | ip_234               | LVCMOS18        | IOB_X1Y105           | AG18                 |                      |
+|        | ip_235               | LVCMOS18        | IOB_X1Y155           | AT21                 |                      |
+|        | ip_236               | LVCMOS18        | IOB_X1Y142           | AT18                 |                      |
+|        | ip_237               | LVCMOS18        | IOB_X1Y129           | AK18                 |                      |
+|        | ip_238               | LVCMOS18        | IOB_X1Y116           | AJ18                 | +                    |
++--------+----------------------+-----------------+----------------------+----------------------+----------------------+
+| 67     | ip_145               | LVCMOS18        | IOB_X1Y205           | AW18                 |                      |
+|        | ip_146               | LVCMOS18        | IOB_X1Y206           | AW17                 |                      |
+|        | ip_147               | LVCMOS18        | IOB_X1Y203           | AV14                 |                      |
+|        | ip_148               | LVCMOS18        | IOB_X1Y204           | AW14                 |                      |
+|        | ip_149               | LVCMOS18        | IOB_X1Y201           | AU17                 |                      |
+|        | ip_15                | LVCMOS18        | IOB_X1Y202           | AV17                 |                      |
+|        | ip_150               | LVCMOS18        | IOB_X1Y199           | AU15                 |                      |
+|        | ip_151               | LVCMOS18        | IOB_X1Y200           | AV15                 |                      |
+|        | ip_152               | LVCMOS18        | IOB_X1Y197           | AT17                 |                      |
+|        | ip_153               | LVCMOS18        | IOB_X1Y198           | AT16                 |                      |
+|        | ip_154               | LVCMOS18        | IOB_X1Y195           | AV16                 |                      |
+|        | ip_155               | LVCMOS18        | IOB_X1Y196           | AW16                 |                      |
+|        | ip_156               | LVCMOS18        | IOB_X1Y192           | AN17                 |                      |
+|        | ip_157               | LVCMOS18        | IOB_X1Y193           | AP17                 |                      |
+|        | ip_158               | LVCMOS18        | IOB_X1Y190           | AR15                 |                      |
+|        | ip_159               | LVCMOS18        | IOB_X1Y191           | AT15                 |                      |
+|        | ip_16                | LVCMOS18        | IOB_X1Y188           | AR13                 |                      |
+|        | ip_160               | LVCMOS18        | IOB_X1Y189           | AT13                 |                      |
+|        | ip_161               | LVCMOS18        | IOB_X1Y186           | AP14                 |                      |
+|        | ip_162               | LVCMOS18        | IOB_X1Y187           | AR14                 |                      |
+|        | ip_163               | LVCMOS18        | IOB_X1Y184           | AN16                 |                      |
+|        | ip_164               | LVCMOS18        | IOB_X1Y185           | AN15                 |                      |
+|        | ip_165               | LVCMOS18        | IOB_X1Y182           | AP16                 |                      |
+|        | ip_166               | LVCMOS18        | IOB_X1Y183           | AR16                 |                      |
+|        | ip_167               | LVCMOS18        | IOB_X1Y179           | AL15                 |                      |
+|        | ip_168               | LVCMOS18        | IOB_X1Y180           | AM15                 |                      |
+|        | ip_169               | LVCMOS18        | IOB_X1Y177           | AM14                 |                      |
+|        | ip_17                | LVCMOS18        | IOB_X1Y178           | AN14                 |                      |
+|        | ip_170               | LVCMOS18        | IOB_X1Y175           | AK16                 |                      |
+|        | ip_171               | LVCMOS18        | IOB_X1Y176           | AL16                 |                      |
+|        | ip_172               | LVCMOS18        | IOB_X1Y173           | AL13                 |                      |
+|        | ip_173               | LVCMOS18        | IOB_X1Y174           | AM13                 |                      |
+|        | ip_174               | LVCMOS18        | IOB_X1Y171           | AL17                 |                      |
+|        | ip_175               | LVCMOS18        | IOB_X1Y172           | AM17                 |                      |
+|        | ip_176               | LVCMOS18        | IOB_X1Y169           | AK15                 |                      |
+|        | ip_177               | LVCMOS18        | IOB_X1Y170           | AK14                 |                      |
+|        | ip_178               | LVCMOS18        | IOB_X1Y166           | AG17                 |                      |
+|        | ip_179               | LVCMOS18        | IOB_X1Y167           | AH17                 |                      |
+|        | ip_18                | LVCMOS18        | IOB_X1Y164           | AJ14                 |                      |
+|        | ip_180               | LVCMOS18        | IOB_X1Y165           | AJ13                 |                      |
+|        | ip_181               | LVCMOS18        | IOB_X1Y162           | AH16                 |                      |
+|        | ip_182               | LVCMOS18        | IOB_X1Y163           | AH15                 |                      |
+|        | ip_183               | LVCMOS18        | IOB_X1Y160           | AJ17                 |                      |
+|        | ip_184               | LVCMOS18        | IOB_X1Y161           | AJ16                 |                      |
+|        | ip_185               | LVCMOS18        | IOB_X1Y158           | AF15                 |                      |
+|        | ip_186               | LVCMOS18        | IOB_X1Y159           | AG15                 |                      |
+|        | ip_187               | LVCMOS18        | IOB_X1Y156           | AG14                 |                      |
+|        | ip_188               | LVCMOS18        | IOB_X1Y157           | AH14                 |                      |
+|        | ip_189               | LVCMOS18        | IOB_X1Y207           | AU14                 |                      |
+|        | ip_19                | LVCMOS18        | IOB_X1Y194           | AP13                 |                      |
+|        | ip_190               | LVCMOS18        | IOB_X1Y181           | AK13                 |                      |
+|        | ip_191               | LVCMOS18        | IOB_X1Y168           | AG13                 | +                    |
++--------+----------------------+-----------------+----------------------+----------------------+----------------------+
+| 68     | ip_0                 | LVCMOS18        | IOB_X1Y257           | AU13                 |                      |
+|        | ip_1                 | LVCMOS18        | IOB_X1Y258           | AV12                 |                      |
+|        | ip_10                | LVCMOS18        | IOB_X1Y255           | AW13                 |                      |
+|        | ip_100               | LVCMOS18        | IOB_X1Y256           | AW12                 |                      |
+|        | ip_101               | LVCMOS18        | IOB_X1Y253           | AT12                 |                      |
+|        | ip_102               | LVCMOS18        | IOB_X1Y254           | AU12                 |                      |
+|        | ip_103               | LVCMOS18        | IOB_X1Y251           | AV11                 |                      |
+|        | ip_104               | LVCMOS18        | IOB_X1Y252           | AW11                 |                      |
+|        | ip_105               | LVCMOS18        | IOB_X1Y249           | AU10                 |                      |
+|        | ip_106               | LVCMOS18        | IOB_X1Y250           | AV10                 |                      |
+|        | ip_107               | LVCMOS18        | IOB_X1Y247           | AU9                  |                      |
+|        | ip_108               | LVCMOS18        | IOB_X1Y248           | AV9                  |                      |
+|        | ip_109               | LVCMOS18        | IOB_X1Y244           | AP12                 |                      |
+|        | ip_11                | LVCMOS18        | IOB_X1Y245           | AP11                 |                      |
+|        | ip_110               | LVCMOS18        | IOB_X1Y242           | AR10                 |                      |
+|        | ip_111               | LVCMOS18        | IOB_X1Y243           | AT10                 |                      |
+|        | ip_112               | LVCMOS18        | IOB_X1Y240           | AN12                 |                      |
+|        | ip_113               | LVCMOS18        | IOB_X1Y241           | AN11                 |                      |
+|        | ip_114               | LVCMOS18        | IOB_X1Y238           | AR11                 |                      |
+|        | ip_115               | LVCMOS18        | IOB_X1Y239           | AT11                 |                      |
+|        | ip_116               | LVCMOS18        | IOB_X1Y236           | AP9                  |                      |
+|        | ip_117               | LVCMOS18        | IOB_X1Y237           | AP8                  |                      |
+|        | ip_118               | LVCMOS18        | IOB_X1Y234           | AR9                  |                      |
+|        | ip_119               | LVCMOS18        | IOB_X1Y235           | AR8                  |                      |
+|        | ip_12                | LVCMOS18        | IOB_X1Y231           | AM10                 |                      |
+|        | ip_120               | LVCMOS18        | IOB_X1Y232           | AM9                  |                      |
+|        | ip_121               | LVCMOS18        | IOB_X1Y229           | AN10                 |                      |
+|        | ip_122               | LVCMOS18        | IOB_X1Y230           | AN9                  |                      |
+|        | ip_123               | LVCMOS18        | IOB_X1Y227           | AM7                  |                      |
+|        | ip_124               | LVCMOS18        | IOB_X1Y228           | AN7                  |                      |
+|        | ip_125               | LVCMOS18        | IOB_X1Y225           | AK11                 |                      |
+|        | ip_126               | LVCMOS18        | IOB_X1Y226           | AL10                 |                      |
+|        | ip_127               | LVCMOS18        | IOB_X1Y223           | AL8                  |                      |
+|        | ip_128               | LVCMOS18        | IOB_X1Y224           | AM8                  |                      |
+|        | ip_129               | LVCMOS18        | IOB_X1Y221           | AL12                 |                      |
+|        | ip_13                | LVCMOS18        | IOB_X1Y222           | AL11                 |                      |
+|        | ip_130               | LVCMOS18        | IOB_X1Y218           | AJ11                 |                      |
+|        | ip_131               | LVCMOS18        | IOB_X1Y219           | AK10                 |                      |
+|        | ip_132               | LVCMOS18        | IOB_X1Y216           | AG10                 |                      |
+|        | ip_133               | LVCMOS18        | IOB_X1Y217           | AH10                 |                      |
+|        | ip_134               | LVCMOS18        | IOB_X1Y214           | AG9                  |                      |
+|        | ip_135               | LVCMOS18        | IOB_X1Y215           | AH9                  |                      |
+|        | ip_136               | LVCMOS18        | IOB_X1Y212           | AH12                 |                      |
+|        | ip_137               | LVCMOS18        | IOB_X1Y213           | AJ12                 |                      |
+|        | ip_138               | LVCMOS18        | IOB_X1Y210           | AJ9                  |                      |
+|        | ip_139               | LVCMOS18        | IOB_X1Y211           | AK9                  |                      |
+|        | ip_14                | LVCMOS18        | IOB_X1Y208           | AG12                 |                      |
+|        | ip_140               | LVCMOS18        | IOB_X1Y209           | AH11                 |                      |
+|        | ip_141               | LVCMOS18        | IOB_X1Y259           | AW9                  |                      |
+|        | ip_142               | LVCMOS18        | IOB_X1Y246           | AP7                  |                      |
+|        | ip_143               | LVCMOS18        | IOB_X1Y233           | AM12                 |                      |
+|        | ip_144               | LVCMOS18        | IOB_X1Y220           | AF10                 | +                    |
++--------+----------------------+-----------------+----------------------+----------------------+----------------------+
+IO/Clock Placer Placement Results
+---------------------------------
+3 instances placed in BUFGCE sites
+706 instances placed in HPIOB_M sites
+
+----- IO_and_Clk_Clean_Up                      | CPU:    1.2 | HCPU:    2.1 | TclCPU:  169.2 | PACPU:  696.4 | Wall:    2.1 | TclWall:  169.9 | PAWall:  396.5 | Mem:    0.0 MB | TMem: 6801.0 MB
+----- Implementation_Feasibility_check_On_IDel | CPU:    1.2 | HCPU:    1.2 | TclCPU:  170.4 | PACPU:  697.7 | Wall:    1.2 | TclWall:  171.1 | PAWall:  397.7 | Mem:    0.0 MB | TMem: 6801.0 MB
+----- Commit_IO_Placement                      | CPU:    0.1 | HCPU:    0.1 | TclCPU:  170.5 | PACPU:  697.7 | Wall:    0.1 | TclWall:  171.2 | PAWall:  397.8 | Mem:    0.0 MB | TMem: 6801.0 MB
+stats:    0.00/ 343.78e    0.00/ 695.21u     0.00/ 5392.22/ 6800.97/ 6800.97MB UpdateTimingTA
+----- UpdateTimingAfterPlaceIOClkAndInit       | CPU:    0.0 | HCPU:    0.0 | TclCPU:  170.5 | PACPU:  697.7 | Wall:    0.0 | TclWall:  171.2 | PAWall:  397.8 | Mem:    0.0 MB | TMem: 6801.0 MB
+----- ParallelPlaceIOClockAndInitTop           | CPU:    0.0 | HCPU:  165.1 | TclCPU:  170.5 | PACPU:  697.7 | Wall:  163.6 | TclWall:  171.2 | PAWall:  397.8 | Mem:  152.0 MB | TMem: 6801.0 MB
+Phase 1.2 IO Placement/ Clock Placement/ Build Placer Device | Checksum: d94a5f2d
+----- Checksum: PlaceDB: d84a617d ConstDB: 00000000 ShapeSum: 00fffdb0 
+----- Number of instance placed: 709 fixed: 0----- Number of Shapes: 70443
+
+Time (s): cpu = 00:02:46 ; elapsed = 00:02:51 . Memory (MB): peak = 6800.973 ; gain = 151.996 ; free physical = 289166 ; free virtual = 298033
+----- IO_Placement/_Clock_Placement/_Build_Pla | CPU:    0.0 | HCPU:  165.1 | TclCPU:  170.5 | PACPU:  697.8 | Wall:  163.6 | TclWall:  171.2 | PAWall:  397.9 | Mem:  152.0 MB | TMem: 6801.0 MB
+
+Phase 1.3 Build Placer Netlist Model
+----- Mark_Clock_Net_without_Clock_Load        | CPU:    0.9 | HCPU:    0.9 | TclCPU:  171.4 | PACPU:  698.7 | Wall:    1.0 | TclWall:  172.2 | PAWall:  398.8 | Mem:    0.0 MB | TMem: 6801.0 MB
+----- Place_Unplaced_Partially_Placed_New_Shap | CPU:    0.0 | HCPU:    0.0 | TclCPU:  171.5 | PACPU:  698.8 | Wall:    0.0 | TclWall:  172.2 | PAWall:  398.9 | Mem:    0.0 MB | TMem: 6801.0 MB
+----- Make_Empty_Occup_Meshes                  | CPU:    0.0 | HCPU:    0.0 | TclCPU:  171.5 | PACPU:  698.8 | Wall:    0.0 | TclWall:  172.3 | PAWall:  398.9 | Mem:    0.0 MB | TMem: 6801.0 MB
+----- ControlSet_DB                            | CPU:    0.0 | HCPU:    0.0 | TclCPU:  171.5 | PACPU:  698.8 | Wall:    0.0 | TclWall:  172.3 | PAWall:  398.9 | Mem:    0.0 MB | TMem: 6801.0 MB
+----- Build_Netlist                            | CPU:   16.1 | HCPU:   16.1 | TclCPU:  187.7 | PACPU:  714.9 | Wall:   16.2 | TclWall:  188.5 | PAWall:  415.2 | Mem:  156.0 MB | TMem: 6957.0 MB
+Finished setLutPinMappings() in 0.81u 0s 0.81w
+----- Build_PlaceInfo                          | CPU:    3.5 | HCPU:    3.5 | TclCPU:  191.2 | PACPU:  718.4 | Wall:    3.3 | TclWall:  191.8 | PAWall:  418.4 | Mem:   15.3 MB | TMem: 6972.3 MB
+Make UCM congestion Map
+congestion maps skip 0 nets
+build LagunaMapper time: 0u 0s 0w
+----- Make_Congestion_Map                      | CPU:    2.0 | HCPU:    2.0 | TclCPU:  193.1 | PACPU:  720.4 | Wall:    1.7 | TclWall:  193.5 | PAWall:  420.1 | Mem:  259.0 MB | TMem: 7231.3 MB
+----- Make_Placer_Netlist_et_al                | CPU:    0.0 | HCPU:   21.7 | TclCPU:  193.1 | PACPU:  720.4 | Wall:   21.3 | TclWall:  193.5 | PAWall:  420.1 | Mem:  430.3 MB | TMem: 7231.3 MB
+tdmCtrl: Setting verbosity to: 0 - OFF
+----- TDM_Controller_Creation                  | CPU:    0.0 | HCPU:    0.0 | TclCPU:  193.1 | PACPU:  720.4 | Wall:    0.0 | TclWall:  193.5 | PAWall:  420.1 | Mem:    0.0 MB | TMem: 7231.3 MB
+dbgCoreRcnt: Creating HAPLDebugCoreReconnect Object
+----- Make_Others                              | CPU:    0.0 | HCPU:    0.0 | TclCPU:  193.2 | PACPU:  720.4 | Wall:    0.0 | TclWall:  193.5 | PAWall:  420.1 | Mem:    0.0 MB | TMem: 7231.3 MB
+----- updateTiming_in_Init                     | CPU:    0.0 | HCPU:    0.0 | TclCPU:  193.2 | PACPU:  720.4 | Wall:    0.0 | TclWall:  193.5 | PAWall:  420.1 | Mem:    0.0 MB | TMem: 7231.3 MB
+----- ParallelInitDesign-Budgets-part2         | CPU:    0.0 | HCPU:    0.0 | TclCPU:  193.2 | PACPU:  720.4 | Wall:    0.0 | TclWall:  193.5 | PAWall:  420.1 | Mem:    0.0 MB | TMem: 7231.3 MB
+DSP48 util 80% (demand 1824, cap 2280)
+RAMB36 util 80% (demand 576, cap 720)
+URAM util 0% (demand 0, cap 320)
+LAGUNA util 0% (demand 0, cap 0)
+
+Design Statistics ... 
+
+Part  : xcvu3p-ffvc1517-1-i
+
+Number of terminals:    1952687
+Number of nets:         534191
+Average net fanouts:    3.65541
+Number of instances:    493698
+Number of moveables:    492989
+Number of control sets: 4(HALF_SLICE : 2)
+RAMBFIFO36    : 576
+LUT           : 187986
+FF            : 234437
+SHAPE         : 69990
+Types in shapes :
+   DSP48E2       : 1824
+   LUT           : 68166
+   FF            : 68166
+Note: Use following formulas to compare these numbers to the ones reported by logic optimization; LUT = LUT+SLR+RAM, LUTRAM=SLR+RAM
+
+
+
+Design Utilization Statistics ... 
+
+Lut    utilization 65.00 ( 256152 out of  394080)
+FF     utilization 38.39 ( 302603 out of  788160)
+LutRam utilization  0.00 (      0 out of  197280)
+Blocked Slice  utilization  0.00 (      0 out of   49260)
+Prohibited Slice  utilization  0.00 (      0 out of   49260)
+Implied Prohibited Slice  utilization  0.00 (      0 out of   49260)
+
+
+Number of PBlocks in the design: 1
+  PBlock: ROOT : isSoft: 1
+
+Placement Utilization ... 
+
+Weighted Lut     utilization  65.0 ( 256152 out of  394080)
+Weighted FreeLut utilization  47.7 ( 187986 out of  394080)
+Weighted FF      utilization  38.4 ( 302603 out of  788160)
+Weighted LutRam  utilization   0.0 (      0 out of  197280)
+Weighted Carry   utilization   0.0 (      0 out of   49260)
+Total BUFG       utilization   0.0 (      3 out of       0)
+Total BUFR       utilization   0.0 (      0 out of       0)
+Total BUFIO      utilization   0.0 (      0 out of       0)
+Total MMCM       utilization   0.0 (      0 out of       0)
+Total IDELAY     utilization   0.0 (      0 out of       0)
+Total ODELAY     utilization   0.0 (      0 out of       0)
+Total ILOGIC     utilization   0.0 (      0 out of       0)
+Total OLOGIC     utilization   0.0 (      0 out of       0)
+Total IO         utilization   0.0 (    453 out of       0)
+Total GT         utilization   0.0 (      0 out of       0)
+Total BRAM       utilization  80.0 (   1152 out of    1440)
+Total URAM       utilization   0.0 (      0 out of     320)
+Total DSP        utilization  80.0 (   1824 out of    2280)
+
+
+
+
+
+Decreasing number of FF per slice from 16 to 11
+----- Make_Commiter                            | CPU:    0.0 | HCPU:    0.0 | TclCPU:  193.8 | PACPU:  721.1 | Wall:    0.0 | TclWall:  194.1 | PAWall:  420.8 | Mem:    0.0 MB | TMem: 7231.3 MB
+===========================
+Global Clock Usage Report 
+===========================
+Number of global clocks: 3
+FF cap: 788160, LUTRAM cap: 197280, RAMB cap: 720, URAM cap: 320, DSP cap: 2280
+Global Clock #1
+  Net name              : clk_BUFGP_net_top_wire
+  Source cell name      : BUFG_inst
+  Source cell type      : BUFGCE
+  Number of loads       : 314699
+    FF : 302603, util: 38.4%
+    DSP : 10944, util: 480.0%
+    RAMB : 576, util: 80.0%
+
+Global Clock #2
+  Net name              : controlSig0
+  Source cell name      : BUFG_inst0
+  Source cell type      : BUFGCE
+  Number of loads       : 60242
+    FF : 59758, util: 7.6%
+    RAMB : 121, util: 16.8%
+
+Global Clock #3
+  Net name              : controlSig1
+  Source cell name      : BUFG_inst1
+  Source cell type      : BUFGCE
+  Number of loads       : 60000
+    FF : 59167, util: 7.5%
+    RAMB : 119, util: 16.5%
+
+Number of global clocks: 3
+ Number of BUFGCE     clocks = 3
+----- ParallelInitDesign-Clock_TMGModel-part1  | CPU:    1.3 | HCPU:    1.3 | TclCPU:  194.5 | PACPU:  721.8 | Wall:    1.3 | TclWall:  194.8 | PAWall:  421.5 | Mem:    0.0 MB | TMem: 7231.3 MB
+Building LHView ...
+Top Slice Area Ratio is smaller than 0.2. Turning off LH Partitioning ...
+LHView Build Time = 0.09
+collectPipFFs psipEnableAutoPipeline=3; enableAutoPipeline=0; isPRFlow=no; sta4=NULL; savePeriodInfo=1; dntBrkOnDiffSlk=0
+STA4==NULL !! ==> Forcing savePeriodInfo to false
+collectPipFFs #m_pipFFVec=10928; #m_pipFFSet=156358; isSDxFlow=0; brkOnDiffSlk=0; #FFChainsWithDiffPeriod=0
+----- Place_Init_Design                        | CPU:    1.6 | HCPU:   25.6 | TclCPU:  196.1 | PACPU:  723.4 | Wall:   25.2 | TclWall:  196.4 | PAWall:  423.1 | Mem:  430.3 MB | TMem: 7231.3 MB
+Phase 1.3 Build Placer Netlist Model | Checksum: 16e68d54e
+----- Checksum: PlaceDB: d84a617d PlaceInfo: 951e7621 ConstDB: 00000000 ShapeSum: 00fffdb0 
+----- Number of instance placed: 709 fixed: 0----- Number of Shapes: 70443
+
+Time (s): cpu = 00:03:12 ; elapsed = 00:03:17 . Memory (MB): peak = 7231.277 ; gain = 582.301 ; free physical = 287722 ; free virtual = 296589
+----- Build_Placer_Netlist_Model               | CPU:    0.0 | HCPU:   25.6 | TclCPU:  196.2 | PACPU:  723.5 | Wall:   25.2 | TclWall:  196.6 | PAWall:  423.2 | Mem:  430.3 MB | TMem: 7231.3 MB
+addConstraint4DSPCascadeRCLKCross
+ .. constraints not applied , since it failed in pre-check
+addConstraint4DSPABCascadeRBRKCross
+ DSP AB Cascade constraints not applied , since it failed in pre-check
+addConstraint4DSPPCascadeRBRKCross
+ DSP AB Cascade constraints not applied , since it failed in pre-check
+ --- Constrain Cascades --- 
+	No cascaded blocks found 
+Cascade constraining to prevent RBRK cross was not performed. Continuing ..
+ --- User Defined Cascade Constraint --- 
+	No cascaded blocks found for avoiding ARC Boundary
+ User defined cascade constraining was not performed. Continuing ..
+
+Phase 1.4 Constrain Clocks/Macros
+Area Constraints statistics before MIG constraining
+Number of current area constraints: 0
+Number of constrained blocks: 0
+Area Constraints statistics before clock constraining
+Number of current area constraints: 0
+Number of constrained blocks: 0
+Area Constraints statistics before reference shape constraint regeneration
+Number of current area constraints: 0
+Number of constrained blocks: 0
+Area Constraints statistics after reference shape constraint regeneration
+Number of current area constraints: 0
+Number of constrained blocks: 0
+Phase 1.4 Constrain Clocks/Macros | Checksum: 16e68d54e
+----- Checksum: PlaceDB: d84a617d PlaceInfo: 951e7621 ConstDB: 00000000 ShapeSum: 00fffdb0 
+----- Number of instance placed: 709 fixed: 0----- Number of Shapes: 70443
+
+Time (s): cpu = 00:03:13 ; elapsed = 00:03:18 . Memory (MB): peak = 7231.277 ; gain = 582.301 ; free physical = 287767 ; free virtual = 296634
+----- Constrain_Clocks/Macros                  | CPU:    1.1 | HCPU:    1.1 | TclCPU:  197.6 | PACPU:  724.9 | Wall:    1.0 | TclWall:  197.9 | PAWall:  424.6 | Mem:    0.0 MB | TMem: 7231.3 MB
+High Fanout Nets for the design:
+
+----- Init_Sites_With_FF_ID:_Init              | CPU:    0.0 | HCPU:    0.0 | TclCPU:  197.9 | PACPU:  725.1 | Wall:    0.0 | TclWall:  198.2 | PAWall:  424.9 | Mem:    0.0 MB | TMem: 7231.3 MB
+----- Collect_PrePlace_Fixed_Instances         | CPU:    0.0 | HCPU:    0.0 | TclCPU:  197.9 | PACPU:  725.2 | Wall:    0.0 | TclWall:  198.2 | PAWall:  424.9 | Mem:    0.0 MB | TMem: 7231.3 MB
+Phase 1 Placer Initialization | Checksum: 16e68d54e
+----- Checksum: PlaceDB: d84a617d PlaceInfo: 951e7621 ConstDB: 00000000 ShapeSum: 00fffdb0 
+----- Number of instance placed: 709 fixed: 0----- Number of Shapes: 70443
+
+Time (s): cpu = 00:03:13 ; elapsed = 00:03:18 . Memory (MB): peak = 7231.277 ; gain = 582.301 ; free physical = 287749 ; free virtual = 296616
+----- Placer_Initialization                    | CPU:    3.6 | HCPU:  197.9 | TclCPU:  198.0 | PACPU:  725.3 | Wall:  198.2 | TclWall:  198.4 | PAWall:  425.0 | Mem:  582.3 MB | TMem: 7231.3 MB
+----- Find_Flops_Fixed_to_Laguna               | CPU:    0.1 | HCPU:    0.1 | TclCPU:  198.1 | PACPU:  725.4 | Wall:    0.1 | TclWall:  198.4 | PAWall:  425.1 | Mem:    0.0 MB | TMem: 7231.3 MB
+
+Phase 2 Global Placement
+----- Make_TypeAreaLegalizer                   | CPU:    0.0 | HCPU:    0.0 | TclCPU:  198.1 | PACPU:  725.4 | Wall:    0.0 | TclWall:  198.4 | PAWall:  425.1 | Mem:    0.0 MB | TMem: 7231.3 MB
+----- Make_Area_Swapper                        | CPU:    0.0 | HCPU:    0.0 | TclCPU:  198.1 | PACPU:  725.4 | Wall:    0.0 | TclWall:  198.4 | PAWall:  425.1 | Mem:    0.0 MB | TMem: 7231.3 MB
+----- Make_TypeAreaLegalizer                   | CPU:    0.0 | HCPU:    0.0 | TclCPU:  198.1 | PACPU:  725.4 | Wall:    0.0 | TclWall:  198.4 | PAWall:  425.1 | Mem:    0.0 MB | TMem: 7231.3 MB
+do_bigblock_placement: pre_floorplan
+----- QP_Make_Problem                          | CPU:    0.6 | HCPU:    0.6 | TclCPU:  199.0 | PACPU:  726.3 | Wall:    0.6 | TclWall:  199.3 | PAWall:  426.0 | Mem:    0.0 MB | TMem: 7231.3 MB
+----- Make_QP                                  | CPU:    0.0 | HCPU:    0.6 | TclCPU:  199.0 | PACPU:  726.3 | Wall:    0.6 | TclWall:  199.3 | PAWall:  426.0 | Mem:    0.0 MB | TMem: 7231.3 MB
+
+Phase 2.1 Floorplanning
+
+ ================================================================
+ Itr Step     Type           MU   CR   AvgMov Max WL(e+6)     WNS
+ ====================================|===========================
+Constraining loads for clocks of types BUFG_GT 
+For clocks of type BUFG_GT: 
+	Enforcing a fixed size of 6 for resulting constraining regions
+	Considering clock nets with loads with fanout less than 1000
+	Accept cross-SLR move/constraining: Yes
+---------- start QP_Iterations_in_HMPlacer_Flow 
+*******************************************************
+HMPlacerIters: START needRepar 0 runVPlacer 1
+*******************************************************
+HMPlacerIters: tryLHPart 0 tryFlatHM 0 lastPass -1
+HMPlacerIters: done runHMP pass -1 bestCost 0 bestPass -1
+----- HMPlacer_Before_NextGen                  | CPU:    0.0 | HCPU:    0.0 | TclCPU:  200.8 | PACPU:  728.1 | Wall:    0.0 | TclWall:  201.1 | PAWall:  427.8 | Mem:    0.0 MB | TMem: 7240.2 MB
+
+Phase 2.1.1 Partition Driven Placement
+After initial block population
+id             type   occupancy   capacity   util
+-------------------------------------------------
+ 0           LUTRAM  [       0]  [  197280]    0%
+ 1              LUT  [  256152]  [  394080]   65%
+ 2               FF  [  302603]  [  788160]   38%
+ 3       RAMBFIFO36  [    1152]  [    1440]   80%
+ 4          DSP48E2  [    1824]  [    2280]   80%
+VPPlacer Init Time:  0.22
+
+Phase 2.1.1.1 PBP: Partition Driven Placement
+part 2 numInternal 217203 numExternal 5698 (38.1192) ratio = 25.2215 isGood 1
+part 1 numInternal 311290 numExternal 5698 (54.6314) ratio = 30.3312 isGood 1
+part 4 numInternal 111661 numExternal 4220 (26.46) ratio = 25.8434 isGood 1
+part 6 numInternal 147585 numExternal 4779 (30.882) ratio = 29.972 isGood 1
+part 5 has lut util 0.820988%. set isGood to false
+part 3 numInternal 104672 numExternal 3734 (28.0321) ratio = 24.7611 isGood 1
+recurseBiPart Run Time:  205.27
+VCycle Run Time:  0.01
+Total MoveBlocksToPartBB Time:  2.26
+Total VPPlacer Run Time:  205.61
+     Total net WL:  462518408 =  230387455 +  232130953, avg : 865.829653 = 431.282921 + 434.546731
+Phase 2.1.1.1 PBP: Partition Driven Placement | Checksum: 13e47c110
+----- Checksum: PlaceDB: d84a617d PlaceInfo: 64fd61e3 ConstDB: 00000000 ShapeSum: 00fffdb0 
+----- Number of instance placed: 709 fixed: 0----- Number of Shapes: 70443
+
+Time (s): cpu = 00:11:44 ; elapsed = 00:06:47 . Memory (MB): peak = 8041.887 ; gain = 1392.910 ; free physical = 274599 ; free virtual = 283470
+----- PBP:_Partition_Driven_Placement          | CPU:  519.2 | HCPU:  519.2 | TclCPU:  720.4 | PACPU: 1247.7 | Wall:  205.4 | TclWall:  406.9 | PAWall:  633.5 | Mem:  801.6 MB | TMem: 8041.9 MB
+
+Phase 2.1.1.2 PBP: Clock Region Placement
+m_maxDist 600 m_maxDelay 16383 m_minWLDist 60
+
+build_nodes start
+Added 140943 nodes for connected LUTs and FFs
+num_nodes:  144052  blocks: 144052  num_macros: 2400
+build_nodes end
+
+num_pblockInfo: 0
+Macro graph Checksum : 0
+Before clean up, Macro graph has 144052 nodes, 0 edges.
+macro_nodes: 2400  nodes/demand/pblocked:   DSP: 1824/ 14592/ 0  BRAM: 576/ 1152/ 0  URAM: 0/ 0/ 0
+Macro Graph Build Time : 0.17
+----- Create_Discrete_Graph                    | CPU:    0.2 | HCPU:    0.2 | TclCPU:  720.6 | PACPU: 1247.9 | Wall:    0.2 | TclWall:  407.1 | PAWall:  633.8 | Mem:    0.0 MB | TMem: 8041.9 MB
+----- Incremental_createDiscreteGraph          | CPU:    0.0 | HCPU:    0.2 | TclCPU:  720.6 | PACPU: 1247.9 | Wall:    0.2 | TclWall:  407.1 | PAWall:  633.8 | Mem:    0.0 MB | TMem: 8041.9 MB
+num_nodes: 144052 fixed: 141652 placed: 0 float: 2400 num_site_refined: 0
+Evaluated 2400 moves, moved 383 nodes 
+   Pass 0, moved 383 blocks: maxUtil = 1.8 targUtil = 1.3 bigShapeUtil = 0 maxUtilMoveDist = 8
+Evaluated 2400 moves, moved 116 nodes 
+   Pass 1, moved 116 blocks: maxUtil = 1.2 targUtil = 1 bigShapeUtil = 0 maxUtilMoveDist = 12
+Evaluated 2400 moves, moved 62 nodes 
+   Pass 2, moved 62 blocks: maxUtil = 1.2 targUtil = 1 bigShapeUtil = 0 maxUtilMoveDist = 16
+Evaluated 2400 moves, moved 39 nodes 
+   Pass 3, moved 39 blocks: maxUtil = 0.9 targUtil = 1 bigShapeUtil = 0 maxUtilMoveDist = 20
+Evaluated 2400 moves, moved 7 nodes 
+   Pass 4, moved 7 blocks: maxUtil = 0.9 targUtil = 1 bigShapeUtil = 0 maxUtilMoveDist = 24
+End macro opt: wl = 4255889, wns  = 2147483647, tns  = 0
+0 non macro blocks moved for a total of 0 times
+interleaving optimization has been applied
+MacroInterleavingOpt Warning: WL increases from 4255889 to 4256509
+End macro opt after interleaving opt: wl = 4256509, wns  = 2147483647, tns  = 0
+PlaceIncremental UtilIsMet? 1
+----- Legalize_Macro_Discrete_PlaceIncremental | CPU:    8.0 | HCPU:    8.0 | TclCPU:  728.6 | PACPU: 1255.9 | Wall:    8.0 | TclWall:  415.1 | PAWall:  641.7 | Mem:    0.0 MB | TMem: 8041.9 MB
+placeIncremental is successful
+----- Place_SliceDriven_BUFGs                  | CPU:    6.3 | HCPU:    6.3 | TclCPU:  734.9 | PACPU: 1262.2 | Wall:    6.3 | TclWall:  421.4 | PAWall:  648.0 | Mem:    0.0 MB | TMem: 8041.9 MB
+----- Place_PS_Driven_BUFGs                    | CPU:    0.0 | HCPU:    0.0 | TclCPU:  734.9 | PACPU: 1262.2 | Wall:    0.0 | TclWall:  421.4 | PAWall:  648.0 | Mem:    0.0 MB | TMem: 8041.9 MB
+----- Redo_BUFG_Placement                      | CPU:    0.0 | HCPU:    6.3 | TclCPU:  734.9 | PACPU: 1262.2 | Wall:    6.3 | TclWall:  421.4 | PAWall:  648.0 | Mem:    0.0 MB | TMem: 8041.9 MB
+Starting clock region placer...
+Clock region placer needs to legalize number of clocks per region: NO
+A total number of 0 cells have to move cross clock regions to have a legal placement in ILP-based clock region legalization phase. 0 of these cells moved cross SLRs. Average weighted clock region manahattan displacement is 0 region(s).
+List of all clock constraints and their load utilizations:
+Clock Constraint 1 {
+ Clock region(s) boundary: ((0, 0), (5, 4))
+ This rectangle covers the whole device
+ Clock Load Utilization:
+   Type          num loads  avail-cap  util
+   ----------------------------------------------
+   DSP48E2            1824       2280     80%
+   RAMBFIFO           1152       1440     80%
+   FF               302603     788160     38%
+
+ 3 clock net(s) are completely constrained in this area:
+   clk_BUFGP_net_top_wire
+   controlSig0
+   controlSig1
+}
+----- Clock_Region_Placer_doPartAndTrack       | CPU:    3.1 | HCPU:    3.1 | TclCPU:  743.6 | PACPU: 1270.8 | Wall:    3.2 | TclWall:  430.2 | PAWall:  656.8 | Mem:    0.0 MB | TMem: 8041.9 MB
+----- Clock_Region_Placer_constrainLoads       | CPU:    0.0 | HCPU:    0.0 | TclCPU:  743.6 | PACPU: 1270.8 | Wall:    0.0 | TclWall:  430.2 | PAWall:  656.8 | Mem:    0.0 MB | TMem: 8041.9 MB
+----- Clock_Region_Placer_constrainGlobalInt   | CPU:    4.8 | HCPU:    7.9 | TclCPU:  743.7 | PACPU: 1270.9 | Wall:    8.0 | TclWall:  430.3 | PAWall:  656.9 | Mem:    0.0 MB | TMem: 8041.9 MB
+Clock region placer needed 8.61secs, status: SUCCESS
+----- Clock_Region_Placer_constrainGlobalClock | CPU:    0.7 | HCPU:    8.6 | TclCPU:  743.7 | PACPU: 1270.9 | Wall:    8.7 | TclWall:  430.3 | PAWall:  656.9 | Mem:    0.0 MB | TMem: 8041.9 MB
+----- Constrain_Global/Regional_Clocks         | CPU:    0.1 | HCPU:    8.7 | TclCPU:  743.7 | PACPU: 1271.0 | Wall:    8.8 | TclWall:  430.3 | PAWall:  657.0 | Mem:    0.0 MB | TMem: 8041.9 MB
+----- doClockRegionPlacement                   | CPU:    0.1 | HCPU:   15.1 | TclCPU:  743.7 | PACPU: 1271.0 | Wall:   15.2 | TclWall:  430.3 | PAWall:  657.0 | Mem:    0.0 MB | TMem: 8041.9 MB
+Phase 2.1.1.2 PBP: Clock Region Placement | Checksum: 1c7bee2d1
+----- Checksum: PlaceDB: d84a617d PlaceInfo: ee7483a4 ConstDB: 00000000 ShapeSum: 00fffdb0 
+----- Number of instance placed: 709 fixed: 0----- Number of Shapes: 70443
+
+Time (s): cpu = 00:12:07 ; elapsed = 00:07:10 . Memory (MB): peak = 8041.887 ; gain = 1392.910 ; free physical = 272671 ; free virtual = 281542
+----- PBP:_Clock_Region_Placement              | CPU:    0.0 | HCPU:   23.3 | TclCPU:  743.8 | PACPU: 1271.1 | Wall:   23.4 | TclWall:  430.4 | PAWall:  657.1 | Mem:    0.0 MB | TMem: 8041.9 MB
+
+Phase 2.1.1.3 PBP: Discrete Incremental
+num_nodes: 144052 fixed: 141652 placed: 0 float: 2400 num_site_refined: 0
+Evaluated 2400 moves, moved 97 nodes 
+   Pass 0, moved 97 blocks: maxUtil = 1 targUtil = 1 bigShapeUtil = 0 maxUtilMoveDist = 100
+Evaluated 2400 moves, moved 10 nodes 
+   Pass 1, moved 10 blocks: maxUtil = 1 targUtil = 1 bigShapeUtil = 0 maxUtilMoveDist = 100
+Evaluated 2400 moves, moved 0 nodes 
+Warning: No move was done!
+End macro opt: wl = 4248335, wns  = 2147483647, tns  = 0
+0 non macro blocks moved for a total of 0 times
+interleaving optimization has been applied
+MacroInterleavingOpt Warning: WL increases from 4248335 to 4251048
+End macro opt after interleaving opt: wl = 4251048, wns  = 2147483647, tns  = 0
+PlaceIncremental UtilIsMet? 1
+----- Legalize_Macro_Discrete_PlaceIncremental | CPU:    5.8 | HCPU:    5.8 | TclCPU:  749.6 | PACPU: 1276.9 | Wall:    5.8 | TclWall:  436.2 | PAWall:  662.9 | Mem:    0.0 MB | TMem: 8041.9 MB
+placeIncremental is successful
+blk 0 loc (20050, 4050) oldPartId 6838 oldBinRect ((19600, 3500), (20099, 3999))
+leaf level node found 6698 bb ((198, 40), (201, 45))
+blk 1 loc (14750, 1050) oldPartId 5629 oldBinRect ((14700, 500), (14799, 999))
+leaf level node found 5630 bb ((147, 10), (148, 15))
+blk 2 loc (6150, 14050) oldPartId 3694 oldBinRect ((6000, 14500), (6499, 14999))
+leaf level node found 3693 bb ((60, 140), (65, 145))
+blk 7 loc (6150, 14550) oldPartId 3693 oldBinRect ((6000, 14000), (6499, 14499))
+leaf level node found 3694 bb ((60, 145), (65, 150))
+blk 9 loc (10450, 12050) oldPartId 5668 oldBinRect ((10400, 12500), (10499, 12999))
+leaf level node found 5667 bb ((104, 120), (105, 125))
+blk 10 loc (10450, 12550) oldPartId 5667 oldBinRect ((10400, 12000), (10499, 12499))
+leaf level node found 5668 bb ((104, 125), (105, 130))
+blk 11 loc (10450, 13550) oldPartId 4847 oldBinRect ((10300, 13000), (10499, 13499))
+leaf level node found 4848 bb ((103, 135), (105, 140))
+blk 12 loc (19450, 5050) oldPartId 6696 oldBinRect ((19900, 4500), (20099, 4999))
+leaf level node found 5810 bb ((194, 50), (195, 55))
+blk 14 loc (20050, 13050) oldPartId 6532 oldBinRect ((19900, 12500), (20099, 12999))
+leaf level node found 6594 bb ((196, 130), (201, 135))
+blk 16 loc (13350, 6050) oldPartId 5685 oldBinRect ((13300, 5500), (13399, 5999))
+leaf level node found 5686 bb ((133, 60), (134, 65))
+after clock region and macro placer, moved 1285 blocks to other bins, removed 0 blocks from their own bins
+Phase 2.1.1.3 PBP: Discrete Incremental | Checksum: 19b7d4797
+----- Checksum: PlaceDB: d84a617d PlaceInfo: c232e86a ConstDB: 00000000 ShapeSum: 00fffdb0 
+----- Number of instance placed: 709 fixed: 0----- Number of Shapes: 70443
+
+Time (s): cpu = 00:12:13 ; elapsed = 00:07:16 . Memory (MB): peak = 8041.887 ; gain = 1392.910 ; free physical = 272761 ; free virtual = 281633
+----- PBP:_Discrete_Incremental                | CPU:    0.0 | HCPU:    5.8 | TclCPU:  749.8 | PACPU: 1277.0 | Wall:    5.8 | TclWall:  436.4 | PAWall:  663.0 | Mem:    0.0 MB | TMem: 8041.9 MB
+     Total net WL:  456556737 =  230610040 +  225946697, avg : 854.669467 = 431.699598 + 422.969868
+
+Phase 2.1.1.4 PBP: Compute Congestion
+congestion maps skip 0 nets
+placer congestion maps processed total 534191 nets
+build congestion map time: 6.35u 0.36s 2.81w
+ North_Long cong level = 3 MaxCong = 0.855 Avg Cong =  0.759588 Cong Wind Ratio = 0.00787348 (sliding window) INT_X28Y101 -> INT_X35Y94 (SLR0 -> SLR0)
+ South_Long cong level = 4 MaxCong = 0.766 Avg Cong =  0.738484 Cong Wind Ratio = 0.00358423 (sliding window) INT_X28Y109 -> INT_X43Y94 (SLR0 -> SLR0)
+ East_Long cong level = 2 MaxCong = 0.872 Avg Cong =  0.764667 Cong Wind Ratio = 0.0013468 (sliding window) INT_X13Y190 -> INT_X16Y187 (SLR0 -> SLR0)
+ West_Long cong level = 3 MaxCong = 0.808 Avg Cong =  0.757051 Cong Wind Ratio = 0.00459568 (sliding window) INT_X26Y105 -> INT_X33Y98 (SLR0 -> SLR0)
+ North_Short cong level = 2 MaxCong = 0.776 Avg Cong =  0.7217 Cong Wind Ratio = 0.000320667 (sliding window) INT_X28Y237 -> INT_X31Y234 (SLR0 -> SLR0)
+ South_Short cong level = 2 MaxCong = 0.676 Avg Cong =  0.665143 Cong Wind Ratio = 0.000224467 (sliding window) INT_X28Y230 -> INT_X31Y227 (SLR0 -> SLR0)
+ East_Short cong level = 4 MaxCong = 0.673 Avg Cong =  0.6495 Cong Wind Ratio = 0.00030183 (sliding window) INT_X3Y205 -> INT_X18Y190 (SLR0 -> SLR0)
+ West_Short cong level = 3 MaxCong = 0.872 Avg Cong =  0.679903 Cong Wind Ratio = 0.0118271 (sliding window) INT_X13Y190 -> INT_X20Y183 (SLR0 -> SLR0)
+     Total net WL:  456556737 =  230610040 +  225946697, avg : 854.669467 = 431.699598 + 422.969868
+  1-fanout net WL:   46686780 =   26977375 +   19709405, avg : 257.992175 = 149.077569 + 108.914606
+  2-fanout net WL:   63220589 =   33515130 +   29705459, avg : 422.024853 = 223.728029 + 198.296823
+  3-fanout net WL:   60620225 =   31144489 +   29475736, avg : 718.811215 = 369.299322 + 349.511893
+  4-fanout net WL:   53876048 =   27104356 +   26771692, avg : 1119.85134 = 563.382997 + 556.468343
+  5-fanout net WL:   45388260 =   22744333 +   22643927, avg : 1626.23647 = 814.916983 + 811.319491
+  6-fanout net WL:   34770309 =   17027318 +   17742991, avg : 2191.63624 = 1073.26303 + 1118.37321
+>=7-fanout net WL:  151994526 =   72097039 +   79897487, avg : 5586.59632 = 2649.94446 + 2936.65185
+----- Report_routing_cong                      | CPU:    6.9 | HCPU:    6.9 | TclCPU:  756.7 | PACPU: 1283.9 | Wall:    3.0 | TclWall:  439.4 | PAWall:  666.0 | Mem:   32.0 MB | TMem: 8073.9 MB
+Phase 2.1.1.4 PBP: Compute Congestion | Checksum: 19b7d4797
+----- Checksum: PlaceDB: d84a617d PlaceInfo: c232e86a ConstDB: 00000000 ShapeSum: 00fffdb0 
+----- Number of instance placed: 709 fixed: 0----- Number of Shapes: 70443
+
+Time (s): cpu = 00:12:19 ; elapsed = 00:07:19 . Memory (MB): peak = 8073.902 ; gain = 1424.926 ; free physical = 272957 ; free virtual = 281828
+----- PBP:_Compute_Congestion                  | CPU:    0.0 | HCPU:    6.9 | TclCPU:  756.8 | PACPU: 1284.0 | Wall:    3.0 | TclWall:  439.5 | PAWall:  666.1 | Mem:   32.0 MB | TMem: 8073.9 MB
+
+Phase 2.1.1.5 PBP: Macro Placement
+
+macro_placer_incremental start
+Unplaced 2400 macro blocks, kept 0 placed
+Not Placed: #DSP=1824; #BRAM=576; #URAM=0
+SoftUnplace: #DSP=0; #BRAM=0; #URAM=0
+num_nodes: 144052 fixed: 141652 placed: 0 float: 2400 num_site_refined: 0
+Evaluated 2400 moves, moved 54 nodes 
+   Pass 0, moved 54 blocks: maxUtil = 1 targUtil = 1 bigShapeUtil = 0 maxUtilMoveDist = 100
+Evaluated 2400 moves, moved 3 nodes 
+   Pass 1, moved 3 blocks: maxUtil = 1 targUtil = 1 bigShapeUtil = 0 maxUtilMoveDist = 100
+Evaluated 2400 moves, moved 0 nodes 
+Warning: No move was done!
+End macro opt: wl = 4248319, wns  = 2147483647, tns  = 0
+0 non macro blocks moved for a total of 0 times
+interleaving optimization has been applied
+MacroInterleavingOpt Warning: WL increases from 4248319 to 4251021
+End macro opt after interleaving opt: wl = 4251021, wns  = 2147483647, tns  = 0
+PlaceIncremental UtilIsMet? 1
+----- Legalize_Macro_Discrete_PlaceIncremental | CPU:    5.6 | HCPU:    5.6 | TclCPU:  762.4 | PACPU: 1289.7 | Wall:    5.6 | TclWall:  445.1 | PAWall:  671.8 | Mem:    0.0 MB | TMem: 8073.9 MB
+placeIncremental is successful
+
+commit_macro start
+commit_macro of types:  RAMBFIFO36  spiral: 0
+macro_committed 576 blocks, 0 failed
+commit_macro of types:  DSP48E2  spiral: 0
+macro_committed 1824 blocks, 0 failed
+
+commit_macro end
+----- Commit_Discretes_Incremental             | CPU:   11.7 | HCPU:   11.7 | TclCPU:  774.2 | PACPU: 1301.4 | Wall:   11.7 | TclWall:  456.9 | PAWall:  683.5 | Mem:    0.0 MB | TMem: 8073.9 MB
+----- Incremental_discrete_placer              | CPU:    0.1 | HCPU:   17.4 | TclCPU:  774.2 | PACPU: 1301.4 | Wall:   17.4 | TclWall:  456.9 | PAWall:  683.5 | Mem:    0.0 MB | TMem: 8073.9 MB
+macro_placer_incremental end. success: 1  has_pblock_violation: 0
+----- Macro_Placement                          | CPU:    6.9 | HCPU:   24.3 | TclCPU:  781.0 | PACPU: 1308.3 | Wall:   24.0 | TclWall:  463.4 | PAWall:  690.1 | Mem:    0.0 MB | TMem: 8073.9 MB
+Phase 2.1.1.5 PBP: Macro Placement | Checksum: 6ee3ee5b
+----- Checksum: PlaceDB: 2ce35607 PlaceInfo: 41009aa4 ConstDB: 00000000 ShapeSum: 00fffdb0 
+----- Number of instance placed: 15877 fixed: 0----- Number of Shapes: 70443
+
+Time (s): cpu = 00:12:45 ; elapsed = 00:07:45 . Memory (MB): peak = 8073.902 ; gain = 1424.926 ; free physical = 272875 ; free virtual = 281746
+----- PBP:_Macro_Placement                     | CPU:    0.0 | HCPU:   24.3 | TclCPU:  782.7 | PACPU: 1310.0 | Wall:   24.0 | TclWall:  465.1 | PAWall:  691.8 | Mem:    0.0 MB | TMem: 8073.9 MB
+TP: Reached timing update at 2023-07-07 11:26:29
+
+Phase 2.1.1.6 PBP: Add part constraints
+HAPLFVPPlacer::addPartConstraints: 
+part 1 numInternal 310082 numExternal 6951 (44.6097) ratio = 30.3312 isGood 1
+part 2 numInternal 217158 numExternal 6951 (31.2413) ratio = 25.2215 isGood 1
+skipping lutram with util 0
+skipping BRAMs with util 0.966667
+skipping DSPs with util 0.911404
+there are 290583 blocks
+Scaled bin rect: ((0, 0), (21499, 14999))
+RPM bin rect: ((48, 2), (3816, 308))   1
+Unscaled bin rect: ((0, 0), (214, 149))   1
+Tile rect: ((53, 156), (616, 309))   1
+Consistent Tile rect: ((53, 156), (616, 309))   1
+Partitioning: added area constraint ((48, 2), (3816, 308)) for 329588 instances
+part: 3 is not good post move, skipping
+skipping lutram with util 0
+skipping BRAMs with util 0.633333
+skipping DSPs with util 0.688596
+there are 203115 blocks
+Scaled bin rect: ((0, 15000), (21499, 29999))
+RPM bin rect: ((48, 312), (3816, 619))   1
+Unscaled bin rect: ((0, 150), (214, 299))   1
+Tile rect: ((53, 1), (616, 154))   1
+Consistent Tile rect: ((53, 1), (616, 154))   1
+Partitioning: added area constraint ((48, 312), (3816, 619)) for 229167 instances
+Phase 2.1.1.6 PBP: Add part constraints | Checksum: 6ee3ee5b
+----- Checksum: PlaceDB: 2ce35607 PlaceInfo: 41009aa4 ConstDB: 00000000 ShapeSum: 00fffdb0 
+----- Number of instance placed: 15877 fixed: 0----- Number of Shapes: 70443
+
+Time (s): cpu = 00:12:49 ; elapsed = 00:07:50 . Memory (MB): peak = 8073.902 ; gain = 1424.926 ; free physical = 273029 ; free virtual = 281901
+----- PBP:_Add_part_constraints                | CPU:    2.7 | HCPU:    2.7 | TclCPU:  787.2 | PACPU: 1314.4 | Wall:    2.7 | TclWall:  469.6 | PAWall:  696.2 | Mem:    0.0 MB | TMem: 8073.9 MB
+Phase 2.1.1 Partition Driven Placement | Checksum: 6ee3ee5b
+----- Checksum: PlaceDB: 2ce35607 PlaceInfo: 41009aa4 ConstDB: 00000000 ShapeSum: 00fffdb0 
+----- Number of instance placed: 15877 fixed: 0----- Number of Shapes: 70443
+
+Time (s): cpu = 00:12:51 ; elapsed = 00:07:52 . Memory (MB): peak = 8073.902 ; gain = 1424.926 ; free physical = 273504 ; free virtual = 282375
+----- Partition_Driven_Placement               | CPU:    0.6 | HCPU:  586.7 | TclCPU:  789.2 | PACPU: 1316.5 | Wall:  268.8 | TclWall:  471.7 | PAWall:  698.3 | Mem:  833.7 MB | TMem: 8073.9 MB
+HMPlacerIters: done runVPPlacer (success = 1)
+ILRPLACE_NOC: Start
+ILRPLACE_NOC: No NOC traffic, constraints or results
+ILRPLACE_NOC: End
+Phase 2.1 Floorplanning | Checksum: 6ee3ee5b
+----- Checksum: PlaceDB: 2ce35607 PlaceInfo: 41009aa4 ConstDB: 00000000 ShapeSum: 00fffdb0 
+----- Number of instance placed: 15877 fixed: 0----- Number of Shapes: 70443
+
+Time (s): cpu = 00:12:53 ; elapsed = 00:07:53 . Memory (MB): peak = 8073.902 ; gain = 1424.926 ; free physical = 273955 ; free virtual = 282828
+----- Floorplanning                            | CPU:    2.0 | HCPU:  590.4 | TclCPU:  791.0 | PACPU: 1318.2 | Wall:  272.5 | TclWall:  473.4 | PAWall:  700.0 | Mem:  842.6 MB | TMem: 8073.9 MB
+
+Phase 2.2 Update Timing before SLR Path Opt
+Phase 2.2 Update Timing before SLR Path Opt | Checksum: 6ee3ee5b
+----- Checksum: PlaceDB: 2ce35607 PlaceInfo: 41009aa4 ConstDB: 00000000 ShapeSum: 00fffdb0 
+----- Number of instance placed: 15877 fixed: 0----- Number of Shapes: 70443
+
+Time (s): cpu = 00:12:54 ; elapsed = 00:07:55 . Memory (MB): peak = 8073.902 ; gain = 1424.926 ; free physical = 273947 ; free virtual = 282819
+----- Update_Timing_before_SLR_Path_Opt        | CPU:    0.0 | HCPU:    0.0 | TclCPU:  792.5 | PACPU: 1319.8 | Wall:    0.0 | TclWall:  474.9 | PAWall:  701.6 | Mem:    0.0 MB | TMem: 8073.9 MB
+
+Phase 2.3 Post-Processing in Floorplanning
+do_bigblock_placement: post_floorplan
+Phase 2.3 Post-Processing in Floorplanning | Checksum: 6ee3ee5b
+----- Checksum: PlaceDB: 2ce35607 PlaceInfo: 41009aa4 ConstDB: 00000000 ShapeSum: 00fffdb0 
+----- Number of instance placed: 15877 fixed: 0----- Number of Shapes: 70443
+
+Time (s): cpu = 00:12:56 ; elapsed = 00:07:57 . Memory (MB): peak = 8073.902 ; gain = 1424.926 ; free physical = 273906 ; free virtual = 282779
+----- Post-Processing_in_Floorplanning         | CPU:    0.2 | HCPU:    0.2 | TclCPU:  794.3 | PACPU: 1321.6 | Wall:    0.2 | TclWall:  476.7 | PAWall:  703.4 | Mem:    0.0 MB | TMem: 8073.9 MB
+Unplaced 2400 macro blocks, kept 0 placed
+Not Placed: #DSP=0; #BRAM=0; #URAM=0
+SoftUnplace: #DSP=0; #BRAM=0; #URAM=0
+INFO: [Place 30-2096]  
+INFO: [Place 30-950] Reading placement information from file: sample.pl.
+INFO: [Place 30-949] Number of instances to place 2400.
+INFO: [#UNDEF] Number of sites successfully placed '2400'.
+INFO: [Place 30-948] Number of instances successfully placed 2400.
+total ILR runtime 0u 0s 0w seconds
+Aleg2 Cum Run Time: 0
+Macro Place Total Run Time : 0.17
+Phase 2 Global Placement | Checksum: f0bbb5e6
+----- Checksum: PlaceDB: aebb1d92 PlaceInfo: 41009aa4 ConstDB: 00000000 ShapeSum: 00fffdb0 
+----- Number of instance placed: 709 fixed: 15168----- Number of Shapes: 70443
+
+Time (s): cpu = 00:13:19 ; elapsed = 00:08:22 . Memory (MB): peak = 8086.293 ; gain = 1437.316 ; free physical = 274494 ; free virtual = 283367
+----- Global_Placement                         | CPU:   22.1 | HCPU:  618.0 | TclCPU:  817.8 | PACPU: 1345.1 | Wall:  301.9 | TclWall:  502.0 | PAWall:  728.7 | Mem:  855.0 MB | TMem: 8086.3 MB
+ERROR: [Place 30-99] Placer failed with error: 'Exit after global placer'
+Please review all ERROR, CRITICAL WARNING, and WARNING messages during placement to understand the cause for failure.
+Restoring Place and Area Constraint DBs...
+HAPLFFlowInitializer: restoring netlist...
+
+Phase 3 Add Constraints
+Phase 3 Add Constraints | Checksum: 42009854
+----- Checksum: PlaceDB: 00000000 PlaceInfo: 41009aa4 ConstDB: 00000000 ShapeSum: 00fffdb0 
+----- Number of instance placed: 0 fixed: 0----- Number of Shapes: 70443
+
+Time (s): cpu = 00:13:20 ; elapsed = 00:08:22 . Memory (MB): peak = 8086.293 ; gain = 1437.316 ; free physical = 274470 ; free virtual = 283343
+----- Add_Constraints                          | CPU:    0.0 | HCPU:    0.0 | TclCPU:  818.2 | PACPU: 1345.5 | Wall:    0.0 | TclWall:  502.4 | PAWall:  729.1 | Mem:    0.0 MB | TMem: 8086.3 MB
+
+Phase 4 Add Constraints new method
+
+Phase 4.1 Build CellView Core
+Phase 4.1 Build CellView Core | Checksum: 42009854
+----- Checksum: PlaceDB: 00000000 PlaceInfo: 41009aa4 ConstDB: 00000000 ShapeSum: 00fffdb0 
+----- Number of instance placed: 0 fixed: 0----- Number of Shapes: 70443
+
+Time (s): cpu = 00:13:20 ; elapsed = 00:08:23 . Memory (MB): peak = 8086.293 ; gain = 1437.316 ; free physical = 274408 ; free virtual = 283281
+----- Build_CellView_Core                      | CPU:    0.0 | HCPU:    0.0 | TclCPU:  818.3 | PACPU: 1345.6 | Wall:    0.0 | TclWall:  502.5 | PAWall:  729.2 | Mem:    0.0 MB | TMem: 8086.3 MB
+
+Phase 4.2 Add User PBlocks
+Phase 4.2 Add User PBlocks | Checksum: 42009854
+----- Checksum: PlaceDB: 00000000 PlaceInfo: 41009aa4 ConstDB: 00000000 ShapeSum: 00fffdb0 
+----- Number of instance placed: 0 fixed: 0----- Number of Shapes: 70443
+
+Time (s): cpu = 00:13:20 ; elapsed = 00:08:23 . Memory (MB): peak = 8086.293 ; gain = 1437.316 ; free physical = 274373 ; free virtual = 283247
+----- Add_User_PBlocks                         | CPU:    0.0 | HCPU:    0.0 | TclCPU:  818.4 | PACPU: 1345.7 | Wall:    0.0 | TclWall:  502.6 | PAWall:  729.3 | Mem:    0.0 MB | TMem: 8086.3 MB
+
+Phase 4.3 Apply User PBlocks
+Phase 4.3 Apply User PBlocks | Checksum: 42009854
+----- Checksum: PlaceDB: 00000000 PlaceInfo: 41009aa4 ConstDB: 00000000 ShapeSum: 00fffdb0 
+----- Number of instance placed: 0 fixed: 0----- Number of Shapes: 70443
+
+Time (s): cpu = 00:13:20 ; elapsed = 00:08:23 . Memory (MB): peak = 8086.293 ; gain = 1437.316 ; free physical = 274353 ; free virtual = 283226
+----- Apply_User_PBlocks                       | CPU:    0.0 | HCPU:    0.0 | TclCPU:  818.5 | PACPU: 1345.8 | Wall:    0.0 | TclWall:  502.7 | PAWall:  729.4 | Mem:    0.0 MB | TMem: 8086.3 MB
+
+Phase 4.4 Add terminal Constraints
+Phase 4.4 Add terminal Constraints | Checksum: 42009854
+----- Checksum: PlaceDB: 00000000 PlaceInfo: 41009aa4 ConstDB: 00000000 ShapeSum: 00fffdb0 
+----- Number of instance placed: 0 fixed: 0----- Number of Shapes: 70443
+
+Time (s): cpu = 00:13:20 ; elapsed = 00:08:23 . Memory (MB): peak = 8086.293 ; gain = 1437.316 ; free physical = 274451 ; free virtual = 283324
+----- Add_terminal_Constraints                 | CPU:    0.0 | HCPU:    0.0 | TclCPU:  818.6 | PACPU: 1345.9 | Wall:    0.0 | TclWall:  502.9 | PAWall:  729.5 | Mem:    0.0 MB | TMem: 8086.3 MB
+Phase 4 Add Constraints new method | Checksum: 42009854
+----- Checksum: PlaceDB: 00000000 PlaceInfo: 41009aa4 ConstDB: 00000000 ShapeSum: 00fffdb0 
+----- Number of instance placed: 0 fixed: 0----- Number of Shapes: 70443
+
+Time (s): cpu = 00:13:20 ; elapsed = 00:08:23 . Memory (MB): peak = 8086.293 ; gain = 1437.316 ; free physical = 274403 ; free virtual = 283276
+----- Add_Constraints_new_method               | CPU:    0.0 | HCPU:    0.4 | TclCPU:  818.7 | PACPU: 1346.0 | Wall:    0.4 | TclWall:  502.9 | PAWall:  729.6 | Mem:    0.0 MB | TMem: 8086.3 MB
+                         Add Constraints | CPU:   0.00 | WALL:  0.00 | Mem:      0.0 | Called  2 times
+              Add Constraints new method | CPU:   0.43 | WALL:  0.43 | Mem:      0.0 | Called  2 times
+                        Add User PBlocks | CPU:   0.03 | WALL:  0.01 | Mem:      0.0 | Called  2 times
+                Add terminal Constraints | CPU:   0.00 | WALL:  0.00 | Mem:      0.0 | Called  2 times
+                    Analyze Clock Placer | CPU:   7.20 | WALL:  1.54 | Mem:     45.4 | Called  1 times
+                      Apply User PBlocks | CPU:   0.00 | WALL:  0.00 | Mem:      0.0 | Called  2 times
+                     Build CellView Core | CPU:   0.00 | WALL:  0.01 | Mem:      0.0 | Called  2 times
+                  Build LUTRAMMUX Shapes | CPU:   0.00 | WALL:  0.00 | Mem:      0.0 | Called  1 times
+                            Build Macros | CPU:   5.53 | WALL:  5.30 | Mem:      0.0 | Called  1 times
+                           Build Netlist | CPU:  16.14 | WALL: 16.25 | Mem:    156.0 | Called  1 times
+                         Build PlaceInfo | CPU:   3.50 | WALL:  3.27 | Mem:     15.3 | Called  1 times
+               Build Placer Device Model | CPU:   4.00 | WALL:  0.78 | Mem:     32.0 | Called  1 times
+              Build Placer Netlist Model | CPU:  25.61 | WALL: 25.25 | Mem:    430.3 | Called  1 times
+ Build Super Logic Region (SLR) Database | CPU:   0.04 | WALL:  0.06 | Mem:      0.0 | Called  1 times
+        CascadeElementConstraintsChecker | CPU:   0.07 | WALL:  0.01 | Mem:      0.0 | Called  1 times
+                         Check Design MT | CPU:  16.49 | WALL:  4.49 | Mem:     69.4 | Called  1 times
+       CheckerForMandatoryPrePlacedCells | CPU:   0.22 | WALL:  0.05 | Mem:      0.0 | Called  1 times
+        CheckerForUnsupportedConstraints | CPU:   1.99 | WALL:  0.99 | Mem:      0.0 | Called  1 times
+                         Clk Load Placer | CPU:   1.74 | WALL:  1.74 | Mem:      0.0 | Called  1 times
+                       Clk Random Placer | CPU:   0.02 | WALL:  0.02 | Mem:      0.0 | Called  1 times
+Clock Region Placer constrainGlobalClocks | CPU:   8.61 | WALL:  8.73 | Mem:      0.0 | Called  1 times
+  Clock Region Placer constrainGlobalInt | CPU:   7.89 | WALL:  8.01 | Mem:      0.0 | Called  1 times
+      Clock Region Placer constrainLoads | CPU:   0.00 | WALL:  0.00 | Mem:      0.0 | Called  1 times
+      Clock Region Placer doPartAndTrack | CPU:   3.09 | WALL:  3.18 | Mem:      0.0 | Called  1 times
+             ClockRegionPlacementChecker | CPU:  14.40 | WALL:  3.45 | Mem:     45.4 | Called  1 times
+      Clockplacer initial legality check | CPU:   0.13 | WALL:  0.14 | Mem:      0.0 | Called  1 times
+                    Close Imported Sites | CPU:   0.01 | WALL:  0.01 | Mem:      0.0 | Called  1 times
+        Collect PrePlace Fixed Instances | CPU:   0.04 | WALL:  0.04 | Mem:      0.0 | Called  1 times
+            Commit Discretes Incremental | CPU:  11.72 | WALL: 11.73 | Mem:      0.0 | Called  1 times
+                     Commit IO Placement | CPU:   0.07 | WALL:  0.07 | Mem:      0.0 | Called  1 times
+                   Constrain BUFCE Loads | CPU:   1.25 | WALL:  0.24 | Mem:     24.0 | Called  1 times
+                 Constrain Clocks/Macros | CPU:   1.05 | WALL:  1.04 | Mem:      0.0 | Called  1 times
+        Constrain Global/Regional Clocks | CPU:   8.71 | WALL:  8.83 | Mem:      0.0 | Called  1 times
+             Constructing HAPIClkRuleMgr | CPU:  11.49 | WALL: 13.33 | Mem:      0.0 | Called  1 times
+                           ControlSet DB | CPU:   1.56 | WALL:  1.56 | Mem:      0.0 | Called  2 times
+                   Create Discrete Graph | CPU:   0.20 | WALL:  0.19 | Mem:      0.0 | Called  1 times
+                       Create SRL Shapes | CPU:   1.24 | WALL:  1.26 | Mem:      0.0 | Called  1 times
+                              DSPChecker | CPU:   2.06 | WALL:  0.38 | Mem:      8.0 | Called  1 times
+                   DanglingIBUFDSChecker | CPU:   0.30 | WALL:  0.05 | Mem:      0.0 | Called  1 times
+                 DesLockPlacementChecker | CPU:   0.00 | WALL:  0.00 | Mem:      0.0 | Called  1 times
+                         DisallowedInsts | CPU:   0.27 | WALL:  0.06 | Mem:      0.0 | Called  1 times
+              Find Flops Fixed to Laguna | CPU:   0.10 | WALL:  0.09 | Mem:      0.0 | Called  1 times
+                              FixIDCReqs | CPU:   0.87 | WALL:  0.82 | Mem:      0.0 | Called  1 times
+                  FloatingOSERDESChecker | CPU:   0.34 | WALL:  0.05 | Mem:      0.0 | Called  1 times
+                           Floorplanning | CPU:  590.37 | WALL: 272.49 | Mem:    842.6 | Called  1 times
+                               GTChecker | CPU:   0.35 | WALL:  0.08 | Mem:      0.0 | Called  1 times
+                        Global Placement | CPU:  618.05 | WALL: 301.95 | Mem:    855.0 | Called  1 times
+                     Greedy IO Placement | CPU:  133.91 | WALL: 132.61 | Mem:    120.0 | Called  1 times
+                 HMPlacer Before NextGen | CPU:   0.00 | WALL:  0.01 | Mem:      0.0 | Called  1 times
+                      HdioRelatedChecker | CPU:   2.15 | WALL:  0.45 | Mem:      8.0 | Called  1 times
+                             ILP Level 2 | CPU:   3.80 | WALL:  3.80 | Mem:      0.0 | Called  1 times
+                    IO / Clock Placement | CPU:  143.27 | WALL: 139.78 | Mem:    152.0 | Called  1 times
+IO Placement/ Clock Placement/ Build Placer Device | CPU:  165.07 | WALL: 163.58 | Mem:    152.0 | Called  1 times
+                               IO Placer | CPU:  140.43 | WALL: 136.92 | Mem:    152.0 | Called  1 times
+                     IO and Clk Clean Up | CPU:   2.12 | WALL:  2.08 | Mem:      0.0 | Called  1 times
+                IOBufferPlacementChecker | CPU:   4.39 | WALL:  0.85 | Mem:     16.0 | Called  1 times
+                  IOLockPlacementChecker | CPU:   2.69 | WALL:  0.49 | Mem:      8.0 | Called  1 times
+               IOStdCompatabilityChecker | CPU:   0.01 | WALL:  0.01 | Mem:      0.0 | Called  1 times
+        Implementation Feasibility check | CPU:  16.51 | WALL:  4.50 | Mem:     69.4 | Called  1 times
+Implementation Feasibility check On IDelay | CPU:   1.20 | WALL:  1.20 | Mem:      0.0 | Called  1 times
+         Incremental createDiscreteGraph | CPU:   0.20 | WALL:  0.19 | Mem:      0.0 | Called  1 times
+             Incremental discrete placer | CPU:  17.40 | WALL: 17.41 | Mem:      0.0 | Called  1 times
+             Init Sites With FF ID: Init | CPU:   0.02 | WALL:  0.02 | Mem:      0.0 | Called  1 times
+                       LUTRAM Clustering | CPU:   0.20 | WALL:  0.18 | Mem:      0.0 | Called  1 times
+                   Laguna PBlock Checker | CPU:   0.02 | WALL:  0.00 | Mem:      0.0 | Called  1 times
+Legalize Macro Discrete PlaceIncremental | CPU:  19.30 | WALL: 19.32 | Mem:      0.0 | Called  3 times
+                         Macro Placement | CPU:  24.28 | WALL: 23.97 | Mem:      0.0 | Called  1 times
+                       Make Area Swapper | CPU:   0.00 | WALL:  0.00 | Mem:      0.0 | Called  1 times
+                          Make Bin Plane | CPU:   0.04 | WALL:  0.05 | Mem:      0.0 | Called  1 times
+                    Make Capacity Meshes | CPU:   3.87 | WALL:  0.75 | Mem:     32.0 | Called  1 times
+                 Make Clock Routing Grid | CPU:   0.00 | WALL:  0.00 | Mem:      0.0 | Called  1 times
+                           Make Commiter | CPU:   0.00 | WALL:  0.00 | Mem:      0.0 | Called  1 times
+                     Make Congestion Map | CPU:   1.99 | WALL:  1.70 | Mem:    259.0 | Called  1 times
+                 Make Empty Occup Meshes | CPU:   0.00 | WALL:  0.00 | Mem:      0.0 | Called  1 times
+                             Make Others | CPU:   0.01 | WALL:  0.01 | Mem:      0.0 | Called  1 times
+               Make Placer Netlist et al | CPU:  21.70 | WALL: 21.29 | Mem:    430.3 | Called  1 times
+                                 Make QP | CPU:   0.64 | WALL:  0.64 | Mem:      0.0 | Called  1 times
+                           Make SLR Info | CPU:   0.00 | WALL:  0.00 | Mem:      0.0 | Called  1 times
+                      Make Timing Helper | CPU:   0.00 | WALL:  0.00 | Mem:      0.0 | Called  1 times
+                  Make TypeAreaLegalizer | CPU:   0.00 | WALL:  0.00 | Mem:      0.0 | Called  2 times
+            Mandatory Logic Optimization | CPU:   1.36 | WALL:  1.85 | Mem:      0.0 | Called  1 times
+       Mark Clock Net without Clock Load | CPU:   0.93 | WALL:  0.98 | Mem:      0.0 | Called  1 times
+                        Multi-driver SRL | CPU:   0.30 | WALL:  0.07 | Mem:      0.0 | Called  1 times
+               OverlappingPBlocksChecker | CPU:   0.00 | WALL:  0.00 | Mem:      0.0 | Called  1 times
+               PBP: Add part constraints | CPU:   2.70 | WALL:  2.72 | Mem:      0.0 | Called  1 times
+             PBP: Clock Region Placement | CPU:  23.33 | WALL: 23.44 | Mem:      0.0 | Called  1 times
+                 PBP: Compute Congestion | CPU:   6.90 | WALL:  3.01 | Mem:     32.0 | Called  1 times
+               PBP: Discrete Incremental | CPU:   5.81 | WALL:  5.82 | Mem:      0.0 | Called  1 times
+                    PBP: Macro Placement | CPU:  24.28 | WALL: 23.97 | Mem:      0.0 | Called  1 times
+         PBP: Partition Driven Placement | CPU:  519.23 | WALL: 205.39 | Mem:    801.6 | Called  1 times
+        ParallelInitDesign-Budgets-part2 | CPU:   0.00 | WALL:  0.00 | Mem:      0.0 | Called  1 times
+ ParallelInitDesign-Clock_TMGModel-part1 | CPU:   1.33 | WALL:  1.32 | Mem:      0.0 | Called  1 times
+ParallelPlaceIOClockAndInit - clockAnalysis | CPU:   8.49 | WALL:  1.80 | Mem:     69.4 | Called  1 times
+ParallelPlaceIOClockAndInit - placeIOClock | CPU:  143.27 | WALL: 139.78 | Mem:    152.0 | Called  1 times
+ParallelPlaceIOClockAndInit - prePlaceDrc | CPU:  16.57 | WALL:  4.52 | Mem:     69.4 | Called  1 times
+          ParallelPlaceIOClockAndInitTop | CPU:  165.07 | WALL: 163.58 | Mem:    152.0 | Called  1 times
+ParallelPlaceIOClockAndInitTop - BuildMacros | CPU:   5.53 | WALL:  5.30 | Mem:      0.0 | Called  1 times
+ParallelPlaceIOClockAndInitTop - BuildTimGraph | CPU:   4.00 | WALL:  0.78 | Mem:     32.0 | Called  1 times
+              Partition Driven Placement | CPU:  586.71 | WALL: 268.83 | Mem:    833.7 | Called  1 times
+                Place Init Before IO-CLK | CPU:   2.06 | WALL:  2.85 | Mem:      0.0 | Called  1 times
+                       Place Init Design | CPU:  25.61 | WALL: 25.25 | Mem:    430.3 | Called  1 times
+                       Place Init Device | CPU:   4.00 | WALL:  0.78 | Mem:     32.0 | Called  1 times
+                 Place Init Pre-Parallel | CPU:   2.06 | WALL:  2.85 | Mem:      0.0 | Called  1 times
+                   Place PS Driven BUFGs | CPU:   0.00 | WALL:  0.00 | Mem:      0.0 | Called  1 times
+                 Place SliceDriven BUFGs | CPU:   6.28 | WALL:  6.28 | Mem:      0.0 | Called  1 times
+Place Unplaced Partially Placed New Shapes | CPU:   0.04 | WALL:  0.04 | Mem:      0.0 | Called  1 times
+                   Placer Initialization | CPU:  197.93 | WALL: 198.23 | Mem:    582.3 | Called  1 times
+   Placer Initialization Netlist Sorting | CPU:   0.11 | WALL:  0.15 | Mem:      0.0 | Called  1 times
+        Post-Processing in Floorplanning | CPU:   0.18 | WALL:  0.17 | Mem:      0.0 | Called  1 times
+                         Pre-Place Cells | CPU:   1.37 | WALL:  1.80 | Mem:      0.0 | Called  1 times
+                     Process FF Clusters | CPU:   0.68 | WALL:  0.43 | Mem:      0.0 | Called  1 times
+               Process LUTRAM Flop Insts | CPU:   0.00 | WALL:  0.00 | Mem:      0.0 | Called  1 times
+                         QP Make Problem | CPU:   0.64 | WALL:  0.64 | Mem:      0.0 | Called  1 times
+                  Rebuild Generic Shapes | CPU:   0.14 | WALL:  0.14 | Mem:      0.0 | Called  1 times
+                     Redo BUFG Placement | CPU:   6.28 | WALL:  6.28 | Mem:      0.0 | Called  1 times
+                     Report routing cong | CPU:   6.90 | WALL:  3.01 | Mem:     32.0 | Called  1 times
+                  Reset Flow Initializer | CPU:   0.11 | WALL:  0.26 | Mem:      0.0 | Called  1 times
+              ResourceUtilizationChecker | CPU:  11.97 | WALL:  2.74 | Mem:     45.4 | Called  1 times
+            Routing Based Site Exclusion | CPU:   0.45 | WALL:  0.73 | Mem:      0.0 | Called  1 times
+           ShapePlacementValidityChecker | CPU:   9.81 | WALL:  2.58 | Mem:     29.4 | Called  1 times
+               Shapebuilder Build Shapes | CPU:   3.61 | WALL:  3.41 | Mem:      0.0 | Called  1 times
+       ShapesExcludeCompatibilityChecker | CPU:   0.07 | WALL:  0.03 | Mem:      0.0 | Called  1 times
+                 TDM Controller Creation | CPU:   0.00 | WALL:  0.00 | Mem:      0.0 | Called  1 times
+       Update Timing before SLR Path Opt | CPU:   0.00 | WALL:  0.00 | Mem:      0.0 | Called  1 times
+      UpdateTimingAfterPlaceIOClkAndInit | CPU:   0.00 | WALL:  0.00 | Mem:      0.0 | Called  1 times
+                      V7IOVoltageChecker | CPU:   0.00 | WALL:  0.00 | Mem:      0.0 | Called  1 times
+                  doClockRegionPlacement | CPU:  15.12 | WALL: 15.23 | Mem:      0.0 | Called  1 times
+                    updateTiming in Init | CPU:   0.00 | WALL:  0.00 | Mem:      0.0 | Called  1 times
+TP: Placer ends at 2023-07-07 11:27:07
+Ending Placer Task | Checksum: 00fffdb0
+----- Checksum: PlaceDB: 00000000 ConstDB: 00000000 ShapeSum: 00fffdb0 
+----- Number of instance placed: 0 fixed: 0----- Number of Shapes: 70443
+
+Time (s): cpu = 00:13:20 ; elapsed = 00:08:23 . Memory (MB): peak = 8086.293 ; gain = 1437.316 ; free physical = 274466 ; free virtual = 283340
+----- Placer                                   | CPU:    0.3 | HCPU:  818.8 | TclCPU:  818.8 | PACPU: 1346.0 | Wall:  503.0 | TclWall:  503.0 | PAWall:  729.6 | Mem: 1437.3 MB | TMem: 8086.3 MB
+Aleg2 Cum Run Time: 0
+
+ Congestion history
+Step              |  WL          |  WS(%)   |  MaxLevel  |  NL  NC      |  SL  SC      |  EL  EC      |  WL  WC      |  ShNL  ShNC    |  ShSL  ShSC    |  ShEL  ShEC    |  ShWL  ShWC
+----------------  -  ----------  -  ------  -  --------  -  --  ------  -  --  ------  -  --  ------  -  --  ------  -  ----  ------  -  ----  ------  -  ----  ------  -  ----  ------
+After PartPlacer  |  -1.000e+00  |  -100.0  |  0         |  -1  -1.000  |  -1  -1.000  |  -1  -1.000  |  -1  -1.000  |  -1    -1.000  |  -1    -1.000  |  -1    -1.000  |  -1    -1.000
+
+Aleg2 Cum Run Time: 0
+PLInfo DTOR :: NOptUndos = 0; NumSpirals = 0
+INFO: [Common 17-83] Releasing license: Implementation
+----- Place_Design_tcl                         | CPU: 1267.8 | HCPU: 1267.8 | TclCPU: 1267.8 | PACPU: 1346.3 | Wall:  643.4 | TclWall:  643.4 | PAWall:  729.9 | Mem: 3998.1 MB | TMem: 8086.3 MB
+21 Infos, 0 Warnings, 0 Critical Warnings and 2 Errors encountered.
+place_design failed
+ERROR: [Common 17-69] Command failed: Placer could not place all instances
