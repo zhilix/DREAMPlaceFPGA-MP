@@ -88,7 +88,7 @@ pip install -r requirements.txt
 
 > You can also use a [python virtual environment](https://docs.python.org/3/library/venv.html) to install all the required packages to run ``DREAMPlaceFPGA_mlcad``
 
-### <a name="build_dreamplacefpga"></a>To Build 
+### <a name="build_dreamplacefpga_mlcad"></a>To Build 
 
 At the root directory, 
 ```
@@ -140,10 +140,10 @@ source <path_to_root_dir>/run_mlcad_design.sh <path_to_root_dir> <gpu_flag>
 ```
 > Run from ***~/Downloads/DREAMPlaceFPGA_mlcad/benchmarks/mlcad2023_benchmarks/Design_181*** directory
 
-For example:
+For example, to run on GPU: 
 > ***~/Downloads/DREAMPlaceFPGA_mlcad:*** *source ~/Downloads/DREAMPlaceFPGA_mlcad/run_mlcad_design.sh ~/Downloads/DREAMPlaceFPGA_mlcad 1*
 
-For Docker usage, please go to [DOCKER_README.md](DOCKER_README.md)
+For Docker usage, please go to [DOCKER_README.md](DOCKER_README.md).
 
 ## <a name="copyright"></a>Copyright
 
