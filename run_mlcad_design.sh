@@ -31,6 +31,11 @@ if [ -f $instance_file ]; then
     sed -i 's/BRAM_CASCADE /BRAM_CASCADE_2 /' $instance_file
 fi
 
+region_file=$(pwd)/design.regions
+if [ -f $region_file ]; then
+    sed -i 's+/DSP_ALU_INST++' $region_file
+fi
+
 #create design.aux file
 if [ -e $(pwd)/design.aux ]; then
     rm $(pwd)/design.aux

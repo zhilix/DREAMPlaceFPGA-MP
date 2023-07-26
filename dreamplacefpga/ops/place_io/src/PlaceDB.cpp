@@ -492,6 +492,7 @@ void PlaceDB::add_region_box(int xl, int yl, int xh, int yh)
 {
     region_box2xl.emplace_back(xl);
     region_box2yl.emplace_back(yl);
+    // low close and high open, [xl, xh) x [yl, yh)
     region_box2xh.emplace_back(xh);
     region_box2yh.emplace_back(yh);
 
@@ -616,6 +617,9 @@ void PlaceDB::bookshelf_end() {
         flat_constraint2node.insert(flat_constraint2node.end(), sub.begin(), sub.end());
         flat_constraint2node_start.emplace_back(flat_constraint2node.size());
     }
+
+    flat_constraint2box_start.emplace_back(flat_constraint2box.size());
+    flat_cascade_inst2node_start.emplace_back(flat_cascade_inst2node.size());
 }
 
 bool PlaceDB::write(std::string const& filename) const {
