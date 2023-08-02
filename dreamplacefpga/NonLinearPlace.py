@@ -706,10 +706,70 @@ class NonLinearPlaceFPGA (BasicPlaceFPGA):
                     self.data_collections.pin_offset_y.copy_(
                         self.data_collections.original_pin_offset_y)
         else: 
+            for global_place_params in params.global_place_stages:
+                if params.gpu: 
+                    torch.cuda.synchronize()
+                tt = time.time()
+                # construct model and optimizer 
+                density_weight = 0.0
+                # construct placement model 
+                model = PlaceObjFPGA(density_weight, params, placedb, self.data_collections, self.op_collections, global_place_params).to(self.data_collections.pos[0].device)
+                print("Model constructed in %g ms"%((time.time()-tt)*1000))
+
+            place_file=params.place_sol
+            #logging.info("Reading %s" % (place_file))
+            with open (place_file,  "r") as f:
+                for line in f:
+                    tokens = line.split()
+                    if len(tokens) > 0:
+                        nodeId = placedb.node_name2id_map[tokens[0]]
+                        self.data_collections.node_x[nodeId].data.fill_(float(tokens[1]))
+                        self.data_collections.node_y[nodeId].data.fill_(float(tokens[2]))
+                        self.data_collections.node_z[nodeId].data.fill_(int(tokens[3]))
+            self.pos[0][:placedb.num_physical_nodes].data.copy_(self.data_collections.node_x)
+            self.pos[0][placedb.num_nodes:placedb.num_nodes+placedb.num_physical_nodes].data.copy_(self.data_collections.node_y)
+            logging.info("Read Placement solution from %s" % (place_file))
+
+            pos = self.pos[0]
+
+            route_utilization_map = model.op_collections.route_utilization_map_op(pos)
+            pin_utilization_map = model.op_collections.pin_utilization_map_op(pos)
+
+            # save matrix for plotting
+            route_utilization_map = route_utilization_map.data.cpu().numpy().T
+            pin_utilization_map = pin_utilization_map.data.cpu().numpy().T
+
+            # np.savetxt("route_utilization_map.txt", route_utilization_map, delimiter=",")
+            # np.savetxt("pin_utilization_map.txt", pin_utilization_map, delimiter=",")
+
+            # plot heatmap for route_utilization_map and pin_utilization_map
+            figure1 = plt.figure()
+
+            plt.imshow(route_utilization_map)
+            plt.xlabel("X")
+            plt.ylabel("Y")
+            plt.title("Route Utilization Map")
+            # reverse the y axis
+            plt.gca().invert_yaxis()
+            plt.savefig("route_utilization_map.png")
+
+            figure2 = plt.figure()
+            plt.imshow(pin_utilization_map)
+            plt.xlabel("X")
+            plt.ylabel("Y")
+            plt.gca().invert_yaxis()
+            plt.title("Pin Utilization Map")
+            plt.savefig("pin_utilization_map.png")
+            
+
+            pdb.set_trace()
+
             cur_metric = EvalMetricsFPGA(iteration)
             all_metrics.append(cur_metric)
             cur_metric.evaluate(placedb, {"hpwl" : self.op_collections.hpwl_op}, self.pos[0])
             logging.info(cur_metric)
+
+
 
         # dump global placement solution for legalization 
         if params.dump_global_place_solution_flag: 

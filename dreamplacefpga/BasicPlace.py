@@ -27,6 +27,7 @@ import dreamplacefpga.ops.precondWL.precondWL as precondWL
 import dreamplacefpga.ops.demandMap.demandMap as demandMap
 import dreamplacefpga.ops.sortNode2Pin.sortNode2Pin as sortNode2Pin
 import dreamplacefpga.ops.lut_ff_legalization.lut_ff_legalization as lut_ff_legalization
+import dreamplacefpga.ops.macro_graph.macro_graph as macro_graph
 import pdb
 
 datatypes = {
@@ -189,6 +190,14 @@ class PlaceDataCollectionFPGA(object):
             movable_size_x = self.node_size_x[:placedb.num_movable_nodes]
             _, self.sorted_node_map = torch.sort(movable_size_x)
             self.sorted_node_map = self.sorted_node_map.to(torch.int32)
+
+            # For MLCAD contest macro-placement
+            self.macro_mask = np.zeros(placedb.num_physical_nodes, dtype=np.uint8)
+            for nodeID in placedb.macro_inst:
+                self.macro_mask[nodeID] = 1
+
+            self.flat_cascade_inst2node_start = torch.from_numpy(placedb.flat_cascade_inst2node_start).to(device)
+            self.flat_cascade_inst2node = torch.from_numpy(placedb.flat_cascade_inst2node).to(device)
 
 class PlaceOpCollectionFPGA(object):
     """
@@ -356,6 +365,9 @@ class BasicPlaceFPGA(nn.Module):
         # draw placement
         self.op_collections.draw_place_op = self.build_draw_placement(params, placedb)
 
+        # build macro graph
+        # self.op_collections.build_macro_graph_op = self.build_macro_graph(params, placedb, self.data_collections, self.device)
+
         # flag for rmst_wl_op
         # can only read once
         self.read_lut_flag = True
@@ -446,6 +458,26 @@ class BasicPlaceFPGA(nn.Module):
             return wirelength_for_pin_op(pin_pos_op(pos))
 
         return build_wirelength_op
+
+    def build_macro_graph(self, params, placedb, data_collections, device):
+        """
+        @brief build graph for RL-based macro placement
+        """
+        return macro_graph.MacroGraph(
+            num_nodes=placedb.num_physical_nodes,
+            num_movable_nodes=placedb.num_movable_nodes,
+            macro_mask=data_collections.macro_mask,
+            num_nets=placedb.num_nets,
+            net_weights=data_collections.net_weights,
+            net_mask=data_collections.net_mask_ignore_large_degrees,
+            flat_net2pin=data_collections.flat_net2pin_map,
+            flat_net2pin_start=data_collections.flat_net2pin_start_map,
+            pin2node_map=data_collections.pin2node_map,
+            pin_types=data_collections.pin_typeIds,
+            cascade_inst_names=placedb.cascade_inst_names,
+            flat_cascade_inst2node_start=data_collections.flat_cascade_inst2node_start,
+            flat_cascade_inst2node=data_collections.flat_cascade_inst2node
+            )
 
     def build_demandMap(self, params, placedb, data_collections, device):
         """

@@ -160,7 +160,7 @@ class PlaceDBFPGA (object):
         self.region_box2yh = [] # yh of each physical region box
         self.flat_constraint2box = [] # flattened array of constraints2boxes_map
         self.flat_constraint2box_start = [] # starting point for each physical region box
-        self.constraint2box_map = [] # nested array of array to map constraint to physical region box 
+        self.constraint2node_map = [] # nested array of array to map constraint to nodes
         self.flat_constraint2node = [] # flattened array of constraint2node_map
         self.flat_constraint2node_start = [] # starting point for each node in each constraint
 
@@ -177,6 +177,9 @@ class PlaceDBFPGA (object):
         self.flat_cascade_inst2node_start = [] # starting point for each cascade instance
 
         self.macro_inst = [] # macro instances
+        self.macro_mask = None
+
+        self.loc2site_map = None # map location to site name
 
     """
     @return number of nodes
@@ -257,6 +260,7 @@ class PlaceDBFPGA (object):
         # self.ram_mask = self.node2fence_region_map == 3
         self.bram_mask = self.node2fence_region_map == 3
         self.uram_mask = self.node2fence_region_map == 4
+
 
     def initialize_from_rawdb(self, params):
         """
@@ -351,35 +355,131 @@ class PlaceDBFPGA (object):
 
         self.num_physical_constraints = pydb.num_physical_constraints
         self.num_region_constraint_boxes = pydb.num_region_constraint_boxes
-        self.region_box2xl = pydb.region_box2xl
-        self.region_box2yl = pydb.region_box2yl
-        self.region_box2xh = pydb.region_box2xh
-        self.region_box2yh = pydb.region_box2yh
-        self.flat_constraint2box = pydb.flat_constraint2box
-        self.flat_constraint2box_start = pydb.flat_constraint2box_start
+        self.region_box2xl = np.array(pydb.region_box2xl, dtype=self.dtype)
+        self.region_box2yl = np.array(pydb.region_box2yl, dtype=self.dtype)
+        self.region_box2xh = np.array(pydb.region_box2xh, dtype=self.dtype)
+        self.region_box2yh = np.array(pydb.region_box2yh, dtype=self.dtype)
+        self.flat_constraint2box = np.array(pydb.flat_constraint2box, dtype=np.int32)
+        self.flat_constraint2box_start = np.array(pydb.flat_constraint2box_start, dtype=np.int32)
         self.constraint2node_map = pydb.constraint2node_map
-        self.flat_constraint2node = pydb.flat_constraint2node
-        self.flat_constraint2node_start = pydb.flat_constraint2node_start
+        self.flat_constraint2node = np.array(pydb.flat_constraint2node, dtype=np.int32)
+        self.flat_constraint2node_start = np.array(pydb.flat_constraint2node_start, dtype=np.int32)
 
-        self.cascade_shape_names = pydb.cascade_shape_names 
+        self.cascade_shape_names = np.array(pydb.cascade_shape_names, dtype=np.str_)
         self.cascade_shape_name2id_map = pydb.cascade_shape_name2id_map
-        self.cascade_shape_heights = pydb.cascade_shape_heights
-        self.cascade_shape_widths = pydb.cascade_shape_widths
-        self.cascade_shape2macro_type = pydb.cascade_shape2macro_type
+        self.cascade_shape_heights = np.array(pydb.cascade_shape_heights, dtype=self.dtype)
+        self.cascade_shape_widths = np.array(pydb.cascade_shape_widths, dtype=self.dtype)
+        self.cascade_shape2macro_type = np.array(pydb.cascade_shape2macro_type, dtype=np.str_)
 
-        self.cascade_inst_names = pydb.cascade_inst_names
+        self.cascade_inst_names = np.array(pydb.cascade_inst_names, dtype=np.str_)
         self.cascade_inst_name2id_map = pydb.cascade_inst_name2id_map 
-        self.cascade_inst2shape = pydb.cascade_inst2shape
-        self.flat_cascade_inst2node = pydb.flat_cascade_inst2node
-        self.flat_cascade_inst2node_start = pydb.flat_cascade_inst2node_start
+        self.cascade_inst2shape = np.array(pydb.cascade_inst2shape, dtype=np.int32)
+        self.flat_cascade_inst2node = np.array(pydb.flat_cascade_inst2node, dtype=np.int32)
+        self.flat_cascade_inst2node_start = np.array(pydb.flat_cascade_inst2node_start, dtype=np.int32)
 
-        self.macro_inst = pydb.macro_inst
+        self.macro_inst = np.array(pydb.macro_inst, dtype=np.int32) 
 
         self.num_routing_layers = 1
         self.unit_horizontal_capacity = 0.95 * params.unit_horizontal_capacity
         self.unit_vertical_capacity = 0.95 * params.unit_vertical_capacity
 
+        self.loc2site_map = self.create_loc2site_map()
+
         # pdb.set_trace()
+
+    def create_loc2site_map(self):
+        """
+        @brief create a loc2site_map for a given placedb
+        """
+        loc2site_map = {}
+
+        dsp_cnt = 0
+        bram_cnt = 0
+        uram_cnt = 0
+        IOB_col = []
+
+        dsp_y_num = self. num_sites_y / 2.5
+        bram_y_num = self. num_sites_y / 5
+        uram_y_num = self. num_sites_y / 15
+        
+        slice_x = 0
+        # initialize loc2site_map
+        for i in range(self.num_sites_x):
+            slice_flag = False
+            for j in range(self.num_sites_y):
+                # LUT/FF
+                if self.site_type_map[i, j] == 1: 
+                    slice_flag = True
+                    slice_y = j
+                    #  16 is the num of LUT/FF in a SLICE
+                    for k in range(0, 16):
+                        loc2site_map[i, j, k] = "SLICE_X" + str(slice_x) + "Y" + str(slice_y)
+
+                # DSP
+                elif self.site_type_map[i, j] == 2:
+                    site_x = int(dsp_cnt / dsp_y_num)
+                    site_y = int(dsp_cnt - site_x * dsp_y_num)
+                    loc2site_map[i, j, 0] = "DSP48E2_X" + str(site_x) + "Y" + str(site_y)
+                    dsp_cnt += 1
+                # BRAM
+                elif self.site_type_map[i, j] == 3:
+                    site_x = int(bram_cnt / bram_y_num)
+                    site_y = int(bram_cnt - site_x * bram_y_num)
+                    loc2site_map[i, j, 0] = "RAMB36_X" + str(site_x) + "Y" + str(site_y)
+                    bram_cnt += 1
+                # URAM
+                elif self.site_type_map[i, j] == 4:
+                    site_x = int(uram_cnt / uram_y_num)
+                    site_y = int(uram_cnt - site_x * uram_y_num)
+                    for k in range(0, 4):
+                        loc2site_map[i, j, k] = "URAM288_X" + str(site_x) + "Y" + str(4 * site_y + k)
+                    
+                    uram_cnt += 1
+                # IO
+                elif self.site_type_map[i, j] == 5:
+                    if i not in IOB_col:
+                        IOB_col.append(i)
+
+            if slice_flag == True:
+                slice_x += 1
+
+        
+        io_loc2site_map = self.get_io_sites(IOB_col)
+
+        for loc, site_name in io_loc2site_map.items():
+            loc2site_map[loc] = io_loc2site_map[loc]
+
+        # with open("loc2site_map.txt", "w") as f:
+        #     for loc, site_name in loc2site_map.items():
+        #         f.write(str(loc[0]) + " " + str(loc[1]) + " " + str(loc[2]) + " " + site_name + "\n")
+
+        return loc2site_map
+    
+    def get_io_sites(self, IOB_col):
+        """ Get io sites.
+
+        To convert the x, y, z location in bookshelf to the site names "IOB_XxxYxx", "BUFGCE_XxxYxx".
+
+        """
+        io_loc2site_map = {}
+    
+        z_indices = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 1, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 0]
+        x_indices = IOB_col
+        
+        site_x = 0
+        site_y = 0
+        for x in x_indices:
+            # 30 is the size of IOs in a column
+            for y in range(0, int(self.num_sites_y/30)):
+                for z in z_indices:
+                    key = (x, y*30, z)
+                    io_loc2site_map[key] = 'IOB_X' + str(site_x) + 'Y' + str(site_y)
+                    site_y += 1
+
+            site_x += 1
+            site_y = 0
+
+        return io_loc2site_map
 
     def print_node(self, node_id):
         """
@@ -686,7 +786,7 @@ class PlaceDBFPGA (object):
         str_node_names = self.node_names
         for i in self.macro_inst:
             content += "%s %d %d %g\n" % (
-                    str_node_names[i],
+                    str_node_names[i],self.
                     node_x[i], 
                     node_y[i], 
                     node_z[i]
@@ -694,6 +794,38 @@ class PlaceDBFPGA (object):
         with open(pl_file, "w") as f:
             f.write(content)
         logging.info("write macro placement takes %.3f seconds" % (time.time()-tt))
+
+    def writeXDC(self, params, xdc_file):
+        """
+        @brief write out xdc file for physical constraints.
+        """
+        tt = time.time()
+        logging.info("writing to %s" % (xdc_file))
+
+        content = ""
+        for i in range(self.num_physical_constraints):
+            content += "create_pblock pblock_%d\n" % (i)
+            for j in range(self.flat_constraint2node_start[i], self.flat_constraint2node_start[i+1]):
+                content += "add_cells_to_pblock [get_pblocks pblock_%d] [get_cells %s]\n" % (i, self.node_names[self.flat_constraint2node[j]])
+
+            for k in range(self.flat_constraint2box_start[i], self.flat_constraint2box_start[i+1]):
+                # low close and high open, [xl, xh) x [yl, yh)
+                xLo = int(self.region_box2xl[k])
+                yLo = int(self.region_box2yl[k])
+                xHi = int(self.region_box2xh[k])
+                yHi = int(self.region_box2yh[k])
+                # Zhili: fix the bug of out of bound.
+                # TODO: remove this after the bug is fixed in the design.regions
+                if xHi >= self.num_sites_x or yHi >= self.num_sites_y:
+                    xHi = self.num_sites_x
+                    yHi = self.num_sites_y
+                site_name_bottom_left = self.loc2site_map[xLo, yLo, 0]
+                site_name_top_right = self.loc2site_map[xHi-1, yHi-1, 0]
+                content += "resize_pblock [get_pblocks pblock_%d] -add {%s:%s}\n" % (i, site_name_bottom_left, site_name_top_right)
+
+        with open(xdc_file, "w") as f:
+            f.write(content)
+        logging.info("write xdc file takes %.3f seconds" % (time.time()-tt))
 
     def read_pl(self, params, pl_file):
         """
@@ -737,6 +869,46 @@ class PlaceDBFPGA (object):
         # update raw database 
         place_io.PlaceIOFunction.apply(self.rawdb, node_x.astype(datatypes[params.dtype]), node_y.astype(datatypes[params.dtype]), node_z.astype(np.int32))
 
+    
+    def read_vivado_placement(self, vivado_placement_file):
+        """
+        @brief read vivado placement solution
+        """
+        movable_site2loc_map = {}
+
+        for loc in self.loc2site_map:
+            loc_x, loc_y, loc_z = loc
+            site_name = self.loc2site_map[loc]
+            if site_name not in movable_site2loc_map:
+                movable_site2loc_map[site_name] = (loc_x, loc_y)
+            
+        name2sitebel_map = {}
+        with open(vivado_placement_file, "r") as f:
+            for line in f:
+                inst_name, site_name, bel_name = line.split()
+                bel_name = bel_name.replace("SLICEL.", "")
+                bel_name = bel_name.replace("SLICEM.", "")
+                name2sitebel_map[inst_name] = (site_name, bel_name)
+
+        belmap = {"AFF"   : 0, "AFF2"  : 1, "BFF"   : 2, "BFF2"  : 3, "CFF"   : 4, "CFF2"  : 5, "DFF"   : 6, "DFF2"  : 7, "EFF"   : 8, "EFF2"  : 9, "FFF"   : 10, "FFF2"  : 11, "GFF"   : 12, "GFF2"  : 13, "HFF"   : 14, "HFF2"  : 15,
+            "A5LUT" : 0, "A6LUT" : 1, "B5LUT" : 2, "B6LUT" : 3, "C5LUT" : 4, "C6LUT" : 5, "D5LUT" : 6, "D6LUT" : 7, "E5LUT" : 8, "E6LUT" : 9, "F5LUT" : 10, "F6LUT" : 11, "G5LUT" : 12, "G6LUT" : 13, "H5LUT" : 14, "H6LUT" : 15}
+
+        for i in range(self.num_movable_nodes):
+            inst_name = self.node_names[i]
+            site_name, bel_name = name2sitebel_map[inst_name]
+            if site_name not in movable_site2loc_map:
+                print("site_name %s not in movable_site2loc_map" % (site_name))
+                continue
+            loc_x, loc_y = movable_site2loc_map[site_name]
+            self.node_x[i] = loc_x
+            self.node_y[i] = loc_y
+
+            if bel_name in belmap:
+                self.node_z[i] = belmap[bel_name]
+            else:
+                print("bel_name %s not in belmap" % (bel_name))
+                self.node_z[i] = 0
+        
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
