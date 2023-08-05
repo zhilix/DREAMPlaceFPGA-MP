@@ -15,13 +15,18 @@ import Params
 import torch
 import pdb
 from torch_geometric.data import Data
+from collections import deque
+import networkx as nx
 
 
 class MacroGraph(object):
     """
     @brief MacroGraph class
     """
-    def __init__(self, num_nodes, num_movable_nodes, macro_mask, num_nets, net_weights, net_mask, flat_net2pin, flat_net2pin_start, pin2node_map, pin_types, cascade_inst_names, flat_cascade_inst2node_start, flat_cascade_inst2node):
+    def __init__(self, num_nodes, num_movable_nodes, macro_mask, num_nets, 
+                 net_weights, net_mask, flat_net2pin, flat_net2pin_start, 
+                 pin2node_map, pin_types, cascade_inst_names, flat_cascade_inst2node_start, 
+                 flat_cascade_inst2node, node_size_x, node_size_y, flat_node2pin_start_map, node_types):
         """
         @brief initialization
         """
@@ -40,9 +45,19 @@ class MacroGraph(object):
         self.flat_cascade_inst2node_start = flat_cascade_inst2node_start
         self.flat_cascade_inst2node = flat_cascade_inst2node
 
+        self.node_size_x = node_size_x
+        self.node_size_y = node_size_y
+        self.flat_node2pin_start_map = flat_node2pin_start_map
+        self.node_types = node_types
+
         # write out hypergraph file for hypergraph partitioning using hMETIS binary
         self.hGraph_file = "design.hgr"
         self.WriteGraphFile(self.hGraph_file)
+
+        for node_id in range(self.num_nodes):
+            if self.macro_mask[node_id]==1 and self.node_types[node_id] not in ['RAMB36E2', 'DSP48E2']:
+                self.macro_mask[node_id]=0
+                print('Node_id: ', node_id, ' is changed to nonMarco: ', self.node_types[node_id])
 
         # set of parameters for hMETIS
         self.num_macro_inst = sum(self.macro_mask)
@@ -62,7 +77,9 @@ class MacroGraph(object):
 
         self.node2cluster_map, self.num_clusters = self.cluster_nodes(partition)
 
-        self.cluster_adj_matrix = self.build_cluster_adj_matrix()
+        self.cluster_adj_matrix, self.cluster_adj_dir_matrix = self.build_cluster_adj_matrix()
+
+        levels, order = self.compute_node_levels()
 
         self.num_features = 2 # is_macro, area
         self.data = self.build_geometric_data()
@@ -162,6 +179,7 @@ class MacroGraph(object):
         # build cluster adjacency matrix
         # cluster_adj_matrix = torch.tensor(self.num_clusters, self.num_clusters, dtype=torch.long)
         cluster_adj_matrix = np.zeros((self.num_clusters, self.num_clusters), dtype=np.int32)
+        cluster_adj_dir_matrix = np.zeros((self.num_clusters, self.num_clusters), dtype=np.int32)
         
         for i in range(self.num_nets):
             if self.net_mask[i] == 1:
@@ -187,10 +205,11 @@ class MacroGraph(object):
                         if src_cluster_id != dst_cluster_id:
                             cluster_adj_matrix[src_cluster_id][dst_cluster_id] = 1
                             cluster_adj_matrix[dst_cluster_id][src_cluster_id] = 1
+                            cluster_adj_dir_matrix[src_cluster_id][dst_cluster_id] = 1
 
         logging.info("Building cluster adjacency matrix takes %.2f seconds" % (time.time()-tt))
 
-        return cluster_adj_matrix
+        return cluster_adj_matrix,cluster_adj_dir_matrix
 
     def build_geometric_data(self):
         """
@@ -209,25 +228,91 @@ class MacroGraph(object):
         # pdb.set_trace()
 
         return data
+    
+    def compute_node_levels(self):
+        num_clusters = self.num_clusters
+        num_marcos = self.num_clusters - self.num_parts
+        levels = [None] * num_clusters
+        processed = [False] * num_clusters
+        order = []
+        Marco_num_processed = 0
+        marco_queue = []
+        stdcell_queue = []
 
+        while Marco_num_processed < num_marcos:  # Continue until all nodes are processed
+            # Find the first unprocessed Marco node
+            src_node = next((i for i in range(self.num_parts, num_clusters) if not processed[i]), None)
+            if src_node is None:  # No unprocessed Marco nodes left
+                break
 
+            # Forward propagation
+            levels[src_node] = 1
+            marco_queue.append(src_node)
+            processed[src_node] = True
+            Marco_num_processed += 1
 
-
-
-                    
-
-
-
+            while marco_queue or stdcell_queue:
+                if Marco_num_processed == num_marcos:
+                    break
                 
+                current_node = None
+                if marco_queue:
+                    current_node = marco_queue.pop(0)
+                elif stdcell_queue:
+                    current_node = stdcell_queue.pop(0)
+
+                for dst_node in range(num_clusters):
+                    if self.cluster_adj_matrix[current_node][dst_node] and not processed[dst_node]:
+                        levels[dst_node] = levels[current_node] + 1
+                        if dst_node < self.num_parts:  # Standard cell node
+                            stdcell_queue.append(dst_node)
+                        else:  # Marco node
+                            marco_queue.append(dst_node)
+                            Marco_num_processed += 1
+
+                        processed[dst_node] = True
 
 
+            # Backward propagation
+            for src_node in range(self.num_parts, num_clusters):
+                if Marco_num_processed == num_marcos:
+                    break
+                if not processed[src_node]:
+                    min_level = float('inf')
+                    for dst_node in range(num_clusters):
+                        if self.cluster_adj_matrix[src_node][dst_node] and processed[dst_node]:
+                            min_level = min(min_level, levels[dst_node])
+
+                    levels[src_node] = min_level - 1 if min_level != float('inf') else 1
+                    processed[src_node] = True
+                    Marco_num_processed += 1
+
+        self.area, self.pin_num, self.cluster_type = self.get_ranking_data()
+        Marco_pin_num = self.pin_num[self.num_parts:]
+        Marco_area = self.area[self.num_parts:]
+        Marco_level = levels[self.num_parts:]
 
 
+        def sort_key(node_id):
+            num_pins = Marco_pin_num[node_id]
+            size = Marco_area[node_id]
+            level = Marco_level[node_id]
+            return (-level, -num_pins, -size, node_id)
 
+        order = sorted(range(self.num_clusters - self.num_parts), key=sort_key) 
+        order = [value + self.num_parts for value in order] #return the cluster id, in placing order
 
+        return levels, order
+    
+    def get_ranking_data(self):
+        area = np.zeros((self.num_clusters))
+        pin_num = np.zeros((self.num_clusters))
+        cluster_type = ['std_node']*self.num_clusters
 
-
-
-
-
-        
+        for node_id, isMarco in enumerate(self.macro_mask):
+            cluster_id = self.node2cluster_map[node_id]
+            area[cluster_id] += self.node_size_x[node_id]*self.node_size_y[node_id]
+            pin_num[cluster_id] += self.flat_node2pin_start_map[node_id+1] - self.flat_node2pin_start_map[node_id]
+            if isMarco==1 and cluster_type[cluster_id] is 'std_node':
+                cluster_type[cluster_id] = self.node_types[node_id]
+        return area, pin_num, cluster_type

@@ -366,7 +366,7 @@ class BasicPlaceFPGA(nn.Module):
         self.op_collections.draw_place_op = self.build_draw_placement(params, placedb)
 
         # build macro graph
-        # self.op_collections.build_macro_graph_op = self.build_macro_graph(params, placedb, self.data_collections, self.device)
+        self.op_collections.build_macro_graph_op = self.build_macro_graph(params, placedb, self.data_collections, self.device)
 
         # flag for rmst_wl_op
         # can only read once
@@ -476,7 +476,11 @@ class BasicPlaceFPGA(nn.Module):
             pin_types=data_collections.pin_typeIds,
             cascade_inst_names=placedb.cascade_inst_names,
             flat_cascade_inst2node_start=data_collections.flat_cascade_inst2node_start,
-            flat_cascade_inst2node=data_collections.flat_cascade_inst2node
+            flat_cascade_inst2node=data_collections.flat_cascade_inst2node,
+            node_size_x=placedb.node_size_x, 
+            node_size_y=placedb.node_size_y, 
+            flat_node2pin_start_map=placedb.flat_node2pin_start_map,
+            node_types=placedb.node_types
             )
 
     def build_demandMap(self, params, placedb, data_collections, device):
