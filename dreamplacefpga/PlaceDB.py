@@ -353,15 +353,24 @@ class PlaceDBFPGA (object):
 
         self.num_physical_constraints = pydb.num_physical_constraints
         self.num_region_constraint_boxes = pydb.num_region_constraint_boxes
-        self.region_box2xl = pydb.region_box2xl
-        self.region_box2yl = pydb.region_box2yl
-        self.region_box2xh = pydb.region_box2xh
-        self.region_box2yh = pydb.region_box2yh
+        self.region_box2xl = np.array(pydb.region_box2xl)
+        self.region_box2yl = np.array(pydb.region_box2yl)
+        self.region_box2xh = np.array(pydb.region_box2xh)
+        self.region_box2yh = np.array(pydb.region_box2yh)
+        #Set xh,yh as max limits for regions
+        self.region_box2xh[self.region_box2xh > self.xh] = self.xh
+        self.region_box2yh[self.region_box2yh > self.yh] = self.yh
+
         self.flat_constraint2box = pydb.flat_constraint2box
         self.flat_constraint2box_start = pydb.flat_constraint2box_start
         self.constraint2node_map = pydb.constraint2node_map
         self.flat_constraint2node = pydb.flat_constraint2node
         self.flat_constraint2node_start = pydb.flat_constraint2node_start
+        #Assign node to region
+        self.node2regionBox_map = np.ones(self.num_physical_nodes, dtype=np.int32)
+        self.node2regionBox_map *= -1
+        for el in range(self.num_region_constraint_boxes):
+            self.node2regionBox_map[np.array(self.constraint2node_map[el])] = el
 
         self.cascade_shape_names = pydb.cascade_shape_names 
         self.cascade_shape_name2id_map = pydb.cascade_shape_name2id_map
@@ -375,7 +384,10 @@ class PlaceDBFPGA (object):
         self.flat_cascade_inst2node = pydb.flat_cascade_inst2node
         self.flat_cascade_inst2node_start = pydb.flat_cascade_inst2node_start
 
-        self.macro_inst = pydb.macro_inst
+        self.macro_inst = np.array(pydb.macro_inst)
+        #Is node a macro
+        self.is_macro_inst = np.zeros(self.num_physical_nodes, dtype=np.int32)
+        self.is_macro_inst[self.macro_inst] = 1
 
         self.num_routing_layers = 1
         self.unit_horizontal_capacity = 0.95 * params.unit_horizontal_capacity
@@ -784,7 +796,7 @@ class PlaceDBFPGA (object):
         str_node_names = self.node_names
         for i in self.macro_inst:
             content += "%s %d %d %g\n" % (
-                    str_node_names[i],self.
+                    str_node_names[i],
                     node_x[i], 
                     node_y[i], 
                     node_z[i]
