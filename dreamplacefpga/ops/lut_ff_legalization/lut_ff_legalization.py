@@ -19,21 +19,22 @@ if configure.compile_configurations["CUDA_FOUND"] == "TRUE":
     import dreamplacefpga.ops.lut_ff_legalization.lut_ff_legalization_cuda as lut_ff_legalization_cuda
 
 class LegalizeCLB(nn.Module):
-    def __init__(self, lutFlopIndices, nodeNames, flop2ctrlSet, flop_ctrlSet, pin2node, pin2net, flat_net2pin, 
+    def __init__(self, placedb, lutFlopIndices, flop2ctrlSet, flop_ctrlSet, pin2node, pin2net, flat_net2pin, 
         flat_net2pin_start, flat_node2pin, flat_node2pin_start, node2fence, pin_types, lut_type, 
         net_wts, avg_lut_area, avg_ff_area, inst_areas, pin_offset_x, pin_offset_y, site_types, 
         site_xy, node_size_x, node_size_y, node2outpin, net2pincount, node2pincount, spiral_accessor, 
-        num_nets, num_movable_nodes, num_nodes, num_sites_x, num_sites_y, xWirelenWt, yWirelenWt, 
-        nbrDistEnd, num_threads, device):
+        num_threads, device):
 
         super(LegalizeCLB, self).__init__()
+        #TODO - Move flag to params
+        self.macro_legalization = True
+
         self.lut_flop_indices=lutFlopIndices
         self.num_lutflops=self.lut_flop_indices.shape[0]
+        self.num_nodes=placedb.num_physical_nodes
 
-        #Use nodeNames for debug purpose - Convert string to int by removing 'inst_'
-        # nodeNames=[s.replace("inst_","") for s in nodeNames]
-        # nodeNames = list(map(int, nodeNames))
-        self.nodeNames=torch.arange(num_nodes, dtype=torch.int, device=device)
+        #Use nodeNames for debug purpose - Convert string to int
+        self.nodeNames=torch.arange(self.num_nodes, dtype=torch.int, device=device)
 
         self.flop2ctrlSetId_map=flop2ctrlSet
         self.flop_ctrlSets=flop_ctrlSet
@@ -61,23 +62,22 @@ class LegalizeCLB(nn.Module):
         self.net2pincount=net2pincount
         self.node2pincount=node2pincount
         self.spiral_accessor=spiral_accessor
-        self.num_nets=num_nets
-        self.num_movable_nodes=num_movable_nodes
-        self.num_nodes=num_nodes
-        self.num_sites_x=num_sites_x
-        self.num_sites_y=num_sites_y
-        self.xWirelenWt=xWirelenWt
-        self.yWirelenWt=yWirelenWt
-        self.nbrDistEnd=nbrDistEnd
+        self.num_nets=placedb.num_nets
+        self.num_movable_nodes=placedb.num_movable_nodes
+        self.num_sites_x=placedb.num_sites_x
+        self.num_sites_y=placedb.num_sites_y
+        self.xWirelenWt=placedb.xWirelenWt
+        self.yWirelenWt=placedb.yWirelenWt
+        self.nbrDistEnd=placedb.nbrDistEnd
         self.num_threads=num_threads
         self.device=device
 
         #Initialize required constants
         self.int_min_val = -2147483647
-        self.maxList = math.ceil(0.005 * num_nodes) #Based on empirical results from elfPlace
+        self.maxList = math.ceil(0.005 * self.num_nodes) #Based on empirical results from elfPlace
         self.nbrDistBeg = 1.0
         self.nbrDistIncr = 1.0
-        self.numGroups = math.ceil((nbrDistEnd-self.nbrDistBeg)/self.nbrDistIncr) + 1
+        self.numGroups = math.ceil((self.nbrDistEnd-self.nbrDistBeg)/self.nbrDistIncr) + 1
         self.WLscoreMaxNetDegree = 100
         self.extNetCountWt = 0.3
         self.wirelenImprovWt = 0.1
@@ -96,22 +96,22 @@ class LegalizeCLB(nn.Module):
         self.SCL_IDX = 128 #2*self.SLICE_CAPACITY
         self.SIG_IDX = 2*self.SLICE_CAPACITY #32
         #Initialize required tensors
-        self.net_bbox = torch.zeros(num_nets*4, dtype=node_size_x.dtype, device=device)
+        self.net_bbox = torch.zeros(self.num_nets*4, dtype=node_size_x.dtype, device=device)
 
         self.net_pinIdArrayX = torch.zeros(len(flat_net2pin), dtype=torch.int, device=device)
         self.net_pinIdArrayY = torch.zeros_like(self.net_pinIdArrayX) #len(flat_net2pin)
 
-        self.flat_node2precluster_map = torch.ones((num_nodes,3), dtype=torch.int, device=device)
+        self.flat_node2precluster_map = torch.ones((self.num_nodes,3), dtype=torch.int, device=device)
         self.flat_node2precluster_map *= -1
-        self.flat_node2precluster_map[:,0] = torch.arange(num_nodes, dtype=torch.int, device=device)
-        self.flat_node2prclstrCount = torch.ones(num_nodes, dtype=torch.int, device=device)
+        self.flat_node2precluster_map[:,0] = torch.arange(self.num_nodes, dtype=torch.int, device=device)
+        self.flat_node2prclstrCount = torch.ones(self.num_nodes, dtype=torch.int, device=device)
 
         #Instance Candidates
         self.inst_curr_detSite = torch.zeros_like(self.flat_node2prclstrCount) #num_nodes
         self.inst_curr_detSite[node2fence < 2] = -1
         self.inst_curr_bestSite = torch.zeros_like(self.inst_curr_detSite) #num_nodes
         self.inst_curr_bestSite[node2fence < 2] = -1
-        self.inst_curr_bestScoreImprov = torch.zeros(num_nodes, dtype=node_size_x.dtype, device=device)
+        self.inst_curr_bestScoreImprov = torch.zeros(self.num_nodes, dtype=node_size_x.dtype, device=device)
         self.inst_curr_bestScoreImprov[node2fence < 2] = -10000.0
 
         self.inst_next_detSite = torch.zeros_like(self.inst_curr_detSite) #num_nodes
@@ -125,7 +125,7 @@ class LegalizeCLB(nn.Module):
         #Map from mem addr to CLB site
         self.addr2site_map = self.site_types.flatten().nonzero(as_tuple=True)[0]
         #Map from CLB site to mem addr
-        self.site2addr_map = torch.ones(num_sites_x*num_sites_y, dtype=torch.int, device=device)
+        self.site2addr_map = torch.ones(self.num_sites_x*self.num_sites_y, dtype=torch.int, device=device)
         self.site2addr_map *= -1
         self.site2addr_map[self.addr2site_map] = torch.arange(self.num_clb_sites, dtype=torch.int, device=device)
         self.addr2site_map = self.addr2site_map.int()

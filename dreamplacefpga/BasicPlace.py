@@ -94,8 +94,7 @@ class PlaceDataCollectionFPGA(object):
             self.uramSiteXYs = torch.from_numpy(placedb.uramSiteXYs).to(dtype=datatypes[params.dtype],device=device)
 
             # number of pins for each cell
-            self.pin_weights = (self.flat_node2pin_start_map[1:] -
-                                self.flat_node2pin_start_map[:-1]).to(
+            self.pin_weights = (self.flat_node2pin_start_map[1:] - self.flat_node2pin_start_map[:-1]).to(
                                     self.node_size_x.dtype)
             ## Resource type masks
             self.flop_mask = torch.from_numpy(placedb.flop_mask).to(device)
@@ -157,6 +156,12 @@ class PlaceDataCollectionFPGA(object):
                 placedb.flat_region_boxes_start).to(device)
             self.node2fence_region_map = torch.from_numpy(
                 placedb.node2fence_region_map).to(device)
+            #For region constraints
+            self.node2regionBox_map = torch.from_numpy(placedb.node2regionBox_map).to(dtype=torch.int32, device=device)
+            self.regionBox2xl = torch.from_numpy(placedb.region_box2xl).to(dtype=datatypes[params.dtype],device=device)
+            self.regionBox2yl = torch.from_numpy(placedb.region_box2yl).to(dtype=datatypes[params.dtype],device=device)
+            self.regionBox2xh = torch.from_numpy(placedb.region_box2xh).to(dtype=datatypes[params.dtype],device=device)
+            self.regionBox2yh = torch.from_numpy(placedb.region_box2yh).to(dtype=datatypes[params.dtype],device=device)
 
             self.num_nodes = torch.tensor(placedb.num_nodes, dtype=torch.int32, device=device)
             self.num_movable_nodes = torch.tensor(placedb.num_movable_nodes, dtype=torch.int32, device=device)
@@ -410,14 +415,14 @@ class BasicPlaceFPGA(nn.Module):
         @param device cpu or cuda
         """
         return move_boundary.MoveBoundary(
-            data_collections.node_size_x,
-            data_collections.node_size_y,
-            xl=placedb.xl,
-            yl=placedb.yl,
-            xh=placedb.xh,
-            yh=placedb.yh,
-            num_movable_nodes=placedb.num_movable_nodes,
-            num_filler_nodes=placedb.num_filler_nodes,
+            placedb=placedb,
+            node_size_x=data_collections.node_size_x,
+            node_size_y=data_collections.node_size_y,
+            regionBox2xl = data_collections.regionBox2xl,
+            regionBox2yl = data_collections.regionBox2yl,
+            regionBox2xh = data_collections.regionBox2xh,
+            regionBox2yh = data_collections.regionBox2yh,
+            node2regionBox_map = data_collections.node2regionBox_map,
             num_threads=params.num_threads)
 
     def build_hpwl(self, params, placedb, data_collections, pin_pos_op, device):
@@ -558,8 +563,8 @@ class BasicPlaceFPGA(nn.Module):
             net_wts = torch.ones(placedb.num_nets, dtype=self.pos[0].dtype, device=device)
 
         return lut_ff_legalization.LegalizeCLB(
+            placedb=placedb,
             lutFlopIndices=data_collections.flop_lut_indices,
-            nodeNames=placedb.node_names,
             flop2ctrlSet=data_collections.flop2ctrlSetId_map,
             flop_ctrlSet=data_collections.flop_ctrlSets,
             pin2node=data_collections.pin2node_map,
@@ -585,14 +590,6 @@ class BasicPlaceFPGA(nn.Module):
             net2pincount=data_collections.net2pincount_map,
             node2pincount=data_collections.node2pincount_map,
             spiral_accessor=data_collections.spiral_accessor,
-            num_nets=placedb.num_nets,
-            num_movable_nodes=placedb.num_movable_nodes,
-            num_nodes=placedb.num_physical_nodes,
-            num_sites_x=placedb.num_sites_x,
-            num_sites_y=placedb.num_sites_y,
-            xWirelenWt=placedb.xWirelenWt,
-            yWirelenWt=placedb.yWirelenWt,
-            nbrDistEnd=placedb.nbrDistEnd,
             num_threads=params.num_threads,
             device=device)
 

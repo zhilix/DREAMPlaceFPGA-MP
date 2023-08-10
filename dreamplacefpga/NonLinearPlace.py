@@ -718,7 +718,6 @@ class NonLinearPlaceFPGA (BasicPlaceFPGA):
         # legalization 
         if params.legalize_flag:
             if params.global_place_flag == 0:
-                #TODO: Load from GP results
                 # global placement may run in multiple stages according to user specification 
                 for global_place_params in params.global_place_stages:
 
