@@ -801,6 +801,15 @@ class PlaceDBFPGA (object):
                     node_y[i], 
                     node_z[i]
                     )
+            #Include checker to ensure macro instance is within region
+            if self.node2regionBox_map[i] != -1:
+                regionId = self.node2regionBox_map[i]
+                if (node_x[i] < self.region_box2xl[regionId] or node_x[i] > self.region_box2xh[regionId] or
+                    node_y[i] < self.region_box2yl[regionId] or node_y[i] > self.region_box2yh[regionId]):
+                    logging.info("ERROR: Node %d %s of type %d incorrectly placed at (%d, %d) which is outside the region (%d, %d, %d, %d)" %
+                                (i, str_node_names[i], self.node_types[i], node_x[i], node_y[i], self.region_box2xl[regionId],
+                                self.region_box2yl[regionId], self.region_box2xh[regionId], self.region_box2yh[regionId]))
+
         with open(pl_file, "w") as f:
             f.write(content)
         logging.info("write macro placement takes %.3f seconds" % (time.time()-tt))

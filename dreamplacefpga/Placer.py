@@ -50,11 +50,10 @@ def placeFPGA(params):
     # write placement solution 
     path = "%s/%s" % (params.result_dir, params.design_name())
     
-    logging.info("Completed Placement in %.3f seconds" % (time.time()-start))
-
     # write macro placement solution
-    logging.info("Writing macro placement solution")
     placedb.writeMacroPl(params, "macroplacement.pl")
+
+    logging.info("Total runtime: %.3f seconds" % (time.time()-start))
                
 
 if __name__ == "__main__":
@@ -87,5 +86,4 @@ if __name__ == "__main__":
     # tt = time.time()
     for params in paramsArray: 
         placeFPGA(params)
-    # logging.info("Completed Placement in %.3f seconds" % (time.time()-tt))
 
