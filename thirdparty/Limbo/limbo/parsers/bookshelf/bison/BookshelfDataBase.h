@@ -398,6 +398,8 @@ class BookshelfDataBase
         /// @brief add node 
         //virtual void add_bookshelf_node(string&, int, int) = 0;
         virtual void add_bookshelf_node(string&, string&) = 0;
+        /// @brief update nodes after reading cascaded nodes
+        virtual void update_nodes() = 0;
         /// @brief add net 
         virtual void add_bookshelf_net(Net const&) = 0;
         /// @brief set node position 

@@ -31,9 +31,22 @@ class PlaceDBFPGA (object):
     def __init__(self):
         self.rawdb = None # raw placement database, a C++ object
         self.num_physical_nodes = 0 # number of real nodes, including movable nodes, terminals, and terminal_NIs
-        self.node_names = [] # name of instances 
-        self.node_name2id_map = {} # map instance name to instance id 
+
+        # All the cascade instances are represented as a SINGLE NODE for global placement
+        self.node_names = [] # name of instances
+        self.node_name2id_map = {} # map instance name to instance id
         self.node_types = [] # instance types 
+
+        # All the cascade instances are represented as a multiple nodes for write back
+        self.original_node_names = [] # name of instances, including all the cascaded nodes
+        self.original_node_name2id_map = {} # map instance name to instance id
+        self.original_node_types = [] # instance types
+
+        # Map the original node id to the new node id
+        self.original_node2node_map = [] # map original node id to cascaded node id
+        self.org_cascade_node_x_offset = [] # map original node id to cascaded placement x offset
+        self.org_cascade_node_y_offset = [] # map original node id to cascaded placement y offset
+
         self.node_x = [] # site location
         self.node_y = [] # site location 
         self.node_z = [] # site specific location
@@ -165,18 +178,15 @@ class PlaceDBFPGA (object):
         self.flat_constraint2node_start = [] # starting point for each node in each constraint
 
         self.cascade_shape_names = [] # names of cascade shapes
-        self.cascade_shape_name2id_map = {} # map cascade shape name to id
         self.cascade_shape_heights = [] # heights(num of rows) of cascade shapes
         self.cascade_shape_widths = [] # widths(num of columns) of cascade shapes
         self.cascade_shape2macro_type = [] # macro types(DSP, URAM, BRAM) of cascade shapes
 
         self.cascade_inst_names = [] # names of cascade instances
-        self.cascade_inst_name2id_map = {} # map cascade instance name to id 
         self.cascade_inst2shape = [] # shape id of cascade instances
-        self.flat_cascade_inst2node = [] # flattened array of cascade_inst2node_map
-        self.flat_cascade_inst2node_start = [] # starting point for each cascade instance
-
-        self.macro_inst = [] # macro instances
+        self.cascade_inst2org_node_map = [] # nested array of array to map cascade instance to original nodes
+        self.cascade_inst2org_start_node = [] # starting point for each node in each cascade instance
+        self.original_macro_nodes = [] # original macro node ids
 
         self.loc2site_map = None # map location to site name
 
@@ -268,9 +278,11 @@ class PlaceDBFPGA (object):
         pydb = place_io.PlaceIOFunction.pydb(self.rawdb)
 
         self.node_names = np.array(pydb.node_names, dtype=np.str_)
+        self.original_node_names = np.array(pydb.original_node_names, dtype=np.str_)
         self.node_size_x = np.array(pydb.node_size_x, dtype=self.dtype)
         self.node_size_y = np.array(pydb.node_size_y, dtype=self.dtype)
         self.node_types = np.array(pydb.node_types, dtype=np.str_)
+        self.original_node_types = np.array(pydb.original_node_types, dtype=np.str_)
         self.flop_indices = np.array(pydb.flop_indices)
         self.node2fence_region_map = np.array(pydb.node2fence_region_map, dtype=np.int32)
         self.node_x = np.array(pydb.node_x, dtype=self.dtype)
@@ -286,6 +298,11 @@ class PlaceDBFPGA (object):
         self.node2outpinIdx_map = np.array(pydb.node2outpinIdx_map, dtype=np.int32)
         self.lut_type = np.array(pydb.lut_type, dtype=np.int32)
         self.node_name2id_map = pydb.node_name2id_map
+        self.original_node_name2id_map = pydb.original_node_name2id_map
+
+        self.original_node2node_map = np.array(pydb.original_node2node_map, dtype=np.int32)
+        self.org_cascade_node_x_offset = np.array(pydb.org_cascade_node_x_offset, dtype=self.dtype)
+        self.org_cascade_node_y_offset = np.array(pydb.org_cascade_node_y_offset, dtype=self.dtype)
 
         self.num_terminals = pydb.num_terminals
         self.num_movable_nodes = pydb.num_movable_nodes
@@ -359,35 +376,34 @@ class PlaceDBFPGA (object):
         self.region_box2yh = np.array(pydb.region_box2yh)
         #Set xh,yh as max limits for regions
         self.region_box2xh[self.region_box2xh > self.xh] = self.xh
-        self.region_box2yh[self.region_box2yh > self.yh] = self.yh
+        self.region_box2yh[self.region_box2yh > self.yh] = self.yh        
 
-        self.flat_constraint2box = pydb.flat_constraint2box
-        self.flat_constraint2box_start = pydb.flat_constraint2box_start
-        self.constraint2node_map = pydb.constraint2node_map
-        self.flat_constraint2node = pydb.flat_constraint2node
-        self.flat_constraint2node_start = pydb.flat_constraint2node_start
+        self.flat_constraint2box = np.array(pydb.flat_constraint2box)
+        self.flat_constraint2box_start = np.array(pydb.flat_constraint2box_start)
+        self.constraint2node_map = np.array(pydb.constraint2node_map)
+        self.flat_constraint2node = np.array(pydb.flat_constraint2node)
+        self.flat_constraint2node_start = np.array(pydb.flat_constraint2node_start)
         #Assign node to region
         self.node2regionBox_map = np.ones(self.num_physical_nodes, dtype=np.int32)
         self.node2regionBox_map *= -1
         for el in range(self.num_region_constraint_boxes):
             self.node2regionBox_map[np.array(self.constraint2node_map[el])] = el
-
-        self.cascade_shape_names = pydb.cascade_shape_names 
-        self.cascade_shape_name2id_map = pydb.cascade_shape_name2id_map
-        self.cascade_shape_heights = pydb.cascade_shape_heights
-        self.cascade_shape_widths = pydb.cascade_shape_widths
-        self.cascade_shape2macro_type = pydb.cascade_shape2macro_type
+            
+        # TODO: can comment out the following lines later
+        self.cascade_shape_names = pydb.cascade_shape_names
+        self.cascade_shape_heights = np.array(pydb.cascade_shape_heights)
+        self.cascade_shape_widths = np.array(pydb.cascade_shape_widths)
+        self.cascade_shape2macro_type = np.array(pydb.cascade_shape2macro_type)
 
         self.cascade_inst_names = pydb.cascade_inst_names
-        self.cascade_inst_name2id_map = pydb.cascade_inst_name2id_map 
-        self.cascade_inst2shape = pydb.cascade_inst2shape
-        self.flat_cascade_inst2node = pydb.flat_cascade_inst2node
-        self.flat_cascade_inst2node_start = pydb.flat_cascade_inst2node_start
+        self.cascade_inst2shape = np.array(pydb.cascade_inst2shape)
 
-        self.macro_inst = np.array(pydb.macro_inst)
+        self.cascade_inst2org_node_map = pydb.cascade_inst2org_node_map
+        self.cascade_inst2org_start_node = np.array(pydb.cascade_inst2org_start_node)
+        self.original_macro_nodes = np.array(pydb.original_macro_nodes)
         #Is node a macro
         self.is_macro_inst = np.zeros(self.num_physical_nodes, dtype=np.int32)
-        self.is_macro_inst[self.macro_inst] = 1
+        self.is_macro_inst[self.original_macro_nodes] = 1
 
         self.num_routing_layers = 1
         self.unit_horizontal_capacity = 0.95 * params.unit_horizontal_capacity
@@ -788,19 +804,20 @@ class PlaceDBFPGA (object):
         tt = time.time()
         logging.info("writing to %s" % (pl_file))
 
-        node_x = self.node_x
+        node_x = self.node_x 
         node_y = self.node_y
         node_z = self.node_z
 
         content = ""
-        str_node_names = self.node_names
-        for i in self.macro_inst:
+        str_node_names = self.original_node_names
+        for i in self.original_macro_nodes:
+            node_id = self.original_node2node_map[i]
             content += "%s %d %d %g\n" % (
                     str_node_names[i],
-                    node_x[i], 
-                    node_y[i], 
-                    node_z[i]
-                    )
+                    node_x[node_id] + self.org_cascade_node_x_offset[i], 
+                    node_y[node_id] + self.org_cascade_node_y_offset[i],
+                    node_z[node_id]
+                    )     
             #Include checker to ensure macro instance is within region
             if self.node2regionBox_map[i] != -1:
                 regionId = self.node2regionBox_map[i]
