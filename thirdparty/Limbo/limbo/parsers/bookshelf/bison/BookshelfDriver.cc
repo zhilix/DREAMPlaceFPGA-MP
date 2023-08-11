@@ -594,15 +594,18 @@ bool read(BookshelfDataBase& db, const std::string& auxFile)
 
 
     //Include mandatory files first
+    //To support cascaded macros, we need to parse based on the order of design.nodes --> design.macros --> design.cascaded_shape_instances--> design.nets
     std::vector<std::string> input_bookshelf_files = {driverAux.libFile(), driverAux.sclFile()};
 
     input_bookshelf_files.emplace_back(driverAux.nodeFile());
-    input_bookshelf_files.emplace_back(driverAux.plFile());
-    input_bookshelf_files.emplace_back(driverAux.netFile());
-    // input_bookshelf_files.emplace_back(driverAux.wtFile());
-    input_bookshelf_files.emplace_back(driverAux.regionFile());
+    if(driverAux.macroFile() != "")
+    {
+        //DBG
+        //std::cout << "sdc file exists" << std::endl;
+        //DBG
+        input_bookshelf_files.emplace_back(driverAux.macroFile());
+    }
     input_bookshelf_files.emplace_back(driverAux.cascadeShapeFile());
-
     //cascadeInstFile is optional
     if (driverAux.cascadeInstFile() != "")
     {
@@ -612,6 +615,9 @@ bool read(BookshelfDataBase& db, const std::string& auxFile)
         input_bookshelf_files.emplace_back(driverAux.cascadeInstFile());
     }
 
+    input_bookshelf_files.emplace_back(driverAux.plFile());
+    input_bookshelf_files.emplace_back(driverAux.regionFile());
+    input_bookshelf_files.emplace_back(driverAux.netFile());
     if (driverAux.wtFile() != "")
     {
         //DBG
@@ -620,17 +626,14 @@ bool read(BookshelfDataBase& db, const std::string& auxFile)
         input_bookshelf_files.emplace_back(driverAux.wtFile());
     }
 
-    if(driverAux.macroFile() != "")
-    {
-        //DBG
-        //std::cout << "sdc file exists" << std::endl;
-        //DBG
-        input_bookshelf_files.emplace_back(driverAux.macroFile());
-    }
-
     //for (auto file : {driverAux.libFile(), driverAux.sclFile(), driverAux.nodeFile(), driverAux.plFile(), driverAux.netFile(), driverAux.wtFile(), driverAux.regionFile(), driverAux.cascadeShapeFile(), driverAux.cascadeInstFile()})
     for (auto file : input_bookshelf_files)
     {
+        if (file == driverAux.plFile())
+        {
+            db.update_nodes();
+        }
+        
         std::string path = auxPath + "/" + file;
         std::cout << "Parsing File " << path << std::endl;
         ifs.open(path);
@@ -641,6 +644,8 @@ bool read(BookshelfDataBase& db, const std::string& auxFile)
         }
         driverAux.parse_stream(ifs);
         ifs.close();
+
+        // at the end of parsing cascadeInstFile, we need to update nodes
         //DBG
         //std::cout << "Completed parsing " << file << std::endl;
         //DBG

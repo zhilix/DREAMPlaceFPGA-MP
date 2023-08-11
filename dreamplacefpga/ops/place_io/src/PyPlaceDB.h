@@ -25,9 +25,11 @@ bool readBookshelf(PlaceDB& db, std::string const& auxPath);
 struct PyPlaceDB
 {
     pybind11::list node_names; ///< 1D array, cell name 
+    pybind11::list original_node_names; ///< 1D array, cell name
     pybind11::list node_size_x; ///< 1D array, cell width  
     pybind11::list node_size_y; ///< 1D array, cell height
     pybind11::list node_types; ///< 1D array, nodeTypes(FPGA)
+    pybind11::list original_node_types; ///< 1D array, nodeTypes(FPGA)
     pybind11::list flop_indices; ///< 1D array, nodeTypes(FPGA)
     //pybind11::list lut_indices; ///< 1D array, nodeTypes(FPGA)
     //pybind11::list flop_lut_indices; ///< 1D array, nodeTypes(FPGA)
@@ -47,6 +49,12 @@ struct PyPlaceDB
     pybind11::list node2outpinIdx_map; ///< array of 1D array, output pin idx of each node
     pybind11::list lut_type; ///< 1D array, nodeTypes(FPGA)
     pybind11::dict node_name2id_map; ///< node name to id map, cell name 
+    pybind11::dict original_node_name2id_map; ///< node name to id map, cell name
+
+    pybind11::list original_node2node_map; ///< map original node id to node id
+    pybind11::list org_cascade_node_x_offset; ///< map original node id to node placement offset in x direction
+    pybind11::list org_cascade_node_y_offset; ///< map original node id to node placement offset in y direction
+
     //pybind11::dict movable_node_name2id_map; ///< node name to id map, cell name 
     //pybind11::dict fixed_node_name2id_map; ///< node name to id map, cell name 
     //pybind11::list fixedNodes; ///< 1D array, nodeTypes(FPGA)
@@ -117,18 +125,16 @@ struct PyPlaceDB
     pybind11::list flat_constraint2node_start; ///< starting point for each node in each constraint
     
     pybind11::list cascade_shape_names; ///< names of cascade nodes
-    pybind11::dict cascade_shape_name2id_map; ///< map cascade node name to id
     pybind11::list cascade_shape_heights; ///< heights(num of rows) of cascade shapes
     pybind11::list cascade_shape_widths; ///< widths(num of columns) of cascade shapes
     pybind11::list cascade_shape2macro_type; ///< macro types(DSP, URAM, BRAM) of cascade shapes
 
     pybind11::list cascade_inst_names; ///< names of cascade instances
-    pybind11::dict cascade_inst_name2id_map; ///< map cascade instance name to id
     pybind11::list cascade_inst2shape; ///< shape id of cascade instances
-    pybind11::list flat_cascade_inst2node; ///< flattened array of cascade_inst2node_map
-    pybind11::list flat_cascade_inst2node_start; ///< starting point for each cascade instance
 
-    pybind11::list macro_inst; ///< 1D array, macro instance (FPGA)
+    pybind11::list cascade_inst2org_node_map; ///< map cascade node to original node id
+    pybind11::list cascade_inst2org_start_node; ///< starting node for each cascade instance
+    pybind11::list original_macro_nodes;    ///< original macro nodes 
     
     //pybind11::list node2orig_node_map; ///< due to some fixed nodes may have non-rectangular shapes, we flat the node list; 
     //                                    ///< this map maps the new indices back to the original ones 

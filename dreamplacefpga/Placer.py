@@ -39,7 +39,7 @@ def placeFPGA(params):
     #logging.info("Reading database takes %.2f seconds" % (time.time()-start))
 
     # write out xdc file
-    placedb.writeXDC(params, "design_constr.xdc")
+    # placedb.writeXDC(params, "design_constr.xdc")
 
     # Random Initial Placement 
     placer = NonLinearPlaceFPGA(params, placedb)

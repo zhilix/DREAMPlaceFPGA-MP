@@ -20,6 +20,7 @@ DREAMPLACE_BEGIN_NAMESPACE
 /// default constructor
 PlaceDB::PlaceDB() {
   num_movable_nodes = 0;
+  original_num_movable_nodes = 0;
   num_fixed_nodes = 0;
   m_numLibCell = 0;
   m_numLUT = 0;
@@ -34,243 +35,30 @@ PlaceDB::PlaceDB() {
   m_numCascadeInst = 0;
 }
 
-void PlaceDB::add_bookshelf_node(std::string& name, std::string& type) 
-{
-    double sqrt0p0625(std::sqrt(0.0625)), sqrt0p125(std::sqrt(0.125));
-
-    //Updated approach
-    if (limbo::iequals(type, "FDRE"))
+void PlaceDB::add_bookshelf_node(std::string& name, std::string& type)
+{   
+    if (type.find("BUF") != std::string::npos)
     {
-      node_name2id_map.insert(std::make_pair(name, mov_node_names.size()));
-      flop_indices.emplace_back(mov_node_names.size());
-      mov_node_names.emplace_back(name);
-      mov_node_types.emplace_back(type);
-      node2fence_region_map.emplace_back(1);
-      mov_node_size_x.push_back(sqrt0p0625);
-      mov_node_size_y.push_back(sqrt0p0625);
-      mov_node_x.emplace_back(0.0);
-      mov_node_y.emplace_back(0.0);
-      mov_node_z.emplace_back(0);
-      lut_type.emplace_back(0);
-      m_numFF += 1;
-      ++num_movable_nodes;
-    }
-    else if (limbo::iequals(type, "FDSE"))
+        fixed_node_name2id_map.insert(std::make_pair(name, fixed_node_names.size()));
+        fixed_node_names.emplace_back(name);
+        fixed_node_types.emplace_back(type);
+        fixed_node_x.emplace_back(0.0);
+        fixed_node_y.emplace_back(0.0);
+        fixed_node_z.emplace_back(0);
+        ++num_fixed_nodes;
+    } else 
     {
-      node_name2id_map.insert(std::make_pair(name, mov_node_names.size()));
-      flop_indices.emplace_back(mov_node_names.size());
-      mov_node_names.emplace_back(name);
-      mov_node_types.emplace_back(type);
-      node2fence_region_map.emplace_back(1);
-      mov_node_size_x.push_back(sqrt0p0625);
-      mov_node_size_y.push_back(sqrt0p0625);
-      mov_node_x.emplace_back(0.0);
-      mov_node_y.emplace_back(0.0);
-      mov_node_z.emplace_back(0);
-      lut_type.emplace_back(0);
-      m_numFF += 1;
-      ++num_movable_nodes;
-    }
-    else if (limbo::iequals(type, "LUT0"))
-    {
-      node_name2id_map.insert(std::make_pair(name, mov_node_names.size()));
-      mov_node_names.emplace_back(name);
-      mov_node_types.emplace_back(type);
-      node2fence_region_map.emplace_back(0);
-      mov_node_size_x.push_back(sqrt0p0625);
-      mov_node_size_y.push_back(sqrt0p0625);
-      mov_node_x.emplace_back(0.0);
-      mov_node_y.emplace_back(0.0);
-      mov_node_z.emplace_back(0);
-      lut_type.emplace_back(0);
-      m_numLUT += 1;
-      ++num_movable_nodes;
-    }
-    else if (limbo::iequals(type, "LUT1"))
-    {
-      node_name2id_map.insert(std::make_pair(name, mov_node_names.size()));
-      mov_node_names.emplace_back(name);
-      mov_node_types.emplace_back(type);
-      node2fence_region_map.emplace_back(0);
-      mov_node_size_x.push_back(sqrt0p0625);
-      mov_node_size_y.push_back(sqrt0p0625);
-      mov_node_x.emplace_back(0.0);
-      mov_node_y.emplace_back(0.0);
-      mov_node_z.emplace_back(0);
-      lut_type.emplace_back(0);
-      m_numLUT += 1;
-      ++num_movable_nodes;
-    }
-    else if (limbo::iequals(type, "LUT2"))
-    {
-      node_name2id_map.insert(std::make_pair(name, mov_node_names.size()));
-      mov_node_names.emplace_back(name);
-      mov_node_types.emplace_back(type);
-      node2fence_region_map.emplace_back(0);
-      mov_node_size_x.push_back(sqrt0p0625);
-      mov_node_size_y.push_back(sqrt0p0625);
-      mov_node_x.emplace_back(0.0);
-      mov_node_y.emplace_back(0.0);
-      mov_node_z.emplace_back(0);
-      lut_type.emplace_back(1);
-      m_numLUT += 1;
-      ++num_movable_nodes;
-    }
-    else if (limbo::iequals(type, "LUT3"))
-    {
-      node_name2id_map.insert(std::make_pair(name, mov_node_names.size()));
-      mov_node_names.emplace_back(name);
-      mov_node_types.emplace_back(type);
-      node2fence_region_map.emplace_back(0);
-      mov_node_size_x.push_back(sqrt0p0625);
-      mov_node_size_y.push_back(sqrt0p0625);
-      mov_node_x.emplace_back(0.0);
-      mov_node_y.emplace_back(0.0);
-      mov_node_z.emplace_back(0);
-      lut_type.emplace_back(2);
-      m_numLUT += 1;
-      ++num_movable_nodes;
-    }
-    else if (limbo::iequals(type, "LUT4"))
-    {
-      node_name2id_map.insert(std::make_pair(name, mov_node_names.size()));
-      mov_node_names.emplace_back(name);
-      mov_node_types.emplace_back(type);
-      node2fence_region_map.emplace_back(0);
-      mov_node_size_x.push_back(sqrt0p125);
-      mov_node_size_y.push_back(sqrt0p125);
-      mov_node_x.emplace_back(0.0);
-      mov_node_y.emplace_back(0.0);
-      mov_node_z.emplace_back(0);
-      lut_type.emplace_back(3);
-      m_numLUT += 1;
-      ++num_movable_nodes;
-    }
-    else if (limbo::iequals(type, "LUT5"))
-    {
-      node_name2id_map.insert(std::make_pair(name, mov_node_names.size()));
-      mov_node_names.emplace_back(name);
-      mov_node_types.emplace_back(type);
-      node2fence_region_map.emplace_back(0);
-      mov_node_size_x.push_back(sqrt0p125);
-      mov_node_size_y.push_back(sqrt0p125);
-      mov_node_x.emplace_back(0.0);
-      mov_node_y.emplace_back(0.0);
-      mov_node_z.emplace_back(0);
-      lut_type.emplace_back(4);
-      m_numLUT += 1;
-      ++num_movable_nodes;
-    }
-    else if (limbo::iequals(type, "LUT6"))
-    {
-      node_name2id_map.insert(std::make_pair(name, mov_node_names.size()));
-      mov_node_names.emplace_back(name);
-      mov_node_types.emplace_back(type);
-      node2fence_region_map.emplace_back(0);
-      mov_node_size_x.push_back(sqrt0p125);
-      mov_node_size_y.push_back(sqrt0p125);
-      mov_node_x.emplace_back(0.0);
-      mov_node_y.emplace_back(0.0);
-      mov_node_z.emplace_back(0);
-      lut_type.emplace_back(5);
-      m_numLUT += 1;
-      ++num_movable_nodes;
-    }
-    else if (limbo::iequals(type, "LUT6_2"))
-    {
-      node_name2id_map.insert(std::make_pair(name, mov_node_names.size()));
-      mov_node_names.emplace_back(name);
-      mov_node_types.emplace_back(type);
-      node2fence_region_map.emplace_back(0);
-      mov_node_size_x.push_back(sqrt0p125);
-      mov_node_size_y.push_back(sqrt0p125);
-      mov_node_x.emplace_back(0.0);
-      mov_node_y.emplace_back(0.0);
-      mov_node_z.emplace_back(0);
-      lut_type.emplace_back(5); //Treating same as LUT6
-      m_numLUT += 1;
-      ++num_movable_nodes;
-    }
-    else if (type.find("DSP") != std::string::npos)
-    {
-      node_name2id_map.insert(std::make_pair(name, mov_node_names.size()));
-      mov_node_names.emplace_back(name);
-      mov_node_types.emplace_back(type);
-      node2fence_region_map.emplace_back(2);
-      mov_node_size_x.push_back(1.0);
-      mov_node_size_y.push_back(2.5);
-      mov_node_x.emplace_back(0.0);
-      mov_node_y.emplace_back(0.0);
-      mov_node_z.emplace_back(0);
-      lut_type.emplace_back(0);
-      m_numDSP += 1;
-      ++num_movable_nodes;
-    }
-    // else if (type.find("RAM") != std::string::npos)
-    // {
-    //   node_name2id_map.insert(std::make_pair(name, mov_node_names.size()));
-    //   mov_node_names.emplace_back(name);
-    //   mov_node_types.emplace_back(type);
-    //   node2fence_region_map.emplace_back(3);
-    //   mov_node_size_x.push_back(1.0);
-    //   mov_node_size_y.push_back(5.0);
-    //   mov_node_x.emplace_back(0.0);
-    //   mov_node_y.emplace_back(0.0);
-    //   mov_node_z.emplace_back(0);
-    //   lut_type.emplace_back(0);
-    //   m_numRAM += 1;
-    //   ++num_movable_nodes;
-    // }
-    else if (type.find("RAMB") != std::string::npos)
-    {
-      node_name2id_map.insert(std::make_pair(name, mov_node_names.size()));
-      mov_node_names.emplace_back(name);
-      mov_node_types.emplace_back(type);
-      node2fence_region_map.emplace_back(3);
-      mov_node_size_x.push_back(1.0);
-      mov_node_size_y.push_back(5.0);
-      mov_node_x.emplace_back(0.0);
-      mov_node_y.emplace_back(0.0);
-      mov_node_z.emplace_back(0);
-      lut_type.emplace_back(0);
-      m_numBRAM += 1;
-      ++num_movable_nodes;
-    }
-    else if (type.find("URAM") != std::string::npos)
-    {
-      node_name2id_map.insert(std::make_pair(name, mov_node_names.size()));
-      mov_node_names.emplace_back(name);
-      mov_node_types.emplace_back(type);
-      node2fence_region_map.emplace_back(4);
-      mov_node_size_x.push_back(1.0);
-      mov_node_size_y.push_back(15.0);  // 15.0? 
-      mov_node_x.emplace_back(0.0);
-      mov_node_y.emplace_back(0.0);
-      mov_node_z.emplace_back(0);
-      lut_type.emplace_back(0);
-      m_numURAM += 1;
-      ++num_movable_nodes; 
-    }
-    else if (type.find("BUF") != std::string::npos)
-    {
-      fixed_node_name2id_map.insert(std::make_pair(name, fixed_node_names.size()));
-      fixed_node_names.emplace_back(name);
-      fixed_node_types.emplace_back(type);
-      fixed_node_x.emplace_back(0.0);
-      fixed_node_y.emplace_back(0.0);
-      fixed_node_z.emplace_back(0);
-      ++num_fixed_nodes;
-    }
-    else
-    {
-        dreamplacePrint(kWARN, "Unknown type component found in .nodes file: %s, %s\n",
-                name.c_str(), type.c_str());
-    }
-    std::vector<index_type> temp;
-    node2pin_map.emplace_back(temp);
-    node2outpinIdx_map.emplace_back(0);
-    node2pincount_map.emplace_back(0);
-    
+        original_node_name2id_map.insert(std::make_pair(name, original_mov_node_names.size()));
+        original_mov_node_names.emplace_back(name);
+        original_mov_node_types.emplace_back(type);
+        original_node_is_cascade.emplace_back(0);
+        original_node2node_map.emplace_back(0);
+        org_cascade_node_pin_offset_x.emplace_back(0.0);
+        org_cascade_node_pin_offset_y.emplace_back(0.0);
+        org_cascade_node_x_offset.emplace_back(0.0);
+        org_cascade_node_y_offset.emplace_back(0.0);
+        ++original_num_movable_nodes;
+    }  
 }
 
 void PlaceDB::add_bookshelf_net(BookshelfParser::Net const& n) {
@@ -292,21 +80,37 @@ void PlaceDB::add_bookshelf_net(BookshelfParser::Net const& n) {
     for (unsigned i = 0, ie = vNetPin.size(); i < ie; ++i) 
     {
         BookshelfParser::NetPin const& netPin = vNetPin[i];
-        index_type nodeId, pinId(pin_names.size());
+        index_type nodeId, pinId(pin_names.size()), org_nodeId;
 
         pin_names.emplace_back(netPin.pin_name);
         pin2net_map.emplace_back(netId);
 
         string2index_map_type::iterator found = node_name2id_map.find(netPin.node_name);
+        string2index_map_type::iterator cas_fnd = original_node_name2id_map.find(netPin.node_name);
         std::string nodeType;
 
         if (found != node_name2id_map.end())
         {
             nodeId = node_name2id_map.at(netPin.node_name);
+            org_nodeId = original_node_name2id_map.at(netPin.node_name);
             pin2nodeType_map.emplace_back(node2fence_region_map[nodeId]);
-            pin_offset_x.emplace_back(0.5*mov_node_size_x[nodeId]);
-            pin_offset_y.emplace_back(0.5*mov_node_size_y[nodeId]);
-
+            if (nodeId < m_numCascadeInst)
+            {   
+                pin_offset_x.emplace_back(org_cascade_node_pin_offset_x[org_nodeId]);
+                pin_offset_y.emplace_back(org_cascade_node_pin_offset_y[org_nodeId]);
+            } else
+            {
+                pin_offset_x.emplace_back(0.5*mov_node_size_x[nodeId]);
+                pin_offset_y.emplace_back(0.5*mov_node_size_y[nodeId]);
+            }
+            nodeType = mov_node_types[nodeId];
+        } else if (cas_fnd != original_node_name2id_map.end())
+        {
+            org_nodeId = original_node_name2id_map.at(netPin.node_name);
+            nodeId = original_node2node_map[org_nodeId];
+            pin2nodeType_map.emplace_back(node2fence_region_map[nodeId]);
+            pin_offset_x.emplace_back(org_cascade_node_pin_offset_x[org_nodeId]);
+            pin_offset_y.emplace_back(org_cascade_node_pin_offset_y[org_nodeId]);
             nodeType = mov_node_types[nodeId];
         } else
         {
@@ -321,7 +125,7 @@ void PlaceDB::add_bookshelf_net(BookshelfParser::Net const& n) {
                 nodeId += num_movable_nodes;
             } else
             {
-                dreamplacePrint(kERROR, "Net %s connects to instance %s pin %s. However instance %s is not specified in .nodes file. FIX\n",
+                dreamplacePrint(kWARN, "Net %s connects to instance %s pin %s. However instance %s is not specified in .nodes file. FIX\n",
                         n.net_name.c_str(), netPin.node_name.c_str(), netPin.pin_name.c_str(), netPin.node_name.c_str());
             }
         }
@@ -376,6 +180,8 @@ void PlaceDB::add_bookshelf_net(BookshelfParser::Net const& n) {
     }
     flat_net2pin_start_map.emplace_back(flat_net2pin_map.size());
     net2pin_map.emplace_back(netPins);
+
+    // std::cout << "End of add_bookshelf_net........" << std::endl;
 }
 void PlaceDB::resize_sites(int xSize, int ySize)
 {
@@ -473,7 +279,7 @@ void PlaceDB::add_ctrl_pin(std::string& pName)
         lCell.addCtrlPin(pName);
     } else
     {
-        dreamplacePrint(kWARN, "libCell not found in .lib file: %s\n",
+        dreamplacePrint(kWARN, "libCell not found in .lib file:.end() %s\n",
                 m_libCellTemp.c_str());
     }
 }
@@ -547,21 +353,362 @@ void PlaceDB::add_cascade_shape_double_col(std::string macroType)
 }
 void PlaceDB::add_cascade_instance_to_shape(std::string const& shapeName, std::string const& instName)
 {
-    cascade_inst_name2id_map.insert(std::make_pair(instName, cascade_inst_names.size()));
-    cascade_inst_names.emplace_back(instName);
-
-    // std::cout << "Add cascade instance " << instName << " to shape " << shapeName << std::endl;
     string2index_map_type::iterator found = cascade_shape_name2id_map.find(shapeName);
+    index_type shapeId;
+    if (found != cascade_shape_name2id_map.end())
+    {
+        shapeId = cascade_shape_name2id_map.at(shapeName);
+    }else{
+        dreamplacePrint(kWARN, "Cascade shape not found in .cascade_shapes file: %s\n",
+                shapeName.c_str());
+    }
+    cascade_inst2shape.emplace_back(shapeId);
 
-    cascade_inst2shape.emplace_back(cascade_shape_name2id_map.at(shapeName));
+    std::string type = cascade_shape2macro_type[shapeId];
+    if (type.find("DSP") != std::string::npos)
+    {
+        m_cascade_nodeSizeXTemp = 1.0;
+        m_cascade_nodeSizeYTemp = 2.5;
+    } else if (type.find("RAMB") != std::string::npos)
+    {
+        m_cascade_nodeSizeXTemp = 1.0;
+        m_cascade_nodeSizeYTemp = 5.0;
+    }
 
-    flat_cascade_inst2node_start.emplace_back(flat_cascade_inst2node.size());
+    cascade_inst_names.emplace_back(instName);
     ++m_numCascadeInst;
+    num_cascade_nodesTemp = 0;
+    
+    std::vector<index_type> temp;
+    cascade_inst2org_node_map.emplace_back(temp);
 
 }
 void PlaceDB::add_node_to_cascade_inst(std::string const& nodeName)
 {
-    flat_cascade_inst2node.emplace_back(node_name2id_map.at(nodeName));
+    
+    index_type org_nodeId = original_node_name2id_map.at(nodeName);
+    index_type cascade_inst_id = m_numCascadeInst - 1;
+
+    cascade_inst2org_node_map[cascade_inst_id].emplace_back(org_nodeId);
+    original_node_is_cascade[org_nodeId] = 1;
+    org_cascade_node_pin_offset_x[org_nodeId] = 0.5*m_cascade_nodeSizeXTemp;
+    org_cascade_node_pin_offset_y[org_nodeId] = (num_cascade_nodesTemp+0.5)*m_cascade_nodeSizeYTemp;
+    org_cascade_node_x_offset[org_nodeId] = 0.0;
+    org_cascade_node_y_offset[org_nodeId] = num_cascade_nodesTemp*m_cascade_nodeSizeYTemp;
+
+    if (num_cascade_nodesTemp == 0)
+    {
+        cascade_inst2org_start_node.emplace_back(org_nodeId);
+    }
+    ++num_cascade_nodesTemp;
+}
+
+void PlaceDB::update_nodes(){
+    // before parsing .nets file, update 
+
+    // Add cascaded instances first, easier debugging
+    for (int i = 0; i < m_numCascadeInst; ++i)
+    {
+        index_type org_start_nodeId;
+        org_start_nodeId = cascade_inst2org_start_node[i];
+        std::string name = original_mov_node_names[org_start_nodeId];
+        std::string type = original_mov_node_types[org_start_nodeId];
+
+        // std::cout << "Cascade instance " << name << " " << type << std::endl;
+
+        for (int j = 0; j < cascade_inst2org_node_map[i].size(); ++j)
+        {
+            original_node2node_map[cascade_inst2org_node_map[i][j]] = mov_node_names.size();
+
+            // std::cout << "Cascade node original id " << cascade_inst2org_node_map[i][j] << "new id " << mov_node_names.size() << std::endl;
+        }
+
+        if (type.find("DSP") != std::string::npos)
+        {
+            node_name2id_map.insert(std::make_pair(name, mov_node_names.size()));
+            mov_node_names.emplace_back(name);
+            mov_node_types.emplace_back(type);
+            node2fence_region_map.emplace_back(2);
+            mov_node_size_x.push_back(1.0*cascade_shape_widths[cascade_inst2shape[i]]);
+            mov_node_size_y.push_back(2.5*cascade_shape_heights[cascade_inst2shape[i]]);
+            mov_node_x.emplace_back(0.0);
+            mov_node_y.emplace_back(0.0);
+            mov_node_z.emplace_back(0);
+            lut_type.emplace_back(0);
+            m_numDSP += 1;
+            ++num_movable_nodes;
+        } else if (type.find("RAMB") != std::string::npos)
+        {
+            node_name2id_map.insert(std::make_pair(name, mov_node_names.size()));
+            mov_node_names.emplace_back(name);
+            mov_node_types.emplace_back(type);
+            node2fence_region_map.emplace_back(3);
+            mov_node_size_x.push_back(1.0*cascade_shape_widths[cascade_inst2shape[i]]);
+            mov_node_size_y.push_back(5.0*cascade_shape_heights[cascade_inst2shape[i]]);
+            mov_node_x.emplace_back(0.0);
+            mov_node_y.emplace_back(0.0);
+            mov_node_z.emplace_back(0);
+            lut_type.emplace_back(0);
+            m_numBRAM += 1;
+            ++num_movable_nodes;
+        } else
+        {
+            dreamplacePrint(kWARN, "Unknown cascade macro type component found: %s, %s\n",
+                    name.c_str(), type.c_str());
+        }
+        std::vector<index_type> temp;
+        node2pin_map.emplace_back(temp);
+        node2outpinIdx_map.emplace_back(0);
+        node2pincount_map.emplace_back(0);
+    }
+    
+    double sqrt0p0625(std::sqrt(0.0625)), sqrt0p125(std::sqrt(0.125));
+
+    // std::cout << "Original movable nodes num" << original_num_movable_nodes << std::endl;
+    // std::cout << "size of original node_names map " << original_mov_node_names.size() << std::endl;
+
+    for (int i = 0; i < original_num_movable_nodes; ++i)
+    {   
+        std::string name = original_mov_node_names[i];
+        std::string type = original_mov_node_types[i];
+        
+        if (original_node_is_cascade[i] == 0)
+        {   
+            // std::cout << "Original node " << name << " " << type << std::endl;
+            //Updated approach
+            if (limbo::iequals(type, "FDRE"))
+            {
+                node_name2id_map.insert(std::make_pair(name, mov_node_names.size()));
+                original_node2node_map[i] = mov_node_names.size();
+                // std::cout << "FDRE node " << name << " " << type << " " << "new id " << mov_node_names.size() << std::endl;
+                flop_indices.emplace_back(mov_node_names.size());
+                mov_node_names.emplace_back(name);
+                mov_node_types.emplace_back(type);
+                node2fence_region_map.emplace_back(1);
+                mov_node_size_x.push_back(sqrt0p0625);
+                mov_node_size_y.push_back(sqrt0p0625);
+                mov_node_x.emplace_back(0.0);
+                mov_node_y.emplace_back(0.0);
+                mov_node_z.emplace_back(0);
+                lut_type.emplace_back(0);
+                m_numFF += 1;
+                ++num_movable_nodes;
+            }
+            else if (limbo::iequals(type, "FDSE"))
+            {
+                node_name2id_map.insert(std::make_pair(name, mov_node_names.size()));
+                original_node2node_map[i] = mov_node_names.size();
+                flop_indices.emplace_back(mov_node_names.size());
+                mov_node_names.emplace_back(name);
+                mov_node_types.emplace_back(type);
+                node2fence_region_map.emplace_back(1);
+                mov_node_size_x.push_back(sqrt0p0625);
+                mov_node_size_y.push_back(sqrt0p0625);
+                mov_node_x.emplace_back(0.0);
+                mov_node_y.emplace_back(0.0);
+                mov_node_z.emplace_back(0);
+                lut_type.emplace_back(0);
+                m_numFF += 1;
+                ++num_movable_nodes;
+            }
+            else if (limbo::iequals(type, "LUT0"))
+            {
+                node_name2id_map.insert(std::make_pair(name, mov_node_names.size()));
+                original_node2node_map[i] = mov_node_names.size();
+                mov_node_names.emplace_back(name);
+                mov_node_types.emplace_back(type);
+                node2fence_region_map.emplace_back(0);
+                mov_node_size_x.push_back(sqrt0p0625);
+                mov_node_size_y.push_back(sqrt0p0625);
+                mov_node_x.emplace_back(0.0);
+                mov_node_y.emplace_back(0.0);
+                mov_node_z.emplace_back(0);
+                lut_type.emplace_back(0);
+                m_numLUT += 1;
+                ++num_movable_nodes;
+            }
+            else if (limbo::iequals(type, "LUT1"))
+            {
+                node_name2id_map.insert(std::make_pair(name, mov_node_names.size()));
+                original_node2node_map[i] = mov_node_names.size();
+                mov_node_names.emplace_back(name);
+                mov_node_types.emplace_back(type);
+                node2fence_region_map.emplace_back(0);
+                mov_node_size_x.push_back(sqrt0p0625);
+                mov_node_size_y.push_back(sqrt0p0625);
+                mov_node_x.emplace_back(0.0);
+                mov_node_y.emplace_back(0.0);
+                mov_node_z.emplace_back(0);
+                lut_type.emplace_back(0);
+                m_numLUT += 1;
+                ++num_movable_nodes;
+            }
+            else if (limbo::iequals(type, "LUT2"))
+            {
+                node_name2id_map.insert(std::make_pair(name, mov_node_names.size()));
+                original_node2node_map[i] = mov_node_names.size();
+                mov_node_names.emplace_back(name);
+                mov_node_types.emplace_back(type);
+                node2fence_region_map.emplace_back(0);
+                mov_node_size_x.push_back(sqrt0p0625);
+                mov_node_size_y.push_back(sqrt0p0625);
+                mov_node_x.emplace_back(0.0);
+                mov_node_y.emplace_back(0.0);
+                mov_node_z.emplace_back(0);
+                lut_type.emplace_back(0);
+                m_numLUT += 1;
+                ++num_movable_nodes;
+            }
+            else if (limbo::iequals(type, "LUT3"))
+            {
+                node_name2id_map.insert(std::make_pair(name, mov_node_names.size()));
+                original_node2node_map[i] = mov_node_names.size();
+                mov_node_names.emplace_back(name);
+                mov_node_types.emplace_back(type);
+                node2fence_region_map.emplace_back(0);
+                mov_node_size_x.push_back(sqrt0p0625);
+                mov_node_size_y.push_back(sqrt0p0625);
+                mov_node_x.emplace_back(0.0);
+                mov_node_y.emplace_back(0.0);
+                mov_node_z.emplace_back(0);
+                lut_type.emplace_back(2);
+                m_numLUT += 1;
+                ++num_movable_nodes;
+            }
+            else if (limbo::iequals(type, "LUT4"))
+            {
+                node_name2id_map.insert(std::make_pair(name, mov_node_names.size()));
+                original_node2node_map[i] = mov_node_names.size();
+                mov_node_names.emplace_back(name);
+                mov_node_types.emplace_back(type);
+                node2fence_region_map.emplace_back(0);
+                mov_node_size_x.push_back(sqrt0p125);
+                mov_node_size_y.push_back(sqrt0p125);
+                mov_node_x.emplace_back(0.0);
+                mov_node_y.emplace_back(0.0);
+                mov_node_z.emplace_back(0);
+                lut_type.emplace_back(3);
+                m_numLUT += 1;
+                ++num_movable_nodes;
+            }
+            else if (limbo::iequals(type, "LUT5"))
+            {
+                node_name2id_map.insert(std::make_pair(name, mov_node_names.size()));
+                original_node2node_map[i] = mov_node_names.size();
+                mov_node_names.emplace_back(name);
+                mov_node_types.emplace_back(type);
+                node2fence_region_map.emplace_back(0);
+                mov_node_size_x.push_back(sqrt0p125);
+                mov_node_size_y.push_back(sqrt0p125);
+                mov_node_x.emplace_back(0.0);
+                mov_node_y.emplace_back(0.0);
+                mov_node_z.emplace_back(0);
+                lut_type.emplace_back(4);
+                m_numLUT += 1;
+                ++num_movable_nodes;
+            }
+            else if (limbo::iequals(type, "LUT6"))
+            {
+                node_name2id_map.insert(std::make_pair(name, mov_node_names.size()));
+                original_node2node_map[i] = mov_node_names.size();
+                mov_node_names.emplace_back(name);
+                mov_node_types.emplace_back(type);
+                node2fence_region_map.emplace_back(0);
+                mov_node_size_x.push_back(sqrt0p125);
+                mov_node_size_y.push_back(sqrt0p125);
+                mov_node_x.emplace_back(0.0);
+                mov_node_y.emplace_back(0.0);
+                mov_node_z.emplace_back(0);
+                lut_type.emplace_back(5);
+                m_numLUT += 1;
+                ++num_movable_nodes;
+            }
+            else if (limbo::iequals(type, "LUT6_2"))
+            {
+                node_name2id_map.insert(std::make_pair(name, mov_node_names.size()));
+                original_node2node_map[i] = mov_node_names.size();
+                mov_node_names.emplace_back(name);
+                mov_node_types.emplace_back(type);
+                node2fence_region_map.emplace_back(0);
+                mov_node_size_x.push_back(sqrt0p125);
+                mov_node_size_y.push_back(sqrt0p125);
+                mov_node_x.emplace_back(0.0);
+                mov_node_y.emplace_back(0.0);
+                mov_node_z.emplace_back(0);
+                lut_type.emplace_back(5); //Treating same as LUT6
+                m_numLUT += 1;
+                ++num_movable_nodes;
+            }
+            else if (type.find("DSP") != std::string::npos)
+            {
+                node_name2id_map.insert(std::make_pair(name, mov_node_names.size()));
+                original_node2node_map[i] = mov_node_names.size();
+                mov_node_names.emplace_back(name);
+                mov_node_types.emplace_back(type);
+                node2fence_region_map.emplace_back(2);
+                mov_node_size_x.push_back(1.0);
+                mov_node_size_y.push_back(2.5);
+                mov_node_x.emplace_back(0.0);
+                mov_node_y.emplace_back(0.0);
+                mov_node_z.emplace_back(0);
+                lut_type.emplace_back(0);
+                m_numDSP += 1;
+                ++num_movable_nodes;
+            }
+            else if (type.find("RAMB") != std::string::npos)
+            {
+                node_name2id_map.insert(std::make_pair(name, mov_node_names.size()));
+                original_node2node_map[i] = mov_node_names.size();
+                mov_node_names.emplace_back(name);
+                mov_node_types.emplace_back(type);
+                node2fence_region_map.emplace_back(3);
+                mov_node_size_x.push_back(1.0);
+                mov_node_size_y.push_back(5.0);
+                mov_node_x.emplace_back(0.0);
+                mov_node_y.emplace_back(0.0);
+                mov_node_z.emplace_back(0);
+                lut_type.emplace_back(0);
+                m_numBRAM += 1;
+                ++num_movable_nodes;
+            }
+            else if (type.find("URAM") != std::string::npos)
+            {
+                node_name2id_map.insert(std::make_pair(name, mov_node_names.size()));
+                original_node2node_map[i] = mov_node_names.size();
+                mov_node_names.emplace_back(name);
+                mov_node_types.emplace_back(type);
+                node2fence_region_map.emplace_back(4);
+                mov_node_size_x.push_back(1.0);
+                mov_node_size_y.push_back(15.0);  // 15.0? 
+                mov_node_x.emplace_back(0.0);
+                mov_node_y.emplace_back(0.0);
+                mov_node_z.emplace_back(0);
+                lut_type.emplace_back(0);
+                m_numURAM += 1;
+                ++num_movable_nodes; 
+            }
+            else
+            {
+                dreamplacePrint(kWARN, "Unknown type component found in the movable nodes: %s, %s\n",
+                        name.c_str(), type.c_str());
+            }
+
+            std::vector<index_type> temp;
+            node2pin_map.emplace_back(temp);
+            node2outpinIdx_map.emplace_back(0);
+            node2pincount_map.emplace_back(0);
+
+        } 
+    }
+
+    for (int i = 0; i < num_fixed_nodes; ++i)
+    {
+        original_node2node_map.emplace_back(i+num_movable_nodes);
+        std::vector<index_type> temp;
+        node2pin_map.emplace_back(temp);
+        node2outpinIdx_map.emplace_back(0);
+        node2pincount_map.emplace_back(0);
+    }
 }
 
 void PlaceDB::set_bookshelf_node_pos(std::string const& name, double x, double y, int z)
@@ -585,7 +732,7 @@ void PlaceDB::set_bookshelf_node_pos(std::string const& name, double x, double y
 }
 
 void PlaceDB::add_macro(std::string const& name) {
-    macro_inst.emplace_back(node_name2id_map.at(name));
+    original_macro_nodes.emplace_back(original_node_name2id_map.at(name));
 }
 
 void PlaceDB::set_bookshelf_design(std::string& name) {
@@ -610,6 +757,18 @@ void PlaceDB::bookshelf_end() {
 
     node_name2id_map.insert(fixed_node_name2id_map.begin(), fixed_node_name2id_map.end());
 
+    for (auto& el : fixed_node_name2id_map)
+    {
+        el.second -= num_movable_nodes;
+        el.second += original_num_movable_nodes;
+        org_cascade_node_pin_offset_x.emplace_back(0.0);
+        org_cascade_node_pin_offset_y.emplace_back(0.0);
+        org_cascade_node_x_offset.emplace_back(0.0);
+        org_cascade_node_y_offset.emplace_back(0.0);
+    }
+    
+    original_node_name2id_map.insert(fixed_node_name2id_map.begin(), fixed_node_name2id_map.end());
+    
     
     flat_constraint2node_start.emplace_back(0);
     for (const auto& sub : constraint2node_map)
@@ -619,7 +778,6 @@ void PlaceDB::bookshelf_end() {
     }
 
     flat_constraint2box_start.emplace_back(flat_constraint2box.size());
-    flat_cascade_inst2node_start.emplace_back(flat_cascade_inst2node.size());
 }
 
 bool PlaceDB::write(std::string const& filename) const {

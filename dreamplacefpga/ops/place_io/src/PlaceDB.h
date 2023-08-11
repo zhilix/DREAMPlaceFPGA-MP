@@ -57,10 +57,20 @@ class PlaceDB : public BookshelfParser::BookshelfDataBase
         std::string const& movNodeName(index_type id) const {return mov_node_names.at(id);}
         std::string& movNodeName(index_type id) {return mov_node_names.at(id);}
 
+        std::vector<std::string> const& originalMovNodeNames() const {return original_mov_node_names;}
+        std::vector<std::string>& originalMovNodeNames() {return original_mov_node_names;}
+        std::string const& originalMovNodeName(index_type id) const {return original_mov_node_names.at(id);}
+        std::string& originalMovNodeName(index_type id) {return original_mov_node_names.at(id);}
+
         std::vector<std::string> const& movNodeTypes() const {return mov_node_types;}
         std::vector<std::string>& movNodeTypes() {return mov_node_types;}
         std::string const& movNodeType(index_type id) const {return mov_node_types.at(id);}
         std::string& movNodeType(index_type id) {return mov_node_types.at(id);}
+
+        std::vector<std::string> const& originalMovNodeTypes() const {return original_mov_node_types;}
+        std::vector<std::string>& originalMovNodeTypes() {return original_mov_node_types;}
+        std::string const& originalMovNodeType(index_type id) const {return original_mov_node_types.at(id);}
+        std::string& originalMovNodeType(index_type id) {return original_mov_node_types.at(id);}
 
         std::vector<double> const& movNodeXLocs() const {return mov_node_x;}
         std::vector<double>& movNodeXLocs() {return mov_node_x;}
@@ -210,6 +220,9 @@ class PlaceDB : public BookshelfParser::BookshelfDataBase
         string2index_map_type const& nodeName2Index() const {return node_name2id_map;}
         string2index_map_type& nodeName2Index() {return node_name2id_map;}
 
+        string2index_map_type const& originalNodeName2Index() const {return original_node_name2id_map;}
+        string2index_map_type& originalNodeName2Index() {return original_node_name2id_map;}
+
         string2index_map_type const& netName2Index() const {return net_name2id_map;}
         string2index_map_type& netName2Index() {return net_name2id_map;}
 
@@ -285,20 +298,23 @@ class PlaceDB : public BookshelfParser::BookshelfDataBase
         std::vector<index_type> const& cascadeInst2Shape() const {return cascade_inst2shape;}
         std::vector<index_type>& cascadeInst2Shape() {return cascade_inst2shape;}
 
-        std::vector<index_type> const& flatCascadeInst2Node() const {return flat_cascade_inst2node;}
-        std::vector<index_type>& flatCascadeInst2Node() {return flat_cascade_inst2node;}
+        std::vector<double> const& orgCascadeNodeXoffset() const {return org_cascade_node_x_offset;}
+        std::vector<double>& orgCascadeNodeXoffset() {return org_cascade_node_x_offset;}
 
-        std::vector<index_type> const& flatCascadeInst2NodeStart() const {return flat_cascade_inst2node_start;}
-        std::vector<index_type>& flatCascadeInst2NodeStart() {return flat_cascade_inst2node_start;}
+        std::vector<double> const& orgCascadeNodeYoffset() const {return org_cascade_node_y_offset;}
+        std::vector<double>& orgCascadeNodeYoffset() {return org_cascade_node_y_offset;}
 
-        string2index_map_type const& cascadeInstName2Index() const {return cascade_inst_name2id_map;}
-        string2index_map_type& cascadeInstName2Index() {return cascade_inst_name2id_map;}
+        std::vector<std::vector<index_type> > const& cascadeInst2OrgNodeMap() const {return cascade_inst2org_node_map;}
+        std::vector<std::vector<index_type> >& cascadeInst2OrgNodeMap() {return cascade_inst2org_node_map;}
 
-        string2index_map_type const& cascadeShapeName2Index() const {return cascade_shape_name2id_map;}
-        string2index_map_type& cascadeShapeName2Index() {return cascade_shape_name2id_map;}
+        std::vector<index_type> const& cascadeInst2OrgStartNode() const {return cascade_inst2org_start_node;}
+        std::vector<index_type>& cascadeInst2OrgStartNode() {return cascade_inst2org_start_node;}
 
-        std::vector<index_type> const& macroInst() const {return macro_inst;}
-        std::vector<index_type>& macroInst() {return macro_inst;}
+        std::vector<index_type> const& originalNode2NodeMap() const {return original_node2node_map;}
+        std::vector<index_type>& originalNode2NodeMap() {return original_node2node_map;}
+        
+        std::vector<index_type> const& orgMacroNodes() const {return original_macro_nodes;}
+        std::vector<index_type>& orgMacroNodes() {return original_macro_nodes;}
 
         std::string designName() const {return m_designName;}
 
@@ -334,6 +350,7 @@ class PlaceDB : public BookshelfParser::BookshelfDataBase
         virtual void add_macro(std::string const& name);
         virtual void set_bookshelf_design(std::string& name);
         virtual void bookshelf_end(); 
+        virtual void update_nodes();
 
         /// write placement solutions 
         virtual bool write(std::string const& filename) const;
@@ -354,6 +371,7 @@ class PlaceDB : public BookshelfParser::BookshelfDataBase
         std::string m_libCellTemp;
 
         std::size_t num_movable_nodes; ///< number of movable cells 
+        std::size_t original_num_movable_nodes; ///< number of movable cells
         std::size_t num_fixed_nodes; ///< number of fixed cells 
         std::size_t m_numLibCell; ///< number of standard cells in the library
         std::size_t m_numLUT; ///< number of LUTs in design
@@ -371,9 +389,11 @@ class PlaceDB : public BookshelfParser::BookshelfDataBase
 
         //New approach to parsing
         std::vector<std::string> mov_node_names; 
+        std::vector<std::string> original_mov_node_names;
         std::vector<std::string> fixed_node_names;
         std::vector<std::string> fixed_node_types;
         std::vector<std::string> mov_node_types;
+        std::vector<std::string> original_mov_node_types;
         std::vector<std::string> net_names;
         std::vector<std::string> pin_names;
         std::vector<std::string> pin_types;
@@ -408,7 +428,9 @@ class PlaceDB : public BookshelfParser::BookshelfDataBase
         //string2index_map_type mov_node_name2id_map;
         string2index_map_type fixed_node_name2id_map;
         string2index_map_type node_name2id_map;
+        string2index_map_type original_node_name2id_map;
         string2index_map_type net_name2id_map;
+        string2index_map_type cascade_shape_name2id_map;
 
         std::vector<double> dspSiteXYs;
         // std::vector<double> ramSiteXYs;
@@ -433,15 +455,23 @@ class PlaceDB : public BookshelfParser::BookshelfDataBase
         std::vector<double> cascade_shape_widths;
         std::vector<std::string> cascade_shape2macro_type;
 
+        double m_cascade_nodeSizeXTemp;
+        double m_cascade_nodeSizeYTemp;
+        std::size_t num_cascade_nodesTemp;
+
         std::vector<std::string> cascade_inst_names;
         std::vector<index_type> cascade_inst2shape;
-        std::vector<index_type> flat_cascade_inst2node;
-        std::vector<index_type> flat_cascade_inst2node_start;
+        std::vector<double> org_cascade_node_pin_offset_x;
+        std::vector<double> org_cascade_node_pin_offset_y;
+        std::vector<double> org_cascade_node_x_offset;
+        std::vector<double> org_cascade_node_y_offset;
 
-        string2index_map_type cascade_inst_name2id_map;
-        string2index_map_type cascade_shape_name2id_map;
+        std::vector<std::vector<index_type> > cascade_inst2org_node_map;
+        std::vector<index_type> cascade_inst2org_start_node;
+        std::vector<index_type> original_node_is_cascade;
+        std::vector<index_type> original_node2node_map;
 
-        std::vector<index_type> macro_inst;
+        std::vector<index_type> original_macro_nodes;
 
 };
 
