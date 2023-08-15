@@ -370,28 +370,31 @@ class PlaceDBFPGA (object):
 
         self.num_physical_constraints = pydb.num_physical_constraints
         self.num_region_constraint_boxes = pydb.num_region_constraint_boxes
-        self.region_box2xl = np.array(pydb.region_box2xl)
-        self.region_box2yl = np.array(pydb.region_box2yl)
-        self.region_box2xh = np.array(pydb.region_box2xh)
-        self.region_box2yh = np.array(pydb.region_box2yh)
-        self.flat_constraint2box = np.array(pydb.flat_constraint2box)
-        self.flat_constraint2box_start = np.array(pydb.flat_constraint2box_start)
-        self.constraint2node_map = np.array(pydb.constraint2node_map)
-        self.flat_constraint2node = np.array(pydb.flat_constraint2node)
-        self.flat_constraint2node_start = np.array(pydb.flat_constraint2node_start)
+        self.region_box2xl = np.array(pydb.region_box2xl, dtype=self.dtype)
+        self.region_box2yl = np.array(pydb.region_box2yl, dtype=self.dtype)
+        self.region_box2xh = np.array(pydb.region_box2xh, dtype=self.dtype)
+        self.region_box2yh = np.array(pydb.region_box2yh, dtype=self.dtype)
+        self.flat_constraint2box = np.array(pydb.flat_constraint2box, dtype=np.int32)
+        self.flat_constraint2box_start = np.array(pydb.flat_constraint2box_start, dtype=np.int32)
+        self.constraint2node_map = pydb.constraint2node_map
+        self.flat_constraint2node = np.array(pydb.flat_constraint2node, dtype=np.int32)
+        self.flat_constraint2node_start = np.array(pydb.flat_constraint2node_start, dtype=np.int32)
 
         # TODO: can comment out the following lines later
-        self.cascade_shape_names = np.array(pydb.cascade_shape_names)
-        self.cascade_shape_heights = np.array(pydb.cascade_shape_heights)
-        self.cascade_shape_widths = np.array(pydb.cascade_shape_widths)
-        self.cascade_shape2macro_type = np.array(pydb.cascade_shape2macro_type)
+        self.cascade_shape_names = np.array(pydb.cascade_shape_names, dtype=np.str_)
+        self.cascade_shape_heights = np.array(pydb.cascade_shape_heights, dtype=self.dtype)
+        self.cascade_shape_widths = np.array(pydb.cascade_shape_widths, dtype=self.dtype)
+        self.cascade_shape2macro_type = np.array(pydb.cascade_shape2macro_type, dtype=np.str_)
 
-        self.cascade_inst_names = np.array(pydb.cascade_inst_names)
-        self.cascade_inst2shape = np.array(pydb.cascade_inst2shape)
+        self.cascade_inst_names = np.array(pydb.cascade_inst_names, dtype=np.str_)
+        self.cascade_inst2shape = np.array(pydb.cascade_inst2shape, dtype=np.int32)
 
         self.cascade_inst2org_node_map = pydb.cascade_inst2org_node_map
-        self.cascade_inst2org_start_node = np.array(pydb.cascade_inst2org_start_node)
-        self.original_macro_nodes = np.array(pydb.original_macro_nodes)
+        self.cascade_inst2org_start_node = np.array(pydb.cascade_inst2org_start_node, dtype=np.int32)
+        self.original_macro_nodes = np.array(pydb.original_macro_nodes, dtype=np.int32)
+
+        self.is_macro_inst = np.zeros(self.num_physical_nodes, dtype=np.int32)
+        self.is_macro_inst[self.original_node2node_map[self.original_macro_nodes]] = 1
 
         self.num_routing_layers = 1
         self.unit_horizontal_capacity = 0.95 * params.unit_horizontal_capacity
@@ -399,7 +402,7 @@ class PlaceDBFPGA (object):
 
         self.loc2site_map = self.create_loc2site_map()
 
-        # pdb.set_trace()
+        pdb.set_trace()
 
     def create_loc2site_map(self):
         """
@@ -868,6 +871,46 @@ class PlaceDBFPGA (object):
         #if params.scale_factor != 1.0:
         #    self.scale_pl(params.scale_factor)
         logging.info("read_pl takes %.3f seconds" % (time.time()-tt))
+    
+    
+    def read_vivado_placement(self, vivado_placement_file):
+        """
+        @brief read vivado placement solution
+        """
+        movable_site2loc_map = {}
+
+        for loc in self.loc2site_map:
+            loc_x, loc_y, loc_z = loc
+            site_name = self.loc2site_map[loc]
+            if site_name not in movable_site2loc_map:
+                movable_site2loc_map[site_name] = (loc_x, loc_y)
+
+        name2sitebel_map = {}
+        with open(vivado_placement_file, "r") as f:
+            for line in f:
+                inst_name, site_name, bel_name = line.split()
+                bel_name = bel_name.replace("SLICEL.", "")
+                bel_name = bel_name.replace("SLICEM.", "") 
+                name2sitebel_map[inst_name] = (site_name, bel_name)
+
+        belmap = {"AFF"   : 0, "AFF2"  : 1, "BFF"   : 2, "BFF2"  : 3, "CFF"   : 4, "CFF2"  : 5, "DFF"   : 6, "DFF2"  : 7, "EFF"   : 8, "EFF2"  : 9, "FFF"   : 10, "FFF2"  : 11, "GFF"   : 12, "GFF2"  : 13, "HFF"   : 14, "HFF2"  : 15,
+            "A5LUT" : 0, "A6LUT" : 1, "B5LUT" : 2, "B6LUT" : 3, "C5LUT" : 4, "C6LUT" : 5, "D5LUT" : 6, "D6LUT" : 7, "E5LUT" : 8, "E6LUT" : 9, "F5LUT" : 10, "F6LUT" : 11, "G5LUT" : 12, "G6LUT" : 13, "H5LUT" : 14, "H6LUT" : 15}
+
+        for i in range(self.num_movable_nodes):
+            inst_name = self.node_names[i]
+            site_name, bel_name = name2sitebel_map[inst_name]
+            if site_name not in movable_site2loc_map:
+                print("site_name %s not in movable_site2loc_map" % (site_name))
+                continue
+            loc_x, loc_y = movable_site2loc_map[site_name]
+            self.node_x[i] = loc_x
+            self.node_y[i] = loc_y
+
+            if bel_name in belmap:
+                self.node_z[i] = belmap[bel_name]
+            else:
+                print("bel_name %s not in belmap" % (bel_name))
+                self.node_z[i] = 0
 
     def apply(self, params, node_x, node_y, node_z):
         """

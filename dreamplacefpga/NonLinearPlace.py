@@ -543,7 +543,7 @@ class NonLinearPlaceFPGA (BasicPlaceFPGA):
                         # valid_margin = 0 if valid_margin < 5 else valid_margin
                         ### move cells into fence regions
                         for i in range(num_regions):
-                            if i == 4:
+                            if i == 5:
                                 continue
                             mask = (node2fence_region_map == i)
                             pos_x_i, pos_y_i = pos_x[mask], pos_y[mask]
@@ -551,7 +551,7 @@ class NonLinearPlaceFPGA (BasicPlaceFPGA):
                             node_size_x_i, node_size_y_i = node_size_x[mask], node_size_y[mask]
                             pos_xh_i = pos_x_i + node_size_x_i
                             pos_yh_i = pos_y_i + node_size_y_i
-                            regions_i = regions[i] # [n_regions, 4]
+                            regions_i = regions[i] # [n_regions, 5]
                             delta_min = torch.empty(num_movable_nodes_i, device=pos_x.device).fill_(((placedb.xh-placedb.xl)**2+(placedb.yh-placedb.yl)**2))
                             delta_x_min = torch.zeros_like(delta_min)
                             delta_y_min = torch.zeros_like(delta_min)
@@ -647,7 +647,7 @@ class NonLinearPlaceFPGA (BasicPlaceFPGA):
 
                         ### write back solution
                         fillers = np.zeros(self.num_filler_nodes, dtype=params.dtype)
-                        fmask = placedb.node2fence_region_map == 4
+                        fmask = placedb.node2fence_region_map == 5
                         fillMask = np.concatenate((fmask,fillers.astype(bool),fmask,fillers.astype(bool)),axis=0)
                         allLoc = np.concatenate((placedb.node_x, fillers, placedb.node_y, fillers),axis=0)
                         omask = ~fmask
