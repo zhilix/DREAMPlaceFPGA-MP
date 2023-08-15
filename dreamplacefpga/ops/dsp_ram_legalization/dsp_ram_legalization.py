@@ -53,7 +53,7 @@ class LegalizeDSPRAMFunction(Function):
 
         available_sites = np.ones(len(sites), dtype=bool)
         rem_insts = np.ones(placedb.num_physical_nodes, dtype=bool)
-        final_locX = np.ones(placedb.num_physical_nodes, dtype=np.int32)
+        final_locX = np.ones(placedb.num_physical_nodes, dtype=np.float32)
         final_locX *= -1
         final_locY = np.ones_like(final_locX)
         final_locY *= -1
