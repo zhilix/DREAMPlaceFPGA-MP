@@ -403,15 +403,13 @@ class PlaceDBFPGA (object):
         self.original_macro_nodes = np.array(pydb.original_macro_nodes)
         #Is node a macro
         self.is_macro_inst = np.zeros(self.num_physical_nodes, dtype=np.int32)
-        self.is_macro_inst[self.original_macro_nodes] = 1
+        self.is_macro_inst[self.original_node2node_map[self.original_macro_nodes]] = 1
 
         self.num_routing_layers = 1
         self.unit_horizontal_capacity = 0.95 * params.unit_horizontal_capacity
         self.unit_vertical_capacity = 0.95 * params.unit_vertical_capacity
 
         self.loc2site_map = self.create_loc2site_map()
-
-        # pdb.set_trace()
 
     def create_loc2site_map(self):
         """
@@ -819,12 +817,12 @@ class PlaceDBFPGA (object):
                     node_z[node_id]
                     )     
             #Include checker to ensure macro instance is within region
-            if self.node2regionBox_map[i] != -1:
-                regionId = self.node2regionBox_map[i]
-                if (node_x[i] < self.region_box2xl[regionId] or node_x[i] > self.region_box2xh[regionId] or
-                    node_y[i] < self.region_box2yl[regionId] or node_y[i] > self.region_box2yh[regionId]):
-                    logging.info("ERROR: Node %d %s of type %d incorrectly placed at (%d, %d) which is outside the region (%d, %d, %d, %d)" %
-                                (i, str_node_names[i], self.node_types[i], node_x[i], node_y[i], self.region_box2xl[regionId],
+            if self.node2regionBox_map[node_id] != -1:
+                regionId = self.node2regionBox_map[node_id]
+                if (node_x[node_id] < self.region_box2xl[regionId] or node_x[node_id] + self.node_size_x[node_id] > self.region_box2xh[regionId] or
+                    node_y[node_id] < self.region_box2yl[regionId] or node_y[node_id] + self.node_size_y[node_id] > self.region_box2yh[regionId]):
+                    logging.info("ERROR: Node %d %s of type %d incorrectly placed at (%d, %d) of size %.2f x %.2f which is outside the region (%d, %d, %d, %d)" %
+                                (node_id, str_node_names[i], self.node_types[node_id], node_x[node_id], node_y[node_id], self.node_size_x[node_id], self.node_size_y[node_id], self.region_box2xl[regionId],
                                 self.region_box2yl[regionId], self.region_box2xh[regionId], self.region_box2yh[regionId]))
 
         with open(pl_file, "w") as f:
