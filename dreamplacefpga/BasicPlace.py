@@ -27,7 +27,9 @@ import dreamplacefpga.ops.precondWL.precondWL as precondWL
 import dreamplacefpga.ops.demandMap.demandMap as demandMap
 import dreamplacefpga.ops.sortNode2Pin.sortNode2Pin as sortNode2Pin
 import dreamplacefpga.ops.lut_ff_legalization.lut_ff_legalization as lut_ff_legalization
+import dreamplacefpga.ops.netlist_graph.netlist_graph as netlist_graph
 import pdb
+import random
 
 datatypes = {
         'float32' : torch.float32, 
@@ -195,6 +197,8 @@ class PlaceDataCollectionFPGA(object):
             _, self.sorted_node_map = torch.sort(movable_size_x)
             self.sorted_node_map = self.sorted_node_map.to(torch.int32)
 
+            self.is_macro_inst = torch.from_numpy(placedb.is_macro_inst).to(device)
+
 class PlaceOpCollectionFPGA(object):
     """
     @brief A wrapper for all ops
@@ -285,6 +289,26 @@ class BasicPlaceFPGA(nn.Module):
         self.init_pos[placedb.num_nodes:placedb.num_nodes+placedb.num_movable_nodes] -= (0.5 * placedb.node_size_y[0:placedb.num_movable_nodes])
         #logging.info("Random Init Place in python takes %.2f seconds" % (time.time() - tt))
 
+        # # update initial location for macros
+        # pl_file = params.aux_input.replace('design.aux','sample.pl')
+        # tt = time.time()
+        # logging.info("reading %s" % (pl_file))
+        # with open(pl_file, "r") as f:
+        #     for line in f:
+        #         if len(line.split()) == 4:
+        #             node_name, pos_x, pos_y, pos_z = line.split()
+        #             org_node_id = placedb.original_node_name2id_map[node_name]
+        #             if org_node_id in placedb.cascade_inst2org_start_node:
+        #                 node_id = placedb.original_node2node_map[org_node_id]
+        #                 if params.macro_pl == 'vivado':
+        #                     self.init_pos[node_id] = float(pos_x)
+        #                     self.init_pos[node_id+placedb.num_nodes] = float(pos_y)
+        #                 elif params.macro_pl == 'random':
+        #                     self.init_pos[node_id] = random.uniform(0, placedb.xh - placedb.xl)
+        #                     self.init_pos[node_id+placedb.num_nodes] = random.uniform(0, placedb.yh - placedb.yl)
+                    
+        # logging.info("read macro placement takes %.3f seconds" % (time.time()-tt))
+
         if placedb.num_filler_nodes:  # uniformly distribute filler cells in the layout
             ### uniformly spread fillers in fence region
             ### for cells in the fence region
@@ -360,6 +384,9 @@ class BasicPlaceFPGA(nn.Module):
  
         # draw placement
         self.op_collections.draw_place_op = self.build_draw_placement(params, placedb)
+
+        # build a netlist graph for gnn
+        # self.op_collections.netlist_graph_op = self.build_netlist_graph(params, placedb, self.data_collections, self.device)
 
         # flag for rmst_wl_op
         # can only read once
@@ -600,6 +627,29 @@ class BasicPlaceFPGA(nn.Module):
         @param placedb placement database
         """
         return draw_place.DrawPlaceFPGA(placedb)
+
+    
+    def build_netlist_graph(self, params, placedb, data_collections, device):
+        """
+        @brief build a netlist graph for gnn
+        @param params parameters
+        @param placedb placement database
+        @param data_collections a collection of all data and variables required for constructing the ops
+        """
+        return netlist_graph.NetlistGraph(
+            num_physical_nodes=placedb.num_physical_nodes,
+            node_size_x=data_collections.node_size_x,
+            node_size_y=data_collections.node_size_y, 
+            num_nets=placedb.num_nets,
+            net_mask=data_collections.net_mask_ignore_large_degrees,
+            flat_net2pin=data_collections.flat_net2pin_map,
+            flat_net2pin_start=data_collections.flat_net2pin_start_map,
+            node2pincount_map=data_collections.node2pincount_map,
+            pin2node_map=data_collections.pin2node_map,
+            pin_types=data_collections.pin_typeIds,
+            is_macro_inst=data_collections.is_macro_inst,
+            )
+
 
     def validate(self, placedb, pos, iteration):
         """
