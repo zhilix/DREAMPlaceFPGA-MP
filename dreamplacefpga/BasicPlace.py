@@ -27,7 +27,7 @@ import dreamplacefpga.ops.precondWL.precondWL as precondWL
 import dreamplacefpga.ops.demandMap.demandMap as demandMap
 import dreamplacefpga.ops.sortNode2Pin.sortNode2Pin as sortNode2Pin
 import dreamplacefpga.ops.lut_ff_legalization.lut_ff_legalization as lut_ff_legalization
-import dreamplacefpga.ops.netlist_graph.netlist_graph as netlist_graph
+#import dreamplacefpga.ops.netlist_graph.netlist_graph as netlist_graph
 import pdb
 import random
 
@@ -158,8 +158,12 @@ class PlaceDataCollectionFPGA(object):
                 placedb.flat_region_boxes_start).to(device)
             self.node2fence_region_map = torch.from_numpy(
                 placedb.node2fence_region_map).to(device)
-            #For region constraints
-            self.node2regionBox_map = torch.from_numpy(placedb.node2regionBox_map).to(dtype=torch.int32, device=device)
+
+            #Region Constraints
+            #Extend node2regionBox_map to include filler nodes as well
+            self.node2regionBox_map = torch.ones(placedb.num_nodes, dtype=torch.int32, device=device)
+            self.node2regionBox_map *= -1
+            self.node2regionBox_map[:placedb.num_physical_nodes].data.copy_(torch.from_numpy(placedb.node2regionBox_map).to(dtype=torch.int32, device=device))
             self.regionBox2xl = torch.from_numpy(placedb.region_box2xl).to(dtype=datatypes[params.dtype],device=device)
             self.regionBox2yl = torch.from_numpy(placedb.region_box2yl).to(dtype=datatypes[params.dtype],device=device)
             self.regionBox2xh = torch.from_numpy(placedb.region_box2xh).to(dtype=datatypes[params.dtype],device=device)
@@ -629,26 +633,26 @@ class BasicPlaceFPGA(nn.Module):
         return draw_place.DrawPlaceFPGA(placedb)
 
     
-    def build_netlist_graph(self, params, placedb, data_collections, device):
-        """
-        @brief build a netlist graph for gnn
-        @param params parameters
-        @param placedb placement database
-        @param data_collections a collection of all data and variables required for constructing the ops
-        """
-        return netlist_graph.NetlistGraph(
-            num_physical_nodes=placedb.num_physical_nodes,
-            node_size_x=data_collections.node_size_x,
-            node_size_y=data_collections.node_size_y, 
-            num_nets=placedb.num_nets,
-            net_mask=data_collections.net_mask_ignore_large_degrees,
-            flat_net2pin=data_collections.flat_net2pin_map,
-            flat_net2pin_start=data_collections.flat_net2pin_start_map,
-            node2pincount_map=data_collections.node2pincount_map,
-            pin2node_map=data_collections.pin2node_map,
-            pin_types=data_collections.pin_typeIds,
-            is_macro_inst=data_collections.is_macro_inst,
-            )
+    #def build_netlist_graph(self, params, placedb, data_collections, device):
+    #    """
+    #    @brief build a netlist graph for gnn
+    #    @param params parameters
+    #    @param placedb placement database
+    #    @param data_collections a collection of all data and variables required for constructing the ops
+    #    """
+    #    return netlist_graph.NetlistGraph(
+    #        num_physical_nodes=placedb.num_physical_nodes,
+    #        node_size_x=data_collections.node_size_x,
+    #        node_size_y=data_collections.node_size_y, 
+    #        num_nets=placedb.num_nets,
+    #        net_mask=data_collections.net_mask_ignore_large_degrees,
+    #        flat_net2pin=data_collections.flat_net2pin_map,
+    #        flat_net2pin_start=data_collections.flat_net2pin_start_map,
+    #        node2pincount_map=data_collections.node2pincount_map,
+    #        pin2node_map=data_collections.pin2node_map,
+    #        pin_types=data_collections.pin_typeIds,
+    #        is_macro_inst=data_collections.is_macro_inst,
+    #        )
 
 
     def validate(self, placedb, pos, iteration):
