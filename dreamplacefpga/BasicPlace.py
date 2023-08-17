@@ -26,8 +26,8 @@ import dreamplacefpga.ops.pin_pos.pin_pos as pin_pos
 import dreamplacefpga.ops.precondWL.precondWL as precondWL
 import dreamplacefpga.ops.demandMap.demandMap as demandMap
 import dreamplacefpga.ops.sortNode2Pin.sortNode2Pin as sortNode2Pin
+import dreamplacefpga.ops.dsp_ram_legalization.dsp_ram_legalization as dsp_ram_legalization
 import dreamplacefpga.ops.lut_ff_legalization.lut_ff_legalization as lut_ff_legalization
-#import dreamplacefpga.ops.netlist_graph.netlist_graph as netlist_graph
 import pdb
 import random
 
@@ -229,6 +229,7 @@ class PlaceOpCollectionFPGA(object):
         self.clustering_compatibility_ff_area_op= None
         self.adjust_node_area_op = None
         self.sort_node2pin_op = None
+        self.dsp_ram_legalization_op = None
         self.lut_ff_legalization_op = None
 
 class BasicPlaceFPGA(nn.Module):
@@ -384,13 +385,11 @@ class BasicPlaceFPGA(nn.Module):
         self.op_collections.density_overflow_op = self.build_electric_overflow(params, placedb, self.data_collections, self.device)
 
         #Legalization
+        self.op_collections.dsp_ram_legalization_op = self.build_dsp_ram_legalization(placedb, self.data_collections, self.device)
         self.op_collections.lut_ff_legalization_op = self.build_lut_ff_legalization(params, placedb, self.data_collections, self.device)
  
         # draw placement
         self.op_collections.draw_place_op = self.build_draw_placement(params, placedb)
-
-        # build a netlist graph for gnn
-        # self.op_collections.netlist_graph_op = self.build_netlist_graph(params, placedb, self.data_collections, self.device)
 
         # flag for rmst_wl_op
         # can only read once
@@ -564,6 +563,17 @@ class BasicPlaceFPGA(nn.Module):
             deterministic_flag=params.deterministic_flag,
             sorted_node_map=data_collections.sorted_node_map)
 
+    def build_dsp_ram_legalization(self, placedb, data_collections, device):
+        """
+        @brief legalization of DSP/BRAM Instances
+        @param placedb placement database
+        @param data_collections a collection of all data and variables required for constructing the ops
+        @param device cpu or cuda
+        """
+        return dsp_ram_legalization.LegalizeDSPRAM(
+            data_collections=data_collections,
+            placedb=placedb,
+            device=device)
 
     def build_lut_ff_legalization(self, params, placedb, data_collections, device):
         """
@@ -631,29 +641,6 @@ class BasicPlaceFPGA(nn.Module):
         @param placedb placement database
         """
         return draw_place.DrawPlaceFPGA(placedb)
-
-    
-    #def build_netlist_graph(self, params, placedb, data_collections, device):
-    #    """
-    #    @brief build a netlist graph for gnn
-    #    @param params parameters
-    #    @param placedb placement database
-    #    @param data_collections a collection of all data and variables required for constructing the ops
-    #    """
-    #    return netlist_graph.NetlistGraph(
-    #        num_physical_nodes=placedb.num_physical_nodes,
-    #        node_size_x=data_collections.node_size_x,
-    #        node_size_y=data_collections.node_size_y, 
-    #        num_nets=placedb.num_nets,
-    #        net_mask=data_collections.net_mask_ignore_large_degrees,
-    #        flat_net2pin=data_collections.flat_net2pin_map,
-    #        flat_net2pin_start=data_collections.flat_net2pin_start_map,
-    #        node2pincount_map=data_collections.node2pincount_map,
-    #        pin2node_map=data_collections.pin2node_map,
-    #        pin_types=data_collections.pin_typeIds,
-    #        is_macro_inst=data_collections.is_macro_inst,
-    #        )
-
 
     def validate(self, placedb, pos, iteration):
         """

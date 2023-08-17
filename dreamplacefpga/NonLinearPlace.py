@@ -24,7 +24,6 @@ from PlaceObj import *
 from EvalMetrics import *
 import NesterovAcceleratedGradientOptimizer
 import pdb 
-import dreamplacefpga.ops.dsp_ram_legalization.dsp_ram_legalization as dsp_ram_legalization
 
 class NonLinearPlaceFPGA (BasicPlaceFPGA):
     """
@@ -451,15 +450,15 @@ class NonLinearPlaceFPGA (BasicPlaceFPGA):
                             if model.lock_mask is not None and model.lock_mask[2:4].sum() > 1:
                                 break
                             #Legalize DSP at the end of Global placement
-                            movVal = dsp_ram_legalization.LegalizeDSPRAMFunction.legalize(pos, placedb, 2, model)
+                            movVal = self.op_collections.dsp_ram_legalization_op.legalize(pos, 2, model)
                             logging.info("Legalized DSPs with maxMov = %g and avgMov = %g" % (movVal[0], movVal[1]))
 
                             #Legalize BRAM at the end of Global placement
-                            moVal = dsp_ram_legalization.LegalizeDSPRAMFunction.legalize(pos, placedb, 3, model)
+                            moVal = self.op_collections.dsp_ram_legalization_op.legalize(pos, 3, model)
                             logging.info("Legalized BRAMs with maxMov = %g and avgMov = %g" % (moVal[0], moVal[1]))
 
                             ##Legalize URAM at the end of Global placement
-                            #moVal = dsp_ram_legalization.LegalizeDSPRAMFunction.legalize(pos, placedb, 4, model)
+                            #moVal = self.op_collections.dsp_ram_legalization_op.legalize(pos, 4, model)
                             #logging.info("Legalized URAMs with maxMov = %g and avgMov = %g" % (moVal[0], moVal[1]))
 
                             #Lock DSP/RAM locations
