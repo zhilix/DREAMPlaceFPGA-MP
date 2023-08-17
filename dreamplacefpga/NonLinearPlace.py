@@ -775,55 +775,71 @@ class NonLinearPlaceFPGA (BasicPlaceFPGA):
 
             tt = time.time()
 
-            self.op_collections.lut_ff_legalization_op.initialize(self.pos[0], model.precondWL[:placedb.num_physical_nodes], sortedNodeMap, sortedNodeIdx, sortedNetMap, sortedNetIdx, sortedPinMap)
+            #Only legalize macro lut/ff instances
+            num_macro_lut_ff_instances = (np.logical_and(placedb.is_macro_inst == 1,placedb.node2fence_region_map < 2)).sum()
 
-            DLStatus = 1
-            dlIter = 0
+            if num_macro_lut_ff_instances > 0:
+                self.op_collections.lut_ff_legalization_op.initialize(self.pos[0], model.precondWL[:placedb.num_physical_nodes], sortedNodeMap, sortedNodeIdx, sortedNetMap, sortedNetIdx, sortedPinMap)
+                self.pos[0].data.copy_(self.op_collections.lut_ff_legalization_op.greedyLG_macroInsts(self.pos[0], 
+                                        model.precondWL[:placedb.num_physical_nodes], self.data_collections.node_z[:placedb.num_movable_nodes],
+                                        sortedNodeMap, sortedNodeIdx, sortedNetMap, sortedNetIdx, sortedPinMap))
+                logging.info("legalization takes %.3f seconds" % (time.time()-tt))
+                cur_metric = EvalMetricsFPGA(iteration)
+                all_metrics.append(cur_metric)
+                cur_metric.evaluate(placedb, {"hpwl" : self.op_collections.hpwl_op}, self.pos[0])
+                logging.info(cur_metric)
+                iteration += 1
+
+            ###Comment out legalizer for all LUT/FF instances
+            ##self.op_collections.lut_ff_legalization_op.initialize(self.pos[0], model.precondWL[:placedb.num_physical_nodes], sortedNodeMap, sortedNodeIdx, sortedNetMap, sortedNetIdx, sortedPinMap)
+
+            ##DLStatus = 1
+            ##dlIter = 0
         
-            #For runDLIter stopping criteria
-            activeStatus = torch.zeros(placedb.num_sites_x*placedb.num_sites_y, dtype=torch.int, device=self.device)
-            illegalStatus = torch.zeros(placedb.num_nodes, dtype=torch.int, device=self.device)
+            ###For runDLIter stopping criteria
+            ##activeStatus = torch.zeros(placedb.num_sites_x*placedb.num_sites_y, dtype=torch.int, device=self.device)
+            ##illegalStatus = torch.zeros(placedb.num_nodes, dtype=torch.int, device=self.device)
 
-            iter_stable = 0
-            prevAct = 0
+            ##iter_stable = 0
+            ##prevAct = 0
 
-            while (DLStatus == 1):
-                self.op_collections.lut_ff_legalization_op.runDLIter(self.pos[0], model.precondWL[:placedb.num_physical_nodes], sortedNodeMap, sortedNodeIdx, sortedNetMap, sortedNetIdx, sortedPinMap, activeStatus, illegalStatus, dlIter)
+            ##while (DLStatus == 1):
+            ##    self.op_collections.lut_ff_legalization_op.runDLIter(self.pos[0], model.precondWL[:placedb.num_physical_nodes], sortedNodeMap, sortedNodeIdx, sortedNetMap, sortedNetIdx, sortedPinMap, activeStatus, illegalStatus, dlIter)
 
-                #######DBG - Print HPWL
-                #temp_pos.data.copy_(self.op_collections.lut_ff_legalization_op.cacheSol_dbg(temp_pos))
-                #cur_metric = EvalMetricsFPGA(iteration)
-                #all_metrics.append(cur_metric)
-                #cur_metric.evaluate(placedb, {"hpwl" : self.op_collections.hpwl_op}, temp_pos)
-                #logging.info(cur_metric)
-                ####DBG
+            ##    #######DBG - Print HPWL
+            ##    #temp_pos.data.copy_(self.op_collections.lut_ff_legalization_op.cacheSol_dbg(temp_pos))
+            ##    #cur_metric = EvalMetricsFPGA(iteration)
+            ##    #all_metrics.append(cur_metric)
+            ##    #cur_metric.evaluate(placedb, {"hpwl" : self.op_collections.hpwl_op}, temp_pos)
+            ##    #logging.info(cur_metric)
+            ##    ####DBG
 
-                if prevAct == illegalStatus.sum().item() + activeStatus.sum().item():
-                    iter_stable = iter_stable + 1
-                else:
-                    iter_stable = 0
+            ##    if prevAct == illegalStatus.sum().item() + activeStatus.sum().item():
+            ##        iter_stable = iter_stable + 1
+            ##    else:
+            ##        iter_stable = 0
 
-                dlIter = dlIter+1
-                if activeStatus.sum().item() > 0:
-                    DLStatus = 1
-                elif illegalStatus.sum().item() > 0:
-                    DLStatus = -1
-                else:
-                    DLStatus = 0
+            ##    dlIter = dlIter+1
+            ##    if activeStatus.sum().item() > 0:
+            ##        DLStatus = 1
+            ##    elif illegalStatus.sum().item() > 0:
+            ##        DLStatus = -1
+            ##    else:
+            ##        DLStatus = 0
 
-                prevAct=illegalStatus.sum().item() + activeStatus.sum().item()
-                #DBG
-                #pdb.set_trace()
-                if dlIter > 100 or iter_stable > 5:
-                    DLStatus = 0
+            ##    prevAct=illegalStatus.sum().item() + activeStatus.sum().item()
+            ##    #DBG
+            ##    #pdb.set_trace()
+            ##    if dlIter > 100 or iter_stable > 5:
+            ##        DLStatus = 0
 
-            self.pos[0].data.copy_(self.op_collections.lut_ff_legalization_op.ripUP_Greedy_slotAssign(self.pos[0], model.precondWL[:placedb.num_physical_nodes], self.data_collections.node_z[:placedb.num_movable_nodes], sortedNodeMap, sortedNodeIdx, sortedNetMap, sortedNetIdx, sortedPinMap))
-            logging.info("legalization takes %.3f seconds" % (time.time()-tt))
-            cur_metric = EvalMetricsFPGA(iteration)
-            all_metrics.append(cur_metric)
-            cur_metric.evaluate(placedb, {"hpwl" : self.op_collections.hpwl_op}, self.pos[0])
-            logging.info(cur_metric)
-            iteration += 1
+            ##self.pos[0].data.copy_(self.op_collections.lut_ff_legalization_op.ripUP_Greedy_slotAssign(self.pos[0], model.precondWL[:placedb.num_physical_nodes], self.data_collections.node_z[:placedb.num_movable_nodes], sortedNodeMap, sortedNodeIdx, sortedNetMap, sortedNetIdx, sortedPinMap))
+            ##logging.info("legalization takes %.3f seconds" % (time.time()-tt))
+            ##cur_metric = EvalMetricsFPGA(iteration)
+            ##all_metrics.append(cur_metric)
+            ##cur_metric.evaluate(placedb, {"hpwl" : self.op_collections.hpwl_op}, self.pos[0])
+            ##logging.info(cur_metric)
+            ##iteration += 1
 
         # plot placement 
         #if params.plot_flag: 
