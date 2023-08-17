@@ -60,14 +60,16 @@ int legalizeCascadeInstsLauncher(
     T stepSize = resource_size_y[site_type_id];
 
     int scaled_y_grids = DREAMPLACE_STD_NAMESPACE::ceil(num_sites_y/stepSize);
+    //Keep track of sites available
     std::vector<unsigned> occupied_sites(num_sites_x*scaled_y_grids, 0);
+    //Keep track of sites considered with a 1-unit distance-based spiral accessor
+    std::vector<unsigned> considered_sites(num_sites_x*scaled_y_grids, 0);
 
     std::vector<int> sorted_instIds(num_cascade_insts);
     std::iota(sorted_instIds.begin(),sorted_instIds.end(),0); //Initializing
 
     //Sort insts based on Slices occupied
     std::sort(sorted_instIds.begin(),sorted_instIds.end(), [&](int i,int j){return cascade_sites[i]>cascade_sites[j];} );
-
 
     for (int i = 0; i < num_cascade_insts; ++i)
     {
@@ -111,18 +113,22 @@ int legalizeCascadeInstsLauncher(
             T yVal = DREAMPLACE_STD_NAMESPACE::round(initY + spiral_accessor[2*sId+1]);
             yVal = DREAMPLACE_STD_NAMESPACE::round(yVal/stepSize)*stepSize;
             int siteId = xVal * num_sites_y + yVal;
+            //Keep track of considered sites
+            int cSiteId = xVal*scaled_y_grids + DREAMPLACE_STD_NAMESPACE::round(yVal/stepSize);
 
             //Check within bounds
             if (xVal < instLimit_xl || xVal + resource_size_x[site_type_id] > instLimit_xh ||
                     yVal < instLimit_yl || yVal + siteSpread*stepSize > instLimit_yh ||
-                    site_types[siteId] != site_type_id)
+                    site_types[siteId] != site_type_id || considered_sites[cSiteId] == 1)
             {
                 continue;
             }
+            considered_sites[cSiteId] = 1;
 
             ////DBG
-            //std::cout << "For inst: " << instId << " consider site: (" << xVal << ", " << yVal << ") of type: " << site_types[siteId] << " in region: " << site_type_id << std::endl;
+            //std::cout << "For inst: " << instId << " consider site: (" << xVal << ", " << yVal << ") of type: " << site_types[siteId] << " in region: " << site_type_id  << " for spiral accessor (" << spiral_accessor[2*sId] << ", " << spiral_accessor[2*sId+1] << std::endl;
             ////DBG
+
 
             T startY = DREAMPLACE_STD_NAMESPACE::round((yVal + (siteSpread-1)*stepSize)/stepSize)*stepSize;
             ////DBG
@@ -133,9 +139,6 @@ int legalizeCascadeInstsLauncher(
             for (T yId = yVal; yId <= startY; yId += stepSize)
             {
                 int siteMap = xVal*scaled_y_grids + DREAMPLACE_STD_NAMESPACE::round(yId/stepSize);
-                ////DBG
-                //std::cout << "Site at (" << xVal << ", " << DREAMPLACE_STD_NAMESPACE::round(yId/stepSize)*stepSize << ") is occupied: " << occupied_sites[siteMap] << std::endl;
-                ////DBG
                 if (occupied_sites[siteMap] != 0)
                 {
                     space_available = 0;
