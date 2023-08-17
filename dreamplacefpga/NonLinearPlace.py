@@ -704,11 +704,11 @@ class NonLinearPlaceFPGA (BasicPlaceFPGA):
                         self.data_collections.original_pin_offset_x)
                     self.data_collections.pin_offset_y.copy_(
                         self.data_collections.original_pin_offset_y)
-        else: 
-            cur_metric = EvalMetricsFPGA(iteration)
-            all_metrics.append(cur_metric)
-            cur_metric.evaluate(placedb, {"hpwl" : self.op_collections.hpwl_op}, self.pos[0])
-            logging.info(cur_metric)
+        #else: 
+        #    cur_metric = EvalMetricsFPGA(iteration)
+        #    all_metrics.append(cur_metric)
+        #    cur_metric.evaluate(placedb, {"hpwl" : self.op_collections.hpwl_op}, self.pos[0])
+        #    logging.info(cur_metric)
 
         # dump global placement solution for legalization 
         if params.dump_global_place_solution_flag: 
@@ -833,16 +833,40 @@ class NonLinearPlaceFPGA (BasicPlaceFPGA):
         if params.dump_legalize_solution_flag: 
             self.dump(params, placedb, self.pos[0].cpu(), "%s.dp.pklz" %(params.design_name()))
 
-        ## detailed placement 
-        #if params.detailed_place_flag: 
-        #    tt = time.time()
-        #    self.pos[0].data.copy_(self.op_collections.detailed_place_op(self.pos[0]))
-        #    logging.info("detailed placement takes %.3f seconds" % (time.time()-tt))
-        #    cur_metric = EvalMetricsFPGA(iteration)
-        #    all_metrics.append(cur_metric)
-        #    cur_metric.evaluate(placedb, {"hpwl" : self.op_collections.hpwl_op}, self.pos[0])
-        #    logging.info(cur_metric)
-        #    iteration += 1
+        # detailed placement not available yet - Use to report HPWL
+        if params.detailed_place_flag: 
+            place_file=params.lg_place_sol
+            if params.global_place_flag == 0 and params.legalize_flag == 0 and place_file != "":
+                #Load legal placement results from file
+                for global_place_params in params.global_place_stages:
+
+                    if params.gpu: 
+                        torch.cuda.synchronize()
+                    tt = time.time()
+                    # construct model and optimizer 
+                    density_weight = 0.0
+                    # construct placement model 
+                    model = PlaceObjFPGA(density_weight, params, placedb, self.data_collections,
+                                    self.op_collections, global_place_params).to(self.data_collections.pos[0].device)
+                    print("Model constructed in %g ms"%((time.time()-tt)*1000))
+
+                #logging.info("Reading %s" % (place_file))
+                with open (place_file,  "r") as f:
+                    for line in f:
+                        tokens = line.split()
+                        if len(tokens) > 0:
+                            nodeId = placedb.node_name2id_map[tokens[0]]
+                            self.data_collections.node_x[nodeId].data.fill_(float(tokens[1]))
+                            self.data_collections.node_y[nodeId].data.fill_(float(tokens[2]))
+                            self.data_collections.node_z[nodeId].data.fill_(int(tokens[3]))
+                self.pos[0][:placedb.num_physical_nodes].data.copy_(self.data_collections.node_x)
+                self.pos[0][placedb.num_nodes:placedb.num_nodes+placedb.num_physical_nodes].data.copy_(self.data_collections.node_y)
+                logging.info("Read Legalized Placement solution from %s" % (place_file))
+                cur_metric = EvalMetricsFPGA(iteration)
+                all_metrics.append(cur_metric)
+                cur_metric.evaluate(placedb, {"hpwl" : self.op_collections.hpwl_op}, self.pos[0])
+                logging.info(cur_metric)
+                #iteration += 1
 
         # save results 
         cur_pos = self.pos[0].data.clone().cpu().numpy()
