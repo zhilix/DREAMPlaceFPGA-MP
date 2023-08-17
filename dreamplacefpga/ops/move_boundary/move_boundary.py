@@ -1,7 +1,7 @@
 ##
 # @file   move_boundary.py
-# @author Yibo Lin (DREAMPlace)
-# @date   Jun 2018
+# @author Rachel Selina (DREAMPlaceFPGA), Yibo Lin (DREAMPlace)
+# @date   Aug 2023
 #
 
 import math 
@@ -25,6 +25,11 @@ class MoveBoundaryFunction(Function):
           pos,
           node_size_x,
           node_size_y,
+          regionBox2xl,
+          regionBox2yl,
+          regionBox2xh,
+          regionBox2yh,
+          node2regionBox_map,
           xl, 
           yl, 
           xh, 
@@ -33,11 +38,17 @@ class MoveBoundaryFunction(Function):
           num_filler_nodes, 
           num_threads
           ):
+
         if pos.is_cuda:
             output = move_boundary_cuda.forward(
                     pos.view(pos.numel()), 
                     node_size_x,
                     node_size_y,
+                    regionBox2xl,
+                    regionBox2yl,
+                    regionBox2xh,
+                    regionBox2yh,
+                    node2regionBox_map,
                     xl, 
                     yl, 
                     xh, 
@@ -50,6 +61,11 @@ class MoveBoundaryFunction(Function):
                     pos.view(pos.numel()), 
                     node_size_x,
                     node_size_y,
+                    regionBox2xl,
+                    regionBox2yl,
+                    regionBox2xh,
+                    regionBox2yh,
+                    node2regionBox_map,
                     xl, 
                     yl, 
                     xh, 
@@ -64,22 +80,34 @@ class MoveBoundary(object):
     """ 
     @brief Bound cells into layout boundary, perform in-place update 
     """
-    def __init__(self, node_size_x, node_size_y, xl, yl, xh, yh, num_movable_nodes, num_filler_nodes, num_threads):
+    def __init__(self, placedb, node_size_x, node_size_y,
+                 regionBox2xl, regionBox2yl, regionBox2xh, regionBox2yh,
+                 node2regionBox_map, num_threads):
         super(MoveBoundary, self).__init__()
         self.node_size_x = node_size_x
         self.node_size_y = node_size_y
-        self.xl = xl 
-        self.yl = yl
-        self.xh = xh 
-        self.yh = yh 
-        self.num_movable_nodes = num_movable_nodes
-        self.num_filler_nodes = num_filler_nodes
+        self.regionBox2xl = regionBox2xl
+        self.regionBox2yl = regionBox2yl
+        self.regionBox2xh = regionBox2xh
+        self.regionBox2yh = regionBox2yh
+        self.node2regionBox_map = node2regionBox_map
+        self.xl = placedb.xl 
+        self.yl = placedb.yl
+        self.xh = placedb.xh 
+        self.yh = placedb.yh 
+        self.num_movable_nodes = placedb.num_movable_nodes
+        self.num_filler_nodes = placedb.num_filler_nodes
         self.num_threads = num_threads
     def __call__(self, pos): 
         return MoveBoundaryFunction.forward(
                 pos,
                 node_size_x=self.node_size_x,
                 node_size_y=self.node_size_y,
+                regionBox2xl = self.regionBox2xl,
+                regionBox2yl = self.regionBox2yl,
+                regionBox2xh = self.regionBox2xh,
+                regionBox2yh = self.regionBox2yh,
+                node2regionBox_map = self.node2regionBox_map,
                 xl=self.xl, 
                 yl=self.yl, 
                 xh=self.xh, 

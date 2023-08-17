@@ -26,6 +26,7 @@ import dreamplacefpga.ops.pin_pos.pin_pos as pin_pos
 import dreamplacefpga.ops.precondWL.precondWL as precondWL
 import dreamplacefpga.ops.demandMap.demandMap as demandMap
 import dreamplacefpga.ops.sortNode2Pin.sortNode2Pin as sortNode2Pin
+import dreamplacefpga.ops.dsp_ram_legalization.dsp_ram_legalization as dsp_ram_legalization
 import dreamplacefpga.ops.lut_ff_legalization.lut_ff_legalization as lut_ff_legalization
 import pdb
 import random
@@ -95,8 +96,7 @@ class PlaceDataCollectionFPGA(object):
             self.uramSiteXYs = torch.from_numpy(placedb.uramSiteXYs).to(dtype=datatypes[params.dtype],device=device)
 
             # number of pins for each cell
-            self.pin_weights = (self.flat_node2pin_start_map[1:] -
-                                self.flat_node2pin_start_map[:-1]).to(
+            self.pin_weights = (self.flat_node2pin_start_map[1:] - self.flat_node2pin_start_map[:-1]).to(
                                     self.node_size_x.dtype)
             ## Resource type masks
             self.flop_mask = torch.from_numpy(placedb.flop_mask).to(device)
@@ -159,6 +159,16 @@ class PlaceDataCollectionFPGA(object):
             self.node2fence_region_map = torch.from_numpy(
                 placedb.node2fence_region_map).to(device)
 
+            #Region Constraints
+            #Extend node2regionBox_map to include filler nodes as well
+            self.node2regionBox_map = torch.ones(placedb.num_nodes, dtype=torch.int32, device=device)
+            self.node2regionBox_map *= -1
+            self.node2regionBox_map[:placedb.num_physical_nodes].data.copy_(torch.from_numpy(placedb.node2regionBox_map).to(dtype=torch.int32, device=device))
+            self.regionBox2xl = torch.from_numpy(placedb.region_box2xl).to(dtype=datatypes[params.dtype],device=device)
+            self.regionBox2yl = torch.from_numpy(placedb.region_box2yl).to(dtype=datatypes[params.dtype],device=device)
+            self.regionBox2xh = torch.from_numpy(placedb.region_box2xh).to(dtype=datatypes[params.dtype],device=device)
+            self.regionBox2yh = torch.from_numpy(placedb.region_box2yh).to(dtype=datatypes[params.dtype],device=device)
+
             self.num_nodes = torch.tensor(placedb.num_nodes, dtype=torch.int32, device=device)
             self.num_movable_nodes = torch.tensor(placedb.num_movable_nodes, dtype=torch.int32, device=device)
             self.num_filler_nodes = torch.tensor(placedb.num_filler_nodes, dtype=torch.int32, device=device)
@@ -219,6 +229,7 @@ class PlaceOpCollectionFPGA(object):
         self.clustering_compatibility_ff_area_op= None
         self.adjust_node_area_op = None
         self.sort_node2pin_op = None
+        self.dsp_ram_legalization_op = None
         self.lut_ff_legalization_op = None
 
 class BasicPlaceFPGA(nn.Module):
@@ -263,45 +274,70 @@ class BasicPlaceFPGA(nn.Module):
             initLocX = 0.5 * (placedb.xh - placedb.xl)
             initLocY = 0.5 * (placedb.yh - placedb.yl)
 
-        # x position
+        regionCenterX = np.zeros(placedb.num_region_constraint_boxes, dtype=placedb.dtype)
+        regionCenterY = np.zeros(placedb.num_region_constraint_boxes, dtype=placedb.dtype)
+
+        for regionID in range(placedb.num_region_constraint_boxes):
+            numIOPins = 0
+            for nodeID in range(placedb.num_movable_nodes,placedb.num_physical_nodes):
+                if placedb.node_x[nodeID] >= placedb.region_box2xl[regionID] and placedb.node_x[nodeID] < placedb.region_box2xh[regionID] and placedb.node_y[nodeID] >= placedb.region_box2yl[regionID] and placedb.node_y[nodeID] < placedb.region_box2yh[regionID]:
+                    for pID in placedb.node2pin_map[nodeID]:
+                        regionCenterX[regionID] += placedb.node_x[nodeID] + placedb.pin_offset_x[pID]
+                        regionCenterY[regionID] += placedb.node_y[nodeID] + placedb.pin_offset_y[pID]
+                    numIOPins += len(placedb.node2pin_map[nodeID])
+            
+            if numIOPins > 0:
+                regionCenterX[regionID] /= numIOPins
+                regionCenterY[regionID] /= numIOPins
+                logging.info("Region %d center: (%f, %f)" % (regionID, regionCenterX[regionID], regionCenterY[regionID]))
+            else:
+                regionCenterX[regionID] = 0.5 * (placedb.region_box2xl[regionID] + placedb.region_box2xh[regionID])
+                regionCenterY[regionID] = 0.5 * (placedb.region_box2yl[regionID] + placedb.region_box2yh[regionID])
+                logging.info("Region %d center: (%f, %f)" % (regionID, regionCenterX[regionID], regionCenterY[regionID]))
+
         self.init_pos[0:placedb.num_physical_nodes] = placedb.node_x
-        if params.global_place_flag and params.random_center_init_flag:  # move to centroid of layout
-            #logging.info("Move cells to the centroid of fixed IOs with random noise")
-            self.init_pos[0:placedb.num_movable_nodes] = np.random.normal(
-                loc = initLocX,
-                scale = min(placedb.xh - placedb.xl, placedb.yh - placedb.yl) * 0.001,
-                size = placedb.num_movable_nodes)
-        self.init_pos[0:placedb.num_movable_nodes] -= (0.5 * placedb.node_size_x[0:placedb.num_movable_nodes])
-
-        # y position
         self.init_pos[placedb.num_nodes:placedb.num_nodes+placedb.num_physical_nodes] = placedb.node_y
-        if params.global_place_flag and params.random_center_init_flag:  # move to center of layout
-            self.init_pos[placedb.num_nodes:placedb.num_nodes+placedb.num_movable_nodes] = np.random.normal(
-                loc = initLocY,
-                scale = min(placedb.xh - placedb.xl, placedb.yh - placedb.yl) * 0.001,
-                size = placedb.num_movable_nodes)
-        self.init_pos[placedb.num_nodes:placedb.num_nodes+placedb.num_movable_nodes] -= (0.5 * placedb.node_size_y[0:placedb.num_movable_nodes])
-        #logging.info("Random Init Place in python takes %.2f seconds" % (time.time() - tt))
 
-        # # update initial location for macros
-        # pl_file = params.aux_input.replace('design.aux','sample.pl')
-        # tt = time.time()
-        # logging.info("reading %s" % (pl_file))
-        # with open(pl_file, "r") as f:
-        #     for line in f:
-        #         if len(line.split()) == 4:
-        #             node_name, pos_x, pos_y, pos_z = line.split()
-        #             org_node_id = placedb.original_node_name2id_map[node_name]
-        #             if org_node_id in placedb.cascade_inst2org_start_node:
-        #                 node_id = placedb.original_node2node_map[org_node_id]
-        #                 if params.macro_pl == 'vivado':
-        #                     self.init_pos[node_id] = float(pos_x)
-        #                     self.init_pos[node_id+placedb.num_nodes] = float(pos_y)
-        #                 elif params.macro_pl == 'random':
-        #                     self.init_pos[node_id] = random.uniform(0, placedb.xh - placedb.xl)
-        #                     self.init_pos[node_id+placedb.num_nodes] = random.uniform(0, placedb.yh - placedb.yl)
-                    
-        # logging.info("read macro placement takes %.3f seconds" % (time.time()-tt))
+        for nodeID in range(0, placedb.num_movable_nodes):
+            regionID = placedb.node2regionBox_map[nodeID]
+            if regionID != -1:
+                self.init_pos[nodeID] = np.random.normal(
+                    loc = regionCenterX[regionID],
+                    scale = min(placedb.xh - placedb.xl, placedb.yh - placedb.yl) * 0.001)
+                self.init_pos[nodeID+placedb.num_nodes] = np.random.normal(
+                    loc = regionCenterY[regionID],
+                    scale = min(placedb.xh - placedb.xl, placedb.yh - placedb.yl) * 0.001)
+
+            else:
+                self.init_pos[nodeID] = np.random.normal(
+                    loc = initLocX,
+                    scale = min(placedb.xh - placedb.xl, placedb.yh - placedb.yl) * 0.001)
+                self.init_pos[nodeID+placedb.num_nodes] = np.random.normal(
+                    loc = initLocY,
+                    scale = min(placedb.xh - placedb.xl, placedb.yh - placedb.yl) * 0.001)
+
+        self.init_pos[0:placedb.num_movable_nodes] -= (0.5 * placedb.node_size_x[0:placedb.num_movable_nodes])
+        self.init_pos[placedb.num_nodes:placedb.num_nodes+placedb.num_movable_nodes] -= (0.5 * placedb.node_size_y[0:placedb.num_movable_nodes])           
+
+        # # x position
+        # self.init_pos[0:placedb.num_physical_nodes] = placedb.node_x
+        # if params.global_place_flag and params.random_center_init_flag:  # move to centroid of layout
+        #     #logging.info("Move cells to the centroid of fixed IOs with random noise")
+        #     self.init_pos[0:placedb.num_movable_nodes] = np.random.normal(
+        #         loc = initLocX,
+        #         scale = min(placedb.xh - placedb.xl, placedb.yh - placedb.yl) * 0.001,
+        #         size = placedb.num_movable_nodes)
+        # self.init_pos[0:placedb.num_movable_nodes] -= (0.5 * placedb.node_size_x[0:placedb.num_movable_nodes])
+
+        # # y position
+        # self.init_pos[placedb.num_nodes:placedb.num_nodes+placedb.num_physical_nodes] = placedb.node_y
+        # if params.global_place_flag and params.random_center_init_flag:  # move to center of layout
+        #     self.init_pos[placedb.num_nodes:placedb.num_nodes+placedb.num_movable_nodes] = np.random.normal(
+        #         loc = initLocY,
+        #         scale = min(placedb.xh - placedb.xl, placedb.yh - placedb.yl) * 0.001,
+        #         size = placedb.num_movable_nodes)
+        # self.init_pos[placedb.num_nodes:placedb.num_nodes+placedb.num_movable_nodes] -= (0.5 * placedb.node_size_y[0:placedb.num_movable_nodes])
+        #logging.info("Random Init Place in python takes %.2f seconds" % (time.time() - tt))
 
         if placedb.num_filler_nodes:  # uniformly distribute filler cells in the layout
             ### uniformly spread fillers in fence region
@@ -374,6 +410,7 @@ class BasicPlaceFPGA(nn.Module):
         self.op_collections.density_overflow_op = self.build_electric_overflow(params, placedb, self.data_collections, self.device)
 
         #Legalization
+        self.op_collections.dsp_ram_legalization_op = self.build_dsp_ram_legalization(placedb, self.data_collections, self.device)
         self.op_collections.lut_ff_legalization_op = self.build_lut_ff_legalization(params, placedb, self.data_collections, self.device)
  
         # draw placement
@@ -433,14 +470,14 @@ class BasicPlaceFPGA(nn.Module):
         @param device cpu or cuda
         """
         return move_boundary.MoveBoundary(
-            data_collections.node_size_x,
-            data_collections.node_size_y,
-            xl=placedb.xl,
-            yl=placedb.yl,
-            xh=placedb.xh,
-            yh=placedb.yh,
-            num_movable_nodes=placedb.num_movable_nodes,
-            num_filler_nodes=placedb.num_filler_nodes,
+            placedb=placedb,
+            node_size_x=data_collections.node_size_x,
+            node_size_y=data_collections.node_size_y,
+            regionBox2xl = data_collections.regionBox2xl,
+            regionBox2yl = data_collections.regionBox2yl,
+            regionBox2xh = data_collections.regionBox2xh,
+            regionBox2yh = data_collections.regionBox2yh,
+            node2regionBox_map = data_collections.node2regionBox_map,
             num_threads=params.num_threads)
 
     def build_hpwl(self, params, placedb, data_collections, pin_pos_op, device):
@@ -551,6 +588,17 @@ class BasicPlaceFPGA(nn.Module):
             deterministic_flag=params.deterministic_flag,
             sorted_node_map=data_collections.sorted_node_map)
 
+    def build_dsp_ram_legalization(self, placedb, data_collections, device):
+        """
+        @brief legalization of DSP/BRAM Instances
+        @param placedb placement database
+        @param data_collections a collection of all data and variables required for constructing the ops
+        @param device cpu or cuda
+        """
+        return dsp_ram_legalization.LegalizeDSPRAM(
+            data_collections=data_collections,
+            placedb=placedb,
+            device=device)
 
     def build_lut_ff_legalization(self, params, placedb, data_collections, device):
         """
@@ -581,8 +629,8 @@ class BasicPlaceFPGA(nn.Module):
             net_wts = torch.ones(placedb.num_nets, dtype=self.pos[0].dtype, device=device)
 
         return lut_ff_legalization.LegalizeCLB(
+            placedb=placedb,
             lutFlopIndices=data_collections.flop_lut_indices,
-            nodeNames=placedb.node_names,
             flop2ctrlSet=data_collections.flop2ctrlSetId_map,
             flop_ctrlSet=data_collections.flop_ctrlSets,
             pin2node=data_collections.pin2node_map,
@@ -608,14 +656,6 @@ class BasicPlaceFPGA(nn.Module):
             net2pincount=data_collections.net2pincount_map,
             node2pincount=data_collections.node2pincount_map,
             spiral_accessor=data_collections.spiral_accessor,
-            num_nets=placedb.num_nets,
-            num_movable_nodes=placedb.num_movable_nodes,
-            num_nodes=placedb.num_physical_nodes,
-            num_sites_x=placedb.num_sites_x,
-            num_sites_y=placedb.num_sites_y,
-            xWirelenWt=placedb.xWirelenWt,
-            yWirelenWt=placedb.yWirelenWt,
-            nbrDistEnd=placedb.nbrDistEnd,
             num_threads=params.num_threads,
             device=device)
 
