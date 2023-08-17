@@ -1,7 +1,7 @@
 /**
- * @file   hpwl_cuda.cpp
- * @author Yibo Lin (DREAMPlace)
- * @date   Jun 2018
+ * @file   move_boundary_cuda.cpp
+ * @author Rachel Selina (DREAMPlaceFPGA), Yibo Lin (DREAMPlace)
+ * @date   Aug 2023
  * @brief  Move out-of-bound cells back to inside placement region 
  */
 #include "utility/src/torch.h"
@@ -13,6 +13,9 @@ template <typename T>
 int computeMoveBoundaryMapCudaLauncher(
         T* x_tensor, T* y_tensor, 
         const T* node_size_x_tensor, const T* node_size_y_tensor, 
+        const T* regionBox2xl, const T* regionBox2yl,
+        const T* regionBox2xh, const T* regionBox2yh,
+        const int* node2regionBox_map,
         const T xl, const T yl, const T xh, const T yh, 
         const int num_nodes, 
         const int num_movable_nodes, 
@@ -27,6 +30,11 @@ at::Tensor move_boundary_forward(
         at::Tensor pos,
         at::Tensor node_size_x,
         at::Tensor node_size_y,
+        at::Tensor regionBox2xl,
+        at::Tensor regionBox2yl,
+        at::Tensor regionBox2xh,
+        at::Tensor regionBox2yh,
+        at::Tensor node2regionBox_map,
         double xl, 
         double yl, 
         double xh, 
@@ -42,8 +50,15 @@ at::Tensor move_boundary_forward(
     // Call the cuda kernel launcher
     DREAMPLACE_DISPATCH_FLOATING_TYPES(pos, "computeMoveBoundaryMapCudaLauncher", [&] {
             computeMoveBoundaryMapCudaLauncher<scalar_t>(
-                    DREAMPLACE_TENSOR_DATA_PTR(pos, scalar_t), DREAMPLACE_TENSOR_DATA_PTR(pos, scalar_t)+pos.numel()/2, 
-                    DREAMPLACE_TENSOR_DATA_PTR(node_size_x, scalar_t), DREAMPLACE_TENSOR_DATA_PTR(node_size_y, scalar_t), 
+                    DREAMPLACE_TENSOR_DATA_PTR(pos, scalar_t),
+                    DREAMPLACE_TENSOR_DATA_PTR(pos, scalar_t)+pos.numel()/2, 
+                    DREAMPLACE_TENSOR_DATA_PTR(node_size_x, scalar_t),
+                    DREAMPLACE_TENSOR_DATA_PTR(node_size_y, scalar_t), 
+                    DREAMPLACE_TENSOR_DATA_PTR(regionBox2xl, scalar_t), 
+                    DREAMPLACE_TENSOR_DATA_PTR(regionBox2yl, scalar_t), 
+                    DREAMPLACE_TENSOR_DATA_PTR(regionBox2xh, scalar_t), 
+                    DREAMPLACE_TENSOR_DATA_PTR(regionBox2yh, scalar_t), 
+                    DREAMPLACE_TENSOR_DATA_PTR(node2regionBox_map, int), 
                     xl, yl, xh, yh, 
                     pos.numel()/2, 
                     num_movable_nodes, 

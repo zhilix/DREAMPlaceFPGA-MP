@@ -374,25 +374,34 @@ class PlaceDBFPGA (object):
         self.region_box2yl = np.array(pydb.region_box2yl, dtype=self.dtype)
         self.region_box2xh = np.array(pydb.region_box2xh, dtype=self.dtype)
         self.region_box2yh = np.array(pydb.region_box2yh, dtype=self.dtype)
+        #Set xh,yh as max limits for regions
+        self.region_box2xh[self.region_box2xh > self.xh] = self.xh
+        self.region_box2yh[self.region_box2yh > self.yh] = self.yh        
+
         self.flat_constraint2box = np.array(pydb.flat_constraint2box, dtype=np.int32)
         self.flat_constraint2box_start = np.array(pydb.flat_constraint2box_start, dtype=np.int32)
         self.constraint2node_map = pydb.constraint2node_map
         self.flat_constraint2node = np.array(pydb.flat_constraint2node, dtype=np.int32)
         self.flat_constraint2node_start = np.array(pydb.flat_constraint2node_start, dtype=np.int32)
-
+        #Assign node to region
+        self.node2regionBox_map = np.ones(self.num_physical_nodes, dtype=np.int32)
+        self.node2regionBox_map *= -1
+        for el in range(self.num_region_constraint_boxes):
+            self.node2regionBox_map[np.array(self.constraint2node_map[el])] = el
+            
         # TODO: can comment out the following lines later
-        self.cascade_shape_names = np.array(pydb.cascade_shape_names, dtype=np.str_)
+        self.cascade_shape_names = pydb.cascade_shape_names
         self.cascade_shape_heights = np.array(pydb.cascade_shape_heights, dtype=self.dtype)
         self.cascade_shape_widths = np.array(pydb.cascade_shape_widths, dtype=self.dtype)
-        self.cascade_shape2macro_type = np.array(pydb.cascade_shape2macro_type, dtype=np.str_)
+        self.cascade_shape2macro_type = pydb.cascade_shape2macro_type
 
-        self.cascade_inst_names = np.array(pydb.cascade_inst_names, dtype=np.str_)
+        self.cascade_inst_names = pydb.cascade_inst_names
         self.cascade_inst2shape = np.array(pydb.cascade_inst2shape, dtype=np.int32)
 
         self.cascade_inst2org_node_map = pydb.cascade_inst2org_node_map
         self.cascade_inst2org_start_node = np.array(pydb.cascade_inst2org_start_node, dtype=np.int32)
         self.original_macro_nodes = np.array(pydb.original_macro_nodes, dtype=np.int32)
-
+        #Is node a macro
         self.is_macro_inst = np.zeros(self.num_physical_nodes, dtype=np.int32)
         self.is_macro_inst[self.original_node2node_map[self.original_macro_nodes]] = 1
 
@@ -806,8 +815,15 @@ class PlaceDBFPGA (object):
                     node_x[node_id] + self.org_cascade_node_x_offset[i], 
                     node_y[node_id] + self.org_cascade_node_y_offset[i],
                     node_z[node_id]
-                    )
-
+                    )     
+            #Include checker to ensure macro instance is within region
+            if self.node2regionBox_map[node_id] != -1:
+                regionId = self.node2regionBox_map[node_id]
+                if (node_x[node_id] < self.region_box2xl[regionId] or node_x[node_id] + self.node_size_x[node_id] > self.region_box2xh[regionId] or
+                    node_y[node_id] < self.region_box2yl[regionId] or node_y[node_id] + self.node_size_y[node_id] > self.region_box2yh[regionId]):
+                    logging.info("ERROR: Node %d %s of type %d incorrectly placed at (%d, %d) of size %.2f x %.2f which is outside the region (%d, %d, %d, %d)" %
+                                (node_id, str_node_names[i], self.node_types[node_id], node_x[node_id], node_y[node_id], self.node_size_x[node_id], self.node_size_y[node_id], self.region_box2xl[regionId],
+                                self.region_box2yl[regionId], self.region_box2xh[regionId], self.region_box2yh[regionId]))
 
         with open(pl_file, "w") as f:
             f.write(content)
