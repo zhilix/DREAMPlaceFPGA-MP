@@ -27,7 +27,6 @@ import dreamplacefpga.ops.precondWL.precondWL as precondWL
 import dreamplacefpga.ops.demandMap.demandMap as demandMap
 import dreamplacefpga.ops.sortNode2Pin.sortNode2Pin as sortNode2Pin
 import dreamplacefpga.ops.lut_ff_legalization.lut_ff_legalization as lut_ff_legalization
-import dreamplacefpga.ops.netlist_graph.netlist_graph as netlist_graph
 import pdb
 import random
 
@@ -380,9 +379,6 @@ class BasicPlaceFPGA(nn.Module):
         # draw placement
         self.op_collections.draw_place_op = self.build_draw_placement(params, placedb)
 
-        # build a netlist graph for gnn
-        # self.op_collections.netlist_graph_op = self.build_netlist_graph(params, placedb, self.data_collections, self.device)
-
         # flag for rmst_wl_op
         # can only read once
         self.read_lut_flag = True
@@ -630,29 +626,6 @@ class BasicPlaceFPGA(nn.Module):
         @param placedb placement database
         """
         return draw_place.DrawPlaceFPGA(placedb)
-
-    
-    def build_netlist_graph(self, params, placedb, data_collections, device):
-        """
-        @brief build a netlist graph for gnn
-        @param params parameters
-        @param placedb placement database
-        @param data_collections a collection of all data and variables required for constructing the ops
-        """
-        return netlist_graph.NetlistGraph(
-            num_physical_nodes=placedb.num_physical_nodes,
-            node_size_x=data_collections.node_size_x,
-            node_size_y=data_collections.node_size_y, 
-            num_nets=placedb.num_nets,
-            net_mask=data_collections.net_mask_ignore_large_degrees,
-            flat_net2pin=data_collections.flat_net2pin_map,
-            flat_net2pin_start=data_collections.flat_net2pin_start_map,
-            node2pincount_map=data_collections.node2pincount_map,
-            pin2node_map=data_collections.pin2node_map,
-            pin_types=data_collections.pin_typeIds,
-            is_macro_inst=data_collections.is_macro_inst,
-            )
-
 
     def validate(self, placedb, pos, iteration):
         """

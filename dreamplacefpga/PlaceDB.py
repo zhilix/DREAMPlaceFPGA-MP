@@ -402,8 +402,6 @@ class PlaceDBFPGA (object):
 
         self.loc2site_map = self.create_loc2site_map()
 
-        pdb.set_trace()
-
     def create_loc2site_map(self):
         """
         @brief create a loc2site_map for a given placedb
