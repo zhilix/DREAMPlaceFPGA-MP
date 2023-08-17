@@ -848,11 +848,6 @@ class PlaceDBFPGA (object):
                 yLo = int(self.region_box2yl[k])
                 xHi = int(self.region_box2xh[k])
                 yHi = int(self.region_box2yh[k])
-                # Zhili: fix the bug of out of bound.
-                # TODO: remove this after the bug is fixed in the design.regions
-                if xHi >= self.num_sites_x or yHi >= self.num_sites_y:
-                    xHi = self.num_sites_x
-                    yHi = self.num_sites_y
                 site_name_bottom_left = self.loc2site_map[xLo, yLo, 0]
                 site_name_top_right = self.loc2site_map[xHi-1, yHi-1, 0]
                 content += "resize_pblock [get_pblocks pblock_%d] -add {%s:%s}\n" % (i, site_name_bottom_left, site_name_top_right)
@@ -860,6 +855,46 @@ class PlaceDBFPGA (object):
         with open(xdc_file, "w") as f:
             f.write(content)
         logging.info("write xdc file takes %.3f seconds" % (time.time()-tt))
+
+    def writeTcl(self, params, tcl_file):
+        """
+        @brief write out tcl file for placing each macro one by one.
+        """
+        tt = time.time()
+        logging.info("writing to %s" % (tcl_file))
+
+        node_x = self.node_x 
+        node_y = self.node_y
+        node_z = self.node_z
+
+        lut_bel_name = {0: "A5LUT", 1: "A6LUT", 2: "B5LUT", 3: "B6LUT", 4: "C5LUT", 5: "C6LUT", 6: "D5LUT", 7: "D6LUT",
+        8: "E5LUT", 9: "E6LUT", 10: "F5LUT", 11: "F6LUT", 12: "G5LUT", 13: "G6LUT", 14: "H5LUT", 15: "H6LUT"}
+        flop_bel_name =  {0: "AFF", 1: "AFF2", 2: "BFF", 3: "BFF2", 4: "CFF", 5: "CFF2", 6: "DFF", 7: "DFF2",
+        8: "EFF", 9: "EFF2", 10: "FFF", 11: "FFF2", 12: "GFF", 13: "GFF2", 14: "HFF", 15: "HFF2"}
+
+        content = ""
+        str_node_names = self.original_node_names
+        for i in self.original_macro_nodes:
+            node_id = self.original_node2node_map[i]
+            loc_x = int(node_x[node_id] + self.org_cascade_node_x_offset[i])
+            loc_y = int(node_y[node_id] + self.org_cascade_node_y_offset[i])
+            loc_z = int(node_z[node_id])
+            site_name = self.loc2site_map[loc_x, loc_y, loc_z]
+            if self.node2fence_region_map[node_id] == 0:
+                bel_name = lut_bel_name[loc_z]
+                site_bel = site_name + "/" + bel_name
+                content += "place_cell %s %s\n" % (str_node_names[i], site_bel)
+            elif self.node2fence_region_map[node_id] == 1:
+                bel_name = flop_bel_name[loc_z]
+                site_bel = site_name + "/" + bel_name
+                content += "place_cell %s %s\n" % (str_node_names[i], site_bel)
+            else:
+                content += "place_cell %s %s\n" % (str_node_names[i], site_name)
+
+        with open(tcl_file, "w") as f:
+            f.write(content)
+
+        logging.info("write tcl file takes %.3f seconds" % (time.time()-tt))
 
     def read_pl(self, params, pl_file):
         """
@@ -914,7 +949,6 @@ class PlaceDBFPGA (object):
             inst_name = self.node_names[i]
             site_name, bel_name = name2sitebel_map[inst_name]
             if site_name not in movable_site2loc_map:
-                print("site_name %s not in movable_site2loc_map" % (site_name))
                 continue
             loc_x, loc_y = movable_site2loc_map[site_name]
             self.node_x[i] = loc_x
@@ -923,7 +957,6 @@ class PlaceDBFPGA (object):
             if bel_name in belmap:
                 self.node_z[i] = belmap[bel_name]
             else:
-                print("bel_name %s not in belmap" % (bel_name))
                 self.node_z[i] = 0
 
     def apply(self, params, node_x, node_y, node_z):

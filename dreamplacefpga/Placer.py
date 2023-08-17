@@ -52,6 +52,8 @@ def placeFPGA(params):
     
     # write macro placement solution
     placedb.writeMacroPl(params, "macroplacement.pl")
+    # write placement solution to Tcl file
+    placedb.writeTcl(params, "macroplacement.tcl")
 
     logging.info("Total runtime: %.3f seconds" % (time.time()-start))
                
