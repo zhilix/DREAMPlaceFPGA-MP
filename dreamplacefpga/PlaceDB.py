@@ -872,8 +872,9 @@ class PlaceDBFPGA (object):
         flop_bel_name =  {0: "AFF", 1: "AFF2", 2: "BFF", 3: "BFF2", 4: "CFF", 5: "CFF2", 6: "DFF", 7: "DFF2",
         8: "EFF", 9: "EFF2", 10: "FFF", 11: "FFF2", 12: "GFF", 13: "GFF2", 14: "HFF", 15: "HFF2"}
 
-        content = ""
+        content = "place_cell { \\\n"
         str_node_names = self.original_node_names
+        # write out macro locations
         for i in self.original_macro_nodes:
             node_id = self.original_node2node_map[i]
             loc_x = int(node_x[node_id] + self.org_cascade_node_x_offset[i])
@@ -883,15 +884,27 @@ class PlaceDBFPGA (object):
             if self.node2fence_region_map[node_id] == 0:
                 bel_name = lut_bel_name[loc_z]
                 site_bel = site_name + "/" + bel_name
-                content += "place_cell %s %s\n" % (str_node_names[i], site_bel)
+                content += "  %s %s \\\n" % (str_node_names[i], site_bel)
             elif self.node2fence_region_map[node_id] == 1:
                 bel_name = flop_bel_name[loc_z]
                 site_bel = site_name + "/" + bel_name
-                content += "place_cell %s %s\n" % (str_node_names[i], site_bel)
+                content += "  %s %s \\\n" % (str_node_names[i], site_bel)
             else:
-                content += "place_cell %s %s\n" % (str_node_names[i], site_name)
+                content += "  %s %s \\\n" % (str_node_names[i], site_name)
+
+        # Write out IO locations
+        for j in range(self.num_movable_nodes, self.num_physical_nodes):
+            node_id = j
+            if self.node_names[node_id].startswith("BUFG"):
+                continue
+            loc_x = int(node_x[node_id])
+            loc_y = int(node_y[node_id])
+            loc_z = int(node_z[node_id])
+            site_name = self.loc2site_map[loc_x, loc_y, loc_z]
+            content += "  %s %s \\\n" % (self.node_names[node_id], site_name)
 
         with open(tcl_file, "w") as f:
+            content += "}"
             f.write(content)
 
         logging.info("write tcl file takes %.3f seconds" % (time.time()-tt))
