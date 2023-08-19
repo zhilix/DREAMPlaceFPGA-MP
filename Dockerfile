@@ -35,8 +35,6 @@ RUN mkdir /opt/cmake \
         && cmake --version
 
 COPY ./requirements.txt .
-COPY ./create_aux_file.sh .
-COPY ./create_json_file.sh .
 
 # Install any needed packages specified in requirements.txt
 RUN pip install --upgrade pip && \
