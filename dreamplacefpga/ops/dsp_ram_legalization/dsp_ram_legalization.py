@@ -152,7 +152,7 @@ class LegalizeDSPRAM(nn.Module):
             else:
                 dsp_ram_legalization_cpp.legalizeCascadeInsts(pos, torch.flatten(self.site_xy), self.regionBox2xl,
                             self.regionBox2yl, self.regionBox2xh, self.regionBox2yh, model.data_collections.resource_size_x,
-                            model.data_collections.resource_size_x, cascade_sites, torch.flatten(self.spiral_accessor),
+                            model.data_collections.resource_size_y, cascade_sites, torch.flatten(self.spiral_accessor),
                             torch.flatten(self.site_type_map), self.node2regionBox_map, cascade_insts_index,
                             cascade_sites_cumsum, self.xl, self.yl, self.xh, self.yh, region_id, self.spiralBegin,
                             self.spiralEnd, num_cascade_insts, self.num_sites_x, self.num_sites_y, movVal,
