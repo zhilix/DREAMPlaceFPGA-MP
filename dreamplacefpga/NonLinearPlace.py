@@ -445,7 +445,9 @@ class NonLinearPlaceFPGA (BasicPlaceFPGA):
                                 break 
 
                         ##DSP/RAM legalization condition check
-                        if placedb.num_movable_nodes_fence_region[2:4].max() > 0 and Llambda_metrics[-1][-1].overflow[0] < placedb.targetOverflow[0] and Llambda_metrics[-1][-1].overflow[1] < placedb.targetOverflow[1] and Llambda_metrics[-1][-1].overflow[2] < placedb.targetOverflow[2] and Llambda_metrics[-1][-1].overflow[3] < placedb.targetOverflow[3]:
+                        if (placedb.num_movable_nodes_fence_region[2:4].max() > 0 and Llambda_metrics[-1][-1].overflow[0] < placedb.targetOverflow[0]
+                            and Llambda_metrics[-1][-1].overflow[1] < placedb.targetOverflow[1] and Llambda_metrics[-1][-1].overflow[2] < placedb.targetOverflow[2]
+                            and Llambda_metrics[-1][-1].overflow[3] < placedb.targetOverflow[3]):
                             pos = model.data_collections.pos[0]
                             if model.lock_mask is not None and model.lock_mask[2:4].sum() > 1:
                                 break
@@ -672,6 +674,26 @@ class NonLinearPlaceFPGA (BasicPlaceFPGA):
                     all_metrics.append([best_metric])
                     logging.info(best_metric[0])
 
+                    ## Legalize DSP/RAMs if any
+                    if (placedb.num_movable_nodes_fence_region[2:4].max() > 0 and 
+                        (model.lock_mask is not None and model.lock_mask[2:4].sum() != 2)):
+
+                        #Legalize DSP at the end of Global placement
+                        movVal = self.op_collections.dsp_ram_legalization_op.legalize(pos, 2, model)
+                        logging.info("Legalized DSPs with maxMov = %g and avgMov = %g" % (movVal[0], movVal[1]))
+
+                        #Legalize BRAM at the end of Global placement
+                        moVal = self.op_collections.dsp_ram_legalization_op.legalize(pos, 3, model)
+                        logging.info("Legalized BRAMs with maxMov = %g and avgMov = %g" % (moVal[0], moVal[1]))
+
+                        ##Legalize URAM at the end of Global placement
+                        #moVal = self.op_collections.dsp_ram_legalization_op.legalize(pos, 4, model)
+                        #logging.info("Legalized URAMs with maxMov = %g and avgMov = %g" % (moVal[0], moVal[1]))
+
+                        #Lock DSP/RAM locations
+                        model.lock_mask[2:4] = True
+                        model.update_mask = ~model.lock_mask
+                
                 #logging.info("optimizer %s takes %.3f seconds" % (optimizer_name, time.time()-tt))
                 #print("Overall optimization time:  %.3f seconds" % (time.time()-optimization_timer))
             # recover node size and pin offset for legalization, since node size is adjusted in global placement
