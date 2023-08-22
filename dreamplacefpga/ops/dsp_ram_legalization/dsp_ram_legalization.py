@@ -189,7 +189,6 @@ class LegalizeDSPRAM(nn.Module):
             region_x_mask = np.logical_and(sites[:,0] >= self.region_box2xl[el], sites[:,0] < self.region_box2xh[el])
             region_y_mask = np.logical_and(sites[:,1] >= self.region_box2yl[el], sites[:,1] < self.region_box2yh[el])
             region_site_mask = np.logical_and(region_x_mask, region_y_mask)
-            region_site_mask = np.logical_and(region_site_mask, available_sites == 1)
             all_site_masks.append(region_site_mask)
 
             rSites = sites[region_site_mask]
@@ -207,7 +206,7 @@ class LegalizeDSPRAM(nn.Module):
         for idx in range(self.num_region_constraint_boxes):
             el = region_index_ordering[idx]
 
-            region_site_mask = all_site_masks[el]
+            region_site_mask = np.logical_and(all_site_masks[el], available_sites == 1)
             region_instance_mask = all_insts_masks[el]
 
             inst_mask = torch.from_numpy(region_instance_mask).to(self.device)
@@ -277,6 +276,12 @@ class LegalizeDSPRAM(nn.Module):
         pos.data[self.numNodes:self.numNodes+self.num_physical_nodes].masked_scatter_(mask, updLocY[mask])
 
         final_movVal[1] /= num_inst
+        
+        #Checker
+        final_sites = final_locX[self.node2fence_region_map == region_id]*self.num_sites_y + final_locY[self.node2fence_region_map == region_id]
+        if final_sites.shape[0] != np.unique(final_sites).shape[0]:
+            print("ERROR: Multiple instances %d of type %d occupy the same sites - CHECK" % (final_sites.shape[0]-np.unique(final_sites).shape[0], region_id))
+        #Checker
 
         return final_movVal 
 
