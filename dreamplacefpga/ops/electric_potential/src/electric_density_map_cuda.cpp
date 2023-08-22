@@ -15,9 +15,10 @@ DREAMPLACE_BEGIN_NAMESPACE
 template <typename T>
 int computeFPGADensityMapCudaLauncher(
     const T* x_tensor, const T* y_tensor, const T* node_size_x_clamped_tensor,
-    const T* node_size_y_clamped_tensor, const T* offset_x_tensor,
-    const T* offset_y_tensor, const T* ratio_tensor, int num_nodes,
-    const int num_bins_x, const int num_bins_y, const T xl, const T yl, 
+    const T* node_size_y_clamped_tensor, const T* region_box2xl, const T* region_box2yl,
+    const T* region_box2xh, const T* region_box2yh, const int* node2region_box,
+    const T* offset_x_tensor, const T* offset_y_tensor, const T* ratio_tensor, 
+    int num_nodes, const int num_bins_x, const int num_bins_y, const T xl, const T yl, 
     const T xh, const T yh, const T bin_size_x, const T bin_size_y, 
     bool deterministic_flag, T* density_map_tensor, const int* sorted_node_map,
     const T targetHalfSizeX, const T targetHalfSizeY);
@@ -62,8 +63,9 @@ int computeFPGADensityMapCudaLauncher(
 /// @param sorted_node_map the indices of the movable node map
 at::Tensor density_map_fpga(
     at::Tensor pos, at::Tensor node_size_x_clamped,
-    at::Tensor node_size_y_clamped, at::Tensor offset_x, at::Tensor offset_y,
-    at::Tensor ratio, at::Tensor initial_density_map,
+    at::Tensor node_size_y_clamped, at::Tensor region_box2xl, at::Tensor region_box2yl,
+    at::Tensor region_box2xh, at::Tensor region_box2yh, at::Tensor node2region_box,
+    at::Tensor offset_x, at::Tensor offset_y, at::Tensor ratio, at::Tensor initial_density_map,
     double xl, double yl, double xh, double yh, double bin_size_x, double bin_size_y,
     int num_movable_nodes, int num_filler_nodes, int num_bins_x,
     int num_bins_y, int deterministic_flag, at::Tensor sorted_node_map, 
@@ -83,6 +85,11 @@ at::Tensor density_map_fpga(
             DREAMPLACE_TENSOR_DATA_PTR(pos, scalar_t) + num_nodes,
             DREAMPLACE_TENSOR_DATA_PTR(node_size_x_clamped, scalar_t),
             DREAMPLACE_TENSOR_DATA_PTR(node_size_y_clamped, scalar_t),
+            DREAMPLACE_TENSOR_DATA_PTR(region_box2xl, scalar_t),
+            DREAMPLACE_TENSOR_DATA_PTR(region_box2yl, scalar_t),
+            DREAMPLACE_TENSOR_DATA_PTR(region_box2xh, scalar_t),
+            DREAMPLACE_TENSOR_DATA_PTR(region_box2yh, scalar_t),
+            DREAMPLACE_TENSOR_DATA_PTR(node2region_box, int),
             DREAMPLACE_TENSOR_DATA_PTR(offset_x, scalar_t),
             DREAMPLACE_TENSOR_DATA_PTR(offset_y, scalar_t),
             DREAMPLACE_TENSOR_DATA_PTR(ratio, scalar_t),
@@ -105,6 +112,11 @@ at::Tensor density_map_fpga(
                   num_physical_nodes,
               DREAMPLACE_TENSOR_DATA_PTR(node_size_y_clamped, scalar_t) +
                   num_physical_nodes,
+              DREAMPLACE_TENSOR_DATA_PTR(region_box2xl, scalar_t),
+              DREAMPLACE_TENSOR_DATA_PTR(region_box2yl, scalar_t),
+              DREAMPLACE_TENSOR_DATA_PTR(region_box2xh, scalar_t),
+              DREAMPLACE_TENSOR_DATA_PTR(region_box2yh, scalar_t),
+              DREAMPLACE_TENSOR_DATA_PTR(node2region_box, int),
               DREAMPLACE_TENSOR_DATA_PTR(offset_x, scalar_t) +
                   num_physical_nodes,
               DREAMPLACE_TENSOR_DATA_PTR(offset_y, scalar_t) +

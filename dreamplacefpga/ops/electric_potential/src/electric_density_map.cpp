@@ -20,8 +20,9 @@ DEFINE_FPGA_DENSITY_FUNCTION(T);
 template <typename T, typename AtomicOp>
 int computeFPGADensityMapLauncher(
     const T* x_tensor, const T* y_tensor, const T* node_size_x_tensor,
-    const T* node_size_y_tensor, const T* offset_x_tensor,
-    const T* offset_y_tensor, const T* ratio_tensor,
+    const T* node_size_y_tensor, const T* region_box2xl, const T* region_box2yl,
+    const T* region_box2xh, const T* region_box2yh, const int* node2region_box,
+    const T* offset_x_tensor, const T* offset_y_tensor, const T* ratio_tensor,
     const int num_nodes, const int num_bins_x, const int num_bins_y, const T xl,
     const T yl, const T xh, const T yh, const T bin_size_x, const T bin_size_y,
     const T targetHalfSizeX, const T targetHalfSizeY,
@@ -40,6 +41,11 @@ int computeFPGADensityMapLauncher(
       DREAMPLACE_TENSOR_DATA_PTR(pos, scalar_t) + num_nodes + begin,     \
       DREAMPLACE_TENSOR_DATA_PTR(node_size_x_clamped, scalar_t) + begin, \
       DREAMPLACE_TENSOR_DATA_PTR(node_size_y_clamped, scalar_t) + begin, \
+      DREAMPLACE_TENSOR_DATA_PTR(region_box2xl, scalar_t),               \
+      DREAMPLACE_TENSOR_DATA_PTR(region_box2yl, scalar_t),               \
+      DREAMPLACE_TENSOR_DATA_PTR(region_box2xh, scalar_t),               \
+      DREAMPLACE_TENSOR_DATA_PTR(region_box2yh, scalar_t),               \
+      DREAMPLACE_TENSOR_DATA_PTR(node2region_box, int),                  \
       DREAMPLACE_TENSOR_DATA_PTR(offset_x, scalar_t) + begin,            \
       DREAMPLACE_TENSOR_DATA_PTR(offset_y, scalar_t) + begin,            \
       DREAMPLACE_TENSOR_DATA_PTR(ratio, scalar_t) + begin, end - (begin),\
@@ -77,8 +83,10 @@ int computeFPGADensityMapLauncher(
 /// cell in y direction
 at::Tensor density_map_fpga(
     at::Tensor pos, at::Tensor node_size_x_clamped,
-    at::Tensor node_size_y_clamped, at::Tensor offset_x, at::Tensor offset_y,
-    at::Tensor ratio, at::Tensor initial_density_map, double xl, double yl,
+    at::Tensor node_size_y_clamped, at::Tensor region_box2xl, at::Tensor region_box2yl,
+    at::Tensor region_box2xh, at::Tensor region_box2yh, at::Tensor node2region_box,
+    at::Tensor offset_x, at::Tensor offset_y, at::Tensor ratio,
+    at::Tensor initial_density_map, double xl, double yl,
     double xh, double yh, double bin_size_x, double bin_size_y,
     double targetHalfSizeX, double targetHalfSizeY,
     int num_movable_nodes, int num_filler_nodes, int num_bins_x,
@@ -166,8 +174,9 @@ at::Tensor electric_force_fpga(
 template <typename T, typename AtomicOp>
 int computeFPGADensityMapLauncher(
     const T* x_tensor, const T* y_tensor, const T* node_size_x_clamped_tensor,
-    const T* node_size_y_clamped_tensor, const T* offset_x_tensor,
-    const T* offset_y_tensor, const T* ratio_tensor,
+    const T* node_size_y_clamped_tensor, const T* region_box2xl, const T* region_box2yl, 
+    const T* region_box2xh, const T* region_box2yh, const int* node2region_box,
+    const T* offset_x_tensor, const T* offset_y_tensor, const T* ratio_tensor,
     const int num_nodes, const int num_bins_x, const int num_bins_y, const T xl,
     const T yl, const T xh, const T yh, const T bin_size_x, const T bin_size_y,
     const T targetHalfSizeX, const T targetHalfSizeY,
@@ -191,8 +200,20 @@ int computeFPGADensityMapLauncher(
     T offset_x = offset_x_tensor[i];
     T offset_y = offset_y_tensor[i];
     T ratio = ratio_tensor[i];
+    T bound_xl = xl;
+    T bound_yl = yl;
+    T bound_xh = xh;
+    T bound_yh = yh;
+    int region_id = node2region_box[i];
 
-    T regValX = DREAMPLACE_STD_NAMESPACE::min(node_x - xl, xh - node_x);
+    if (region_id != -1){
+      bound_xl = region_box2xl[region_id];
+      bound_yl = region_box2yl[region_id];
+      bound_xh = region_box2xh[region_id];
+      bound_yh = region_box2yh[region_id];
+    }
+    
+    T regValX = DREAMPLACE_STD_NAMESPACE::min(node_x - bound_xl, bound_xh - node_x);
     T halfSizeX = DREAMPLACE_STD_NAMESPACE::max(offset_x, DREAMPLACE_STD_NAMESPACE::min(targetHalfSizeX, regValX));
 
     T bXLo = node_x - halfSizeX;
@@ -204,7 +225,7 @@ int computeFPGADensityMapLauncher(
     bin_index_xl = DREAMPLACE_STD_NAMESPACE::max(bin_index_xl, 0);
     bin_index_xh = DREAMPLACE_STD_NAMESPACE::min(bin_index_xh, num_bins_x);
 
-    T regValY = DREAMPLACE_STD_NAMESPACE::min(node_y - yl, yh - node_y);
+    T regValY = DREAMPLACE_STD_NAMESPACE::min(node_y - bound_yl, bound_yh - node_y);
     T halfSizeY = DREAMPLACE_STD_NAMESPACE::max(offset_y, DREAMPLACE_STD_NAMESPACE::min(targetHalfSizeY, regValY));
 
     T bYLo = node_y - halfSizeY;

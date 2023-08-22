@@ -49,6 +49,11 @@ class ElectricPotentialFunction(Function):
         pos,
         node_size_x_clamped,
         node_size_y_clamped,
+        region_box2xl,
+        region_box2yl,
+        region_box2xh,
+        region_box2yh,
+        node2region_box,
         offset_x,
         offset_y,
         ratio,
@@ -111,7 +116,8 @@ class ElectricPotentialFunction(Function):
         #If filler sizes become zero due to instance adjust area
         if node_size_x_clamped[-1] == 0 or node_size_y_clamped[-1] == 0:
             density_map = ElectricDensityMapFunction.forward(
-                pos, node_size_x_clamped[:num_movable_nodes], node_size_y_clamped[:num_movable_nodes], 
+                pos, node_size_x_clamped[:num_movable_nodes], node_size_y_clamped[:num_movable_nodes],
+                region_box2xl, region_box2yl, region_box2xh, region_box2yh, node2region_box,
                 offset_x[:num_movable_nodes], offset_y[:num_movable_nodes],
                 ratio[:num_movable_nodes], 
                 initial_density_map,
@@ -121,8 +127,9 @@ class ElectricPotentialFunction(Function):
                 deterministic_flag, sorted_node_map, stretchRatio)
         else:
             density_map = ElectricDensityMapFunction.forward(
-                pos, node_size_x_clamped, node_size_y_clamped, offset_x, offset_y,
-                ratio, 
+                pos, node_size_x_clamped, node_size_y_clamped, 
+                region_box2xl, region_box2yl, region_box2xh, region_box2yh, node2region_box,
+                offset_x, offset_y, ratio, 
                 initial_density_map,
                 xl, yl, xh, yh, bin_size_x, bin_size_y,
                 num_movable_nodes, num_filler_nodes, 
@@ -228,6 +235,10 @@ class ElectricPotential(ElectricOverflow):
         self,
         node_size_x,
         node_size_y,
+        region_box2xl,
+        region_box2yl,
+        region_box2xh,
+        region_box2yh,
         xl,
         yl,
         xh,
@@ -241,6 +252,7 @@ class ElectricPotential(ElectricOverflow):
         sorted_node_map,
         region_id=None,
         fence_regions=None, # [n_subregion, 4] as dummy macros added to initial density. (xl,yl,xh,yh) rectangles
+        node2region_box=None,
         node2fence_region_map=None,
         placedb=None,
         stretchRatio=None
@@ -298,6 +310,11 @@ class ElectricPotential(ElectricOverflow):
         super(ElectricPotential,
               self).__init__(node_size_x=node_size_x,
                              node_size_y=node_size_y,
+                             region_box2xl=region_box2xl,
+                             region_box2yl=region_box2yl,
+                             region_box2xh=region_box2xh,
+                             region_box2yh=region_box2yh,
+                             node2region_box=node2region_box,
                              xl=xl,
                              yl=yl,
                              xh=xh,
@@ -313,6 +330,10 @@ class ElectricPotential(ElectricOverflow):
         self.node2fence_region_map = node2fence_region_map
         self.placedb = placedb
         self.region_id = region_id
+        self.region_box2xl = region_box2xl
+        self.region_box2yl = region_box2yl
+        self.region_box2xh = region_box2xh
+        self.region_box2yh = region_box2yh
         self.fence_region_mask = node2fence_region_map == region_id
         ## set by build_density_op func
         self.filler_start_map = None
@@ -396,6 +417,7 @@ class ElectricPotential(ElectricOverflow):
             #print("Density computation for region: %d" %(self.region_id))
             return ElectricPotentialFunction.apply(
                 pos, self.node_size_x_clamped, self.node_size_y_clamped,
+                self.region_box2xl, self.region_box2yl, self.region_box2xh, self.region_box2yh, self.node2region_box,
                 self.offset_x, self.offset_y, self.ratio, 
                 self.initial_density_map, 
                 self.xl, self.yl, self.xh, self.yh, self.bin_size_x,
@@ -414,7 +436,8 @@ class ElectricPotential(ElectricOverflow):
 
             density_map = ElectricDensityMapFunction.forward(
                 pos, self.node_size_x_clamped, self.node_size_y_clamped,
-                self.offset_x, self.offset_y, self.ratio, 
+                self.region_box2xl, self.region_box2yl, self.region_box2xh, self.region_box2yh, 
+                self.node2region_box, self.offset_x, self.offset_y, self.ratio, 
                 self.initial_density_map, 
                 self.xl, self.yl, self.xh, self.yh, self.bin_size_x,
                 self.bin_size_y, self.num_movable_nodes, 0,

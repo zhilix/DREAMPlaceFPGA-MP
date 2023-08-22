@@ -51,9 +51,9 @@ def placeFPGA(params):
     path = "%s/%s" % (params.result_dir, params.design_name())
     
     # write macro placement solution
-    placedb.writeMacroPl(params, "macroplacement.pl")
+    placedb.writeMacroPl(params, "macroplacement_new_density.pl")
     # write placement solution to Tcl file
-    placedb.writeTcl(params, "merge.vivado.tcl")
+    # placedb.writeTcl(params, "merge.vivado.tcl")
 
     logging.info("Total runtime: %.3f seconds" % (time.time()-start))
                

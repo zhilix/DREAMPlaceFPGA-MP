@@ -344,6 +344,10 @@ class PlaceObjFPGA(nn.Module):
         return electric_potential.ElectricPotential(
             node_size_x=data_collections.node_size_x,
             node_size_y=data_collections.node_size_y,
+            region_box2xl=data_collections.regionBox2xl,
+            region_box2yl=data_collections.regionBox2yl,
+            region_box2xh=data_collections.regionBox2xh,
+            region_box2yh=data_collections.regionBox2yh,
             xl=placedb.xl,
             yl=placedb.yl,
             xh=placedb.xh,
@@ -357,6 +361,7 @@ class PlaceObjFPGA(nn.Module):
             sorted_node_map=data_collections.sorted_node_map,
             region_id=region_id,
             fence_regions=fence_regions,
+            node2region_box=data_collections.node2regionBox_map,
             node2fence_region_map=data_collections.node2fence_region_map,
             placedb=placedb)
 

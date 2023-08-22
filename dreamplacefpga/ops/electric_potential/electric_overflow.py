@@ -58,6 +58,11 @@ class ElectricDensityMapFunction(Function):
         pos,
         node_size_x_clamped,
         node_size_y_clamped,
+        region_box2xl,
+        region_box2yl,
+        region_box2xh,
+        region_box2yh,
+        node2region_box,
         offset_x,
         offset_y,
         ratio,
@@ -83,7 +88,9 @@ class ElectricDensityMapFunction(Function):
         if pos.is_cuda:
             output = electric_potential_cuda.density_map_fpga(
                 pos.view(pos.numel()), node_size_x_clamped,
-                node_size_y_clamped, offset_x, offset_y, ratio.mul(0.25),
+                node_size_y_clamped, region_box2xl, region_box2yl, 
+                region_box2xh, region_box2yh, node2region_box, 
+                offset_x, offset_y, ratio.mul(0.25),
                 initial_density_map, xl, yl, xh,
                 yh, bin_size_x, bin_size_y, num_movable_nodes,
                 num_filler_nodes, num_bins_x, num_bins_y,
@@ -91,7 +98,9 @@ class ElectricDensityMapFunction(Function):
         else:
             output = electric_potential_cpp.density_map_fpga(
                 pos.view(pos.numel()), node_size_x_clamped,
-                node_size_y_clamped, offset_x, offset_y, ratio.mul(0.25),
+                node_size_y_clamped, region_box2xl, region_box2yl,
+                region_box2xh, region_box2yh, node2region_box,
+                offset_x, offset_y, ratio.mul(0.25),
                 initial_density_map, xl, yl, xh, yh, bin_size_x, bin_size_y,
                 targetHalfSizeX, targetHalfSizeY, num_movable_nodes, 
                 num_filler_nodes, num_bins_x, num_bins_y,
@@ -107,6 +116,11 @@ class ElectricOverflow(nn.Module):
         self,
         node_size_x,
         node_size_y,
+        region_box2xl,
+        region_box2yl,
+        region_box2xh,
+        region_box2yh,
+        node2region_box,
         xl,
         yl,
         xh,
@@ -123,7 +137,11 @@ class ElectricOverflow(nn.Module):
         super(ElectricOverflow, self).__init__()
         self.node_size_x = node_size_x
         self.node_size_y = node_size_y
-
+        self.region_box2xl = region_box2xl
+        self.region_box2yl = region_box2yl
+        self.region_box2xh = region_box2xh
+        self.region_box2yh = region_box2yh
+        self.node2region_box = node2region_box
         self.xl = xl
         self.yl = yl
         self.xh = xh
@@ -166,6 +184,8 @@ class ElectricOverflow(nn.Module):
         
         density_map = ElectricDensityMapFunction.forward(
             pos, self.node_size_x_clamped, self.node_size_y_clamped,
+            self.region_box2xl, self.region_box2yl, self.region_box2xh,
+            self.region_box2yh, self.node2region_box,
             self.offset_x, self.offset_y, self.ratio, 
             self.initial_density_map, 
             self.xl, self.yl, self.xh, self.yh, self.bin_size_x,
