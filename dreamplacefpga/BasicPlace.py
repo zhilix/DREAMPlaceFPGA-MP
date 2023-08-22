@@ -273,71 +273,26 @@ class BasicPlaceFPGA(nn.Module):
         else: ##Design does not have IO pins - place in center
             initLocX = 0.5 * (placedb.xh - placedb.xl)
             initLocY = 0.5 * (placedb.yh - placedb.yl)
-
-        regionCenterX = np.zeros(placedb.num_region_constraint_boxes, dtype=placedb.dtype)
-        regionCenterY = np.zeros(placedb.num_region_constraint_boxes, dtype=placedb.dtype)
-
-        for regionID in range(placedb.num_region_constraint_boxes):
-            numIOPins = 0
-            for nodeID in range(placedb.num_movable_nodes,placedb.num_physical_nodes):
-                if placedb.node_x[nodeID] >= placedb.region_box2xl[regionID] and placedb.node_x[nodeID] < placedb.region_box2xh[regionID] and placedb.node_y[nodeID] >= placedb.region_box2yl[regionID] and placedb.node_y[nodeID] < placedb.region_box2yh[regionID]:
-                    for pID in placedb.node2pin_map[nodeID]:
-                        regionCenterX[regionID] += placedb.node_x[nodeID] + placedb.pin_offset_x[pID]
-                        regionCenterY[regionID] += placedb.node_y[nodeID] + placedb.pin_offset_y[pID]
-                    numIOPins += len(placedb.node2pin_map[nodeID])
-            
-            if numIOPins > 0:
-                regionCenterX[regionID] /= numIOPins
-                regionCenterY[regionID] /= numIOPins
-                logging.info("Region %d center: (%f, %f)" % (regionID, regionCenterX[regionID], regionCenterY[regionID]))
-            else:
-                regionCenterX[regionID] = 0.5 * (placedb.region_box2xl[regionID] + placedb.region_box2xh[regionID])
-                regionCenterY[regionID] = 0.5 * (placedb.region_box2yl[regionID] + placedb.region_box2yh[regionID])
-                logging.info("Region %d center: (%f, %f)" % (regionID, regionCenterX[regionID], regionCenterY[regionID]))
-
+        
+        # x position
         self.init_pos[0:placedb.num_physical_nodes] = placedb.node_x
-        self.init_pos[placedb.num_nodes:placedb.num_nodes+placedb.num_physical_nodes] = placedb.node_y
-
-        for nodeID in range(0, placedb.num_movable_nodes):
-            regionID = placedb.node2regionBox_map[nodeID]
-            if regionID != -1:
-                self.init_pos[nodeID] = np.random.normal(
-                    loc = regionCenterX[regionID],
-                    scale = min(placedb.xh - placedb.xl, placedb.yh - placedb.yl) * 0.001)
-                self.init_pos[nodeID+placedb.num_nodes] = np.random.normal(
-                    loc = regionCenterY[regionID],
-                    scale = min(placedb.xh - placedb.xl, placedb.yh - placedb.yl) * 0.001)
-
-            else:
-                self.init_pos[nodeID] = np.random.normal(
-                    loc = initLocX,
-                    scale = min(placedb.xh - placedb.xl, placedb.yh - placedb.yl) * 0.001)
-                self.init_pos[nodeID+placedb.num_nodes] = np.random.normal(
-                    loc = initLocY,
-                    scale = min(placedb.xh - placedb.xl, placedb.yh - placedb.yl) * 0.001)
-
+        if params.global_place_flag and params.random_center_init_flag:  # move to centroid of layout
+            #logging.info("Move cells to the centroid of fixed IOs with random noise")
+            self.init_pos[0:placedb.num_movable_nodes] = np.random.normal(
+                loc = initLocX,
+                scale = min(placedb.xh - placedb.xl, placedb.yh - placedb.yl) * 0.001,
+                size = placedb.num_movable_nodes)
         self.init_pos[0:placedb.num_movable_nodes] -= (0.5 * placedb.node_size_x[0:placedb.num_movable_nodes])
-        self.init_pos[placedb.num_nodes:placedb.num_nodes+placedb.num_movable_nodes] -= (0.5 * placedb.node_size_y[0:placedb.num_movable_nodes])           
 
-        # # x position
-        # self.init_pos[0:placedb.num_physical_nodes] = placedb.node_x
-        # if params.global_place_flag and params.random_center_init_flag:  # move to centroid of layout
-        #     #logging.info("Move cells to the centroid of fixed IOs with random noise")
-        #     self.init_pos[0:placedb.num_movable_nodes] = np.random.normal(
-        #         loc = initLocX,
-        #         scale = min(placedb.xh - placedb.xl, placedb.yh - placedb.yl) * 0.001,
-        #         size = placedb.num_movable_nodes)
-        # self.init_pos[0:placedb.num_movable_nodes] -= (0.5 * placedb.node_size_x[0:placedb.num_movable_nodes])
-
-        # # y position
-        # self.init_pos[placedb.num_nodes:placedb.num_nodes+placedb.num_physical_nodes] = placedb.node_y
-        # if params.global_place_flag and params.random_center_init_flag:  # move to center of layout
-        #     self.init_pos[placedb.num_nodes:placedb.num_nodes+placedb.num_movable_nodes] = np.random.normal(
-        #         loc = initLocY,
-        #         scale = min(placedb.xh - placedb.xl, placedb.yh - placedb.yl) * 0.001,
-        #         size = placedb.num_movable_nodes)
-        # self.init_pos[placedb.num_nodes:placedb.num_nodes+placedb.num_movable_nodes] -= (0.5 * placedb.node_size_y[0:placedb.num_movable_nodes])
-        #logging.info("Random Init Place in python takes %.2f seconds" % (time.time() - tt))
+        # y position
+        self.init_pos[placedb.num_nodes:placedb.num_nodes+placedb.num_physical_nodes] = placedb.node_y
+        if params.global_place_flag and params.random_center_init_flag:  # move to center of layout
+            self.init_pos[placedb.num_nodes:placedb.num_nodes+placedb.num_movable_nodes] = np.random.normal(
+                loc = initLocY,
+                scale = min(placedb.xh - placedb.xl, placedb.yh - placedb.yl) * 0.001,
+                size = placedb.num_movable_nodes)
+        self.init_pos[placedb.num_nodes:placedb.num_nodes+placedb.num_movable_nodes] -= (0.5 * placedb.node_size_y[0:placedb.num_movable_nodes])
+        # logging.info("Random Init Place in python takes %.2f seconds" % (time.time() - tt))
 
         if placedb.num_filler_nodes:  # uniformly distribute filler cells in the layout
             ### uniformly spread fillers in fence region
@@ -630,32 +585,12 @@ class BasicPlaceFPGA(nn.Module):
 
         return lut_ff_legalization.LegalizeCLB(
             placedb=placedb,
-            lutFlopIndices=data_collections.flop_lut_indices,
-            flop2ctrlSet=data_collections.flop2ctrlSetId_map,
-            flop_ctrlSet=data_collections.flop_ctrlSets,
-            pin2node=data_collections.pin2node_map,
-            pin2net=data_collections.pin2net_map,
-            flat_net2pin=data_collections.flat_net2pin_map,
-            flat_net2pin_start=data_collections.flat_net2pin_start_map,
-            flat_node2pin=data_collections.flat_node2pin_map,
-            flat_node2pin_start=data_collections.flat_node2pin_start_map,
-            node2fence=data_collections.node2fence_region_map,
-            pin_types=data_collections.pin_typeIds,
-            lut_type=data_collections.lut_type,
+            data_collections=data_collections,
             net_wts=net_wts,
             avg_lut_area=avgLUTArea,
             avg_ff_area=avgFFArea,
             inst_areas=inst_areas,
-            pin_offset_x=data_collections.lg_pin_offset_x,
-            pin_offset_y=data_collections.lg_pin_offset_y,
             site_types=site_types,
-            site_xy=data_collections.lg_siteXYs,
-            node_size_x=data_collections.node_size_x[:placedb.num_physical_nodes],
-            node_size_y=data_collections.node_size_y[:placedb.num_physical_nodes],
-            node2outpin=data_collections.node2outpinIdx_map[:placedb.num_physical_nodes],
-            net2pincount=data_collections.net2pincount_map,
-            node2pincount=data_collections.node2pincount_map,
-            spiral_accessor=data_collections.spiral_accessor,
             num_threads=params.num_threads,
             device=device)
 

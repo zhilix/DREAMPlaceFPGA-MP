@@ -4194,8 +4194,7 @@ int ripUp_LG(
 
 //run greedy legalization
 template <typename T>
-int greedy_LG(
-              const T* pos_x,
+int greedy_LG(const T* pos_x,
               const T* pos_y,
               const T* pin_offset_x,
               const T* pin_offset_y,
@@ -4433,6 +4432,279 @@ int greedy_LG(
                 inst_curr_detSite[prclInst] = bestSite;
             }
             greedyLegalizeInst = 1;
+        }
+    }
+
+    return 0;
+}
+
+//run greedy legalization with region constraints
+template <typename T>
+int greedy_LG_regions(
+        const T* pos_x,
+        const T* pos_y,
+        const T* pin_offset_x,
+        const T* pin_offset_y,
+        const T* net_weights,
+        const T* net_bbox,
+        const T* wlPrecond,
+        const T* site_xy,
+        const T* regionBox2xl,
+        const T* regionBox2xh,
+        const T* regionBox2yl,
+        const T* regionBox2yh,
+        const int* net_pinIdArrayX,
+        const int* net_pinIdArrayY,
+        const int* spiral_accessor,
+        const int* node2fence_region_map,
+        const int* lut_type,
+        const int* site_types,
+        const int* node2pincount,
+        const int* net2pincount,
+        const int* pin2net_map,
+        const int* pin2node_map,
+        const int* pin_typeIds,
+        const int* flop2ctrlSetId_map,
+        const int* flop_ctrlSets,
+        const int* flat_net2pin_start_map,
+        const int* flat_node2pin_start_map,
+        const int* flat_node2pin_map,
+        const int* flat_node2prclstrCount,
+        const int* flat_node2precluster_map,
+        const int* node2regionBox_map,
+        const int* sorted_net_map,
+        const int* sorted_node_map,
+        const int* sorted_remNode_idx,
+        const int* site2addr_map,
+        const int* node_names,
+        const T xl,
+        const T yl,
+        const T xh,
+        const T yh,
+        const T xWirelenWt,
+        const T yWirelenWt,
+        const T extNetCountWt,
+        const T wirelenImprovWt,
+        const int num_remInsts,
+        const int num_sites_y,
+        const int spiralBegin,
+        const int spiralEnd,
+        const int SIG_IDX,
+        const int CE_IN_CLB,
+        const int CKSR_IN_CLB,
+        const int HALF_SLICE_CAPACITY,
+        const int NUM_BLE_PER_SLICE,
+        const int greedyExpansion,
+        const int netShareScoreMaxNetDegree,
+        const int wlScoreMaxNetDegree,
+        int* inst_curr_detSite,
+        int* site_det_sig_idx,
+        int* site_det_sig,
+        int* site_det_impl_lut,
+        int* site_det_impl_ff,
+        int* site_det_impl_cksr,
+        int* site_det_impl_ce,
+        int* site_det_siteId,
+        T* site_det_score
+        )
+{
+    for (int i = 0; i < num_remInsts; ++i)
+    {
+        const int instId = sorted_remNode_idx[i];
+
+        int greedyLegalizeInst(INVALID);
+
+        int beg(spiralBegin), end(spiralEnd), instPcl(instId*3);
+
+        T cenX(pos_x[flat_node2precluster_map[instPcl]]);
+        T cenY(pos_y[flat_node2precluster_map[instPcl]]);
+
+        if (flat_node2prclstrCount[instId] > 1)
+        {
+            cenX *= wlPrecond[flat_node2precluster_map[instPcl]];
+            cenY *= wlPrecond[flat_node2precluster_map[instPcl]];
+            T totalWt(wlPrecond[flat_node2precluster_map[instPcl]]);
+
+            for (int cl = 1; cl < flat_node2prclstrCount[instId]; ++cl)
+            {
+                int pclInst = flat_node2precluster_map[instPcl + cl];
+                cenX += pos_x[pclInst] * wlPrecond[pclInst];
+                cenY += pos_y[pclInst] * wlPrecond[pclInst];
+                totalWt += wlPrecond[pclInst];
+            }
+
+            cenX /= totalWt;
+            cenY /= totalWt;
+        }
+
+        //BestCandidate
+        //Candidate<T> bestCand;
+        T bestScore = 0.0;
+        int bestSite = INVALID;
+        int bestCandLUT[SLICE_CAPACITY];
+        int bestCandFF[SLICE_CAPACITY];
+        int bestCandCK[2];
+        int bestCandCE[4];
+        int bestCandSig[2*SLICE_CAPACITY];
+        int bestCandSigSize = 0;
+
+        T bestScoreImprov(-10000.0);
+
+        int maxRad = DREAMPLACE_STD_NAMESPACE::max(xh, yh);
+        T instLimit_xl(xl), instLimit_yl(yl), instLimit_xh(xh), instLimit_yh(yh);
+
+        //Update limits of instance if region constraint exists
+        if (node2regionBox_map[instId] != INVALID)
+        {
+            int regionId = node2regionBox_map[instId];
+            instLimit_xl = regionBox2xl[regionId];
+            instLimit_yl = regionBox2yl[regionId];
+            instLimit_xh = regionBox2xh[regionId];
+            instLimit_yh = regionBox2yh[regionId];
+            maxRad = DREAMPLACE_STD_NAMESPACE::max(instLimit_xh, instLimit_yh);
+        }
+
+        //DBG
+        int cnt = 0;
+        for (int sIdx = beg; sIdx < end; ++sIdx)
+        {
+            //DBG
+            ++cnt;
+
+            int saIdx = sIdx*2;
+            int xVal = cenX + spiral_accessor[saIdx]; 
+            int yVal = cenY + spiral_accessor[saIdx + 1]; 
+            int siteMapIdx = xVal * num_sites_y + yVal;
+            int siteMapAIdx = site2addr_map[siteMapIdx];
+
+            //Check within bounds and site-inst compatibility
+            if (xVal < instLimit_xl || xVal >= instLimit_xh || yVal < instLimit_yl || yVal >= instLimit_yh
+                    || site_types[siteMapIdx] != 1 || node2fence_region_map[instId] > 1)
+            {
+                continue;
+            }
+
+            T candScore = site_det_score[siteMapAIdx];
+            int candSite = site_det_siteId[siteMapAIdx];
+            int candLUT[SLICE_CAPACITY];
+            int candFF[SLICE_CAPACITY];
+            int candCK[2];
+            int candCE[4];
+            int candSig[2*SLICE_CAPACITY];
+            int candSigSize = site_det_sig_idx[siteMapAIdx];
+
+            int sdId(siteMapAIdx*SIG_IDX), sdlutId(siteMapAIdx*SLICE_CAPACITY);
+            int sdckId(siteMapAIdx*CKSR_IN_CLB), sdceId(siteMapAIdx*CE_IN_CLB);
+
+            for(int sg = 0; sg < candSigSize; ++sg)
+            {
+                candSig[sg] = site_det_sig[sdId + sg];
+            }
+            for(int sg = 0; sg < SLICE_CAPACITY; ++sg)
+            {
+                candLUT[sg] = site_det_impl_lut[sdlutId + sg];
+                candFF[sg] = site_det_impl_ff[sdlutId + sg];
+            }
+            for(int sg = 0; sg < CKSR_IN_CLB; ++sg)
+            {
+                candCK[sg] = site_det_impl_cksr[sdckId + sg];
+            }
+            for(int sg = 0; sg < CE_IN_CLB; ++sg)
+            {
+                candCE[sg] = site_det_impl_ce[sdceId + sg];
+            }
+            if (add_inst_to_cand_impl(lut_type, flat_node2pin_start_map, flat_node2pin_map, node2pincount, net2pincount, pin2net_map, pin_typeIds, sorted_net_map, flat_node2prclstrCount, flat_node2precluster_map, flop2ctrlSetId_map, node2fence_region_map, flop_ctrlSets, instId, CKSR_IN_CLB, CE_IN_CLB, HALF_SLICE_CAPACITY, NUM_BLE_PER_SLICE, candLUT, candFF, candCK, candCE) && 
+                    add_inst_to_sig(flat_node2prclstrCount[instId], flat_node2precluster_map, sorted_node_map, instPcl, candSig, candSigSize))
+            {
+                // Adding the instance to the site is legal
+                // If this is the first legal position found, set the expansion search radius
+                if (bestScoreImprov == -10000.0)
+                {
+                    int r = DREAMPLACE_STD_NAMESPACE::abs(spiral_accessor[saIdx]) + DREAMPLACE_STD_NAMESPACE::abs(spiral_accessor[saIdx + 1]); 
+                    r += greedyExpansion;
+
+                    int nwR = DREAMPLACE_STD_NAMESPACE::min(maxRad, r);
+                    end = nwR ? 2 * (nwR + 1) * nwR + 1 : 1;
+                }
+                //cand_score = computeCandidateScore(cand);
+                compute_candidate_score(pos_x, pos_y, pin_offset_x, pin_offset_y, net_bbox, net_weights, net_pinIdArrayX, net_pinIdArrayY, flat_net2pin_start_map, flat_node2pin_start_map, flat_node2pin_map, sorted_net_map, pin2net_map, pin2node_map, net2pincount, site_xy, node_names, xWirelenWt, yWirelenWt, extNetCountWt, wirelenImprovWt, netShareScoreMaxNetDegree, wlScoreMaxNetDegree, candSig, candSite, candSigSize, candScore);
+
+                T scoreImprov = candScore - site_det_score[siteMapAIdx];
+                if (scoreImprov > bestScoreImprov)
+                {
+                    //std::cout << "Found best candidate for " << idx << std::endl;
+                    //bestCand = cand;
+                    bestScore = candScore;
+                    bestSite = candSite;
+                    bestCandSigSize = candSigSize;
+
+                    for(int sg = 0; sg < candSigSize; ++sg)
+                    {
+                        bestCandSig[sg] = candSig[sg];
+                    }
+                    for(int sg = 0; sg < SLICE_CAPACITY; ++sg)
+                    {
+                        bestCandLUT[sg] = candLUT[sg];
+                        bestCandFF[sg] = candFF[sg];
+                    }
+                    for(int sg = 0; sg < CKSR_IN_CLB; ++sg)
+                    {
+                        bestCandCK[sg] = candCK[sg];
+                    }
+                    for(int sg = 0; sg < CE_IN_CLB; ++sg)
+                    {
+                        bestCandCE[sg] = candCE[sg];
+                    }
+
+                    bestScoreImprov = scoreImprov;
+                }
+            } 
+        }
+
+        // Commit the found best legal solution
+        if (bestSite != INVALID)
+        {
+            int stId = bestSite;
+            int stAId = site2addr_map[stId];
+
+            site_det_score[stAId] = bestScore;
+            site_det_siteId[stAId] = bestSite;
+            site_det_sig_idx[stAId] = bestCandSigSize;
+
+            int sdId(stAId*SIG_IDX), sdlutId(stAId*SLICE_CAPACITY);
+            int sdckId(stAId*CKSR_IN_CLB), sdceId(stAId*CE_IN_CLB);
+
+            for (auto sg = 0; sg < bestCandSigSize; ++sg)
+            {
+                site_det_sig[sdId + sg] = bestCandSig[sg];
+            }
+            for (int sg = 0; sg < SLICE_CAPACITY; ++sg)
+            {
+                site_det_impl_lut[sdlutId + sg] = bestCandLUT[sg];
+                site_det_impl_ff[sdlutId + sg] = bestCandFF[sg];
+            }
+            for (int sg = 0; sg < CKSR_IN_CLB; ++sg)
+            {
+                site_det_impl_cksr[sdckId + sg] = bestCandCK[sg];
+            }
+            for (int sg = 0; sg < CE_IN_CLB; ++sg)
+            {
+                site_det_impl_ce[sdceId + sg] = bestCandCE[sg];
+            }
+            /////
+
+            for (int cl = 0; cl < flat_node2prclstrCount[instId]; ++cl)
+            {
+                int prclInst = flat_node2precluster_map[instPcl + cl];
+                inst_curr_detSite[prclInst] = bestSite;
+            }
+            greedyLegalizeInst = 1;
+        }
+
+        if (greedyLegalizeInst != 1)
+        {
+            inst_curr_detSite[instId] = INVALID;
+            dreamplacePrint(kERROR, "unable to legalize inst: %u \n", instId);
         }
     }
 
@@ -5952,6 +6224,276 @@ void ripUp_SlotAssign(at::Tensor pos,
     //std::cout << "Completed cache solution" << std::endl;
 }
 
+//Greedy Legalization of macro LUT/FF Instances
+void greedyLG_macroInsts(at::Tensor pos,
+                   at::Tensor pin_offset_x,
+                   at::Tensor pin_offset_y,
+                   at::Tensor net_weights,
+                   at::Tensor net_bbox,
+                   at::Tensor wlPrecond,
+                   at::Tensor site_xy,
+                   at::Tensor regionBox2xl,
+                   at::Tensor regionBox2yl,
+                   at::Tensor regionBox2xh,
+                   at::Tensor regionBox2yh,
+                   at::Tensor net_pinIdArrayX,
+                   at::Tensor net_pinIdArrayY,
+                   at::Tensor spiral_accessor,
+                   at::Tensor node2fence_region_map,
+                   at::Tensor lut_type,
+                   at::Tensor site_types,
+                   at::Tensor node2pincount,
+                   at::Tensor net2pincount,
+                   at::Tensor pin2net_map,
+                   at::Tensor pin2node_map,
+                   at::Tensor pin_typeIds,
+                   at::Tensor flop2ctrlSetId_map,
+                   at::Tensor flop_ctrlSets,
+                   at::Tensor flat_net2pin_start_map,
+                   at::Tensor flat_node2pin_start_map,
+                   at::Tensor flat_node2pin_map,
+                   at::Tensor flat_node2prclstrCount,
+                   at::Tensor flat_node2precluster_map,
+                   at::Tensor node2regionBox_map,
+                   at::Tensor sorted_net_map,
+                   at::Tensor sorted_node_map,
+                   at::Tensor sorted_node_idx,
+                   at::Tensor node2outpinIdx_map,
+                   at::Tensor flat_net2pin_map,
+                   at::Tensor addr2site_map,
+                   at::Tensor site2addr_map,
+                   at::Tensor node_names,
+                   double xl,
+                   double yl,
+                   double xh,
+                   double yh,
+                   double xWirelenWt,
+                   double yWirelenWt,
+                   double extNetCountWt,
+                   double wirelenImprovWt,
+                   double slotAssignFlowWeightScale,
+                   double slotAssignFlowWeightIncr,
+                   int NUM_BLE_PER_HALF_SLICE,
+                   int num_nodes,
+                   int num_sites_x,
+                   int num_sites_y,
+                   int num_clb_sites,
+                   int spiralBegin,
+                   int spiralEnd,
+                   int CKSR_IN_CLB,
+                   int CE_IN_CLB,
+                   int HALF_SLICE_CAPACITY,
+                   int NUM_BLE_PER_SLICE,
+                   int netShareScoreMaxNetDegree,
+                   int wlScoreMaxNetDegree,
+                   int greedyExpansion,
+                   int SIG_IDX,
+                   int num_threads,
+                   at::Tensor inst_curr_detSite,
+                   at::Tensor site_det_sig_idx,
+                   at::Tensor site_det_sig,
+                   at::Tensor site_det_impl_lut,
+                   at::Tensor site_det_impl_ff,
+                   at::Tensor site_det_impl_cksr,
+                   at::Tensor site_det_impl_ce,
+                   at::Tensor site_det_siteId,
+                   at::Tensor site_det_score,
+                   at::Tensor node_x,
+                   at::Tensor node_y,
+                   at::Tensor node_z
+                   )
+{
+    CHECK_FLAT(pos);
+    CHECK_EVEN(pos);
+    CHECK_CONTIGUOUS(pos);
+
+    CHECK_FLAT(pin_offset_x);
+    CHECK_CONTIGUOUS(pin_offset_x);
+    CHECK_FLAT(pin_offset_y);
+    CHECK_CONTIGUOUS(pin_offset_y);
+
+    CHECK_FLAT(net_weights);
+    CHECK_CONTIGUOUS(net_weights);
+
+    CHECK_FLAT(net_bbox);
+    CHECK_CONTIGUOUS(net_bbox);
+
+    CHECK_FLAT(wlPrecond);
+    CHECK_CONTIGUOUS(wlPrecond);
+
+    CHECK_FLAT(site_xy);
+    CHECK_CONTIGUOUS(site_xy);
+
+    CHECK_FLAT(net_pinIdArrayX);
+    CHECK_CONTIGUOUS(net_pinIdArrayX);
+    CHECK_FLAT(net_pinIdArrayY);
+    CHECK_CONTIGUOUS(net_pinIdArrayY);
+
+    CHECK_FLAT(spiral_accessor);
+    CHECK_CONTIGUOUS(spiral_accessor);
+
+    CHECK_FLAT(node2fence_region_map);
+    CHECK_CONTIGUOUS(node2fence_region_map);
+
+    CHECK_FLAT(lut_type);
+    CHECK_CONTIGUOUS(lut_type);
+
+    CHECK_FLAT(site_types);
+    CHECK_CONTIGUOUS(site_types);
+
+    CHECK_FLAT(node2pincount);
+    CHECK_CONTIGUOUS(node2pincount);
+
+    CHECK_FLAT(net2pincount);
+    CHECK_CONTIGUOUS(net2pincount);
+
+    CHECK_FLAT(pin2net_map);
+    CHECK_CONTIGUOUS(pin2net_map);
+
+    CHECK_FLAT(pin2node_map);
+    CHECK_CONTIGUOUS(pin2node_map);
+
+    CHECK_FLAT(pin_typeIds);
+    CHECK_CONTIGUOUS(pin_typeIds);
+
+    CHECK_FLAT(flop2ctrlSetId_map);
+    CHECK_CONTIGUOUS(flop2ctrlSetId_map);
+    CHECK_FLAT(flop_ctrlSets);
+    CHECK_CONTIGUOUS(flop_ctrlSets);
+
+    CHECK_FLAT(flat_node2pin_start_map);
+    CHECK_CONTIGUOUS(flat_node2pin_start_map);
+    CHECK_FLAT(flat_node2pin_map);
+    CHECK_CONTIGUOUS(flat_node2pin_map);
+
+    CHECK_FLAT(flat_net2pin_start_map);
+    CHECK_CONTIGUOUS(flat_net2pin_start_map);
+    CHECK_FLAT(flat_net2pin_map);
+    CHECK_CONTIGUOUS(flat_net2pin_map);
+
+    CHECK_FLAT(flat_node2prclstrCount);
+    CHECK_CONTIGUOUS(flat_node2prclstrCount);
+    CHECK_FLAT(flat_node2precluster_map);
+    CHECK_CONTIGUOUS(flat_node2precluster_map);
+
+    CHECK_FLAT(sorted_node_map);
+    CHECK_CONTIGUOUS(sorted_node_map);
+    CHECK_FLAT(sorted_node_idx);
+    CHECK_CONTIGUOUS(sorted_node_idx);
+
+    CHECK_FLAT(sorted_net_map);
+    CHECK_CONTIGUOUS(sorted_net_map);
+
+    int numNodes = pos.numel() / 2;
+
+    //RipUp & Greedy Legalization
+    DREAMPLACE_DISPATCH_FLOATING_TYPES(pos, "greedy_LG_regions", [&] {
+            greedy_LG_regions<scalar_t>(
+                    DREAMPLACE_TENSOR_DATA_PTR(pos, scalar_t),
+                    DREAMPLACE_TENSOR_DATA_PTR(pos, scalar_t) + numNodes,
+                    DREAMPLACE_TENSOR_DATA_PTR(pin_offset_x, scalar_t),
+                    DREAMPLACE_TENSOR_DATA_PTR(pin_offset_y, scalar_t),
+                    DREAMPLACE_TENSOR_DATA_PTR(net_weights, scalar_t),
+                    DREAMPLACE_TENSOR_DATA_PTR(net_bbox, scalar_t),
+                    DREAMPLACE_TENSOR_DATA_PTR(wlPrecond, scalar_t),
+                    DREAMPLACE_TENSOR_DATA_PTR(site_xy, scalar_t),
+                    DREAMPLACE_TENSOR_DATA_PTR(regionBox2xl, scalar_t),
+                    DREAMPLACE_TENSOR_DATA_PTR(regionBox2xh, scalar_t),
+                    DREAMPLACE_TENSOR_DATA_PTR(regionBox2yl, scalar_t),
+                    DREAMPLACE_TENSOR_DATA_PTR(regionBox2yh, scalar_t),
+                    DREAMPLACE_TENSOR_DATA_PTR(net_pinIdArrayX, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(net_pinIdArrayY, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(spiral_accessor, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(node2fence_region_map, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(lut_type, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(site_types, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(node2pincount, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(net2pincount, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(pin2net_map, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(pin2node_map, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(pin_typeIds, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(flop2ctrlSetId_map, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(flop_ctrlSets, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(flat_net2pin_start_map, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(flat_node2pin_start_map, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(flat_node2pin_map, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(flat_node2prclstrCount, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(flat_node2precluster_map, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(node2regionBox_map, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(sorted_net_map, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(sorted_node_map, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(sorted_node_idx, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(site2addr_map, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(node_names, int),
+                    xl, yl, xh, yh, xWirelenWt, yWirelenWt, extNetCountWt,
+                    wirelenImprovWt, num_nodes, num_sites_y,
+                    spiralBegin, spiralEnd, SIG_IDX, CE_IN_CLB, CKSR_IN_CLB,
+                    HALF_SLICE_CAPACITY, NUM_BLE_PER_SLICE, greedyExpansion,
+                    netShareScoreMaxNetDegree, wlScoreMaxNetDegree,
+                    DREAMPLACE_TENSOR_DATA_PTR(inst_curr_detSite, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(site_det_sig_idx, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(site_det_sig, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(site_det_impl_lut, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(site_det_impl_ff, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(site_det_impl_cksr, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(site_det_impl_ce, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(site_det_siteId, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(site_det_score, scalar_t));
+                });
+
+    //std::cout << "Completed RipUp & Greedy Legalization" << std::endl;
+
+    DREAMPLACE_DISPATCH_FLOATING_TYPES(pos, "slotAssign", [&] {
+            slotAssign<scalar_t>(
+                    DREAMPLACE_TENSOR_DATA_PTR(pos, scalar_t),
+                    DREAMPLACE_TENSOR_DATA_PTR(pos, scalar_t) + numNodes,
+                    DREAMPLACE_TENSOR_DATA_PTR(wlPrecond, scalar_t),
+                    DREAMPLACE_TENSOR_DATA_PTR(site_xy, scalar_t),
+                    DREAMPLACE_TENSOR_DATA_PTR(flop_ctrlSets, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(flop2ctrlSetId_map, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(flat_node2pin_start_map, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(flat_node2pin_map, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(flat_net2pin_start_map, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(flat_net2pin_map, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(pin2net_map, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(pin2node_map, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(node2pincount, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(net2pincount, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(node2outpinIdx_map, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(pin_typeIds, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(lut_type, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(site_types, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(sorted_net_map, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(addr2site_map, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(node_names, int),
+                    slotAssignFlowWeightScale, slotAssignFlowWeightIncr,
+                    num_sites_x, num_sites_y, num_clb_sites, CKSR_IN_CLB,
+                    CE_IN_CLB, HALF_SLICE_CAPACITY,
+                    NUM_BLE_PER_SLICE, NUM_BLE_PER_HALF_SLICE, num_threads, 
+                    DREAMPLACE_TENSOR_DATA_PTR(site_det_sig_idx, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(site_det_impl_lut, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(site_det_impl_ff, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(site_det_impl_cksr, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(site_det_impl_ce, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(site_det_siteId, int));
+                });
+    //std::cout << "Completed slot assign" << std::endl;
+
+    //Cache Solution
+    DREAMPLACE_DISPATCH_FLOATING_TYPES(pos, "cacheSolution", [&] {
+            cacheSolution<scalar_t>(
+                    DREAMPLACE_TENSOR_DATA_PTR(site_det_impl_lut, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(site_det_impl_ff, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(inst_curr_detSite, int),
+                    DREAMPLACE_TENSOR_DATA_PTR(addr2site_map, int),
+                    num_sites_y, num_clb_sites,
+                    DREAMPLACE_TENSOR_DATA_PTR(node_x, scalar_t),
+                    DREAMPLACE_TENSOR_DATA_PTR(node_y, scalar_t),
+                    DREAMPLACE_TENSOR_DATA_PTR(node_z, int));
+                });
+    //std::cout << "Completed cache solution" << std::endl;
+}
+
 //For GPU use
 void updateNbrListMap(
               at::Tensor pos,
@@ -6052,5 +6594,6 @@ PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
   m.def("initLegalize", &DREAMPLACE_NAMESPACE::initLegalize, "Initialize LUT/FF legalization");
   m.def("runDLIter", &DREAMPLACE_NAMESPACE::runDLIter, "Run DL Iteration");
   m.def("ripUp_SlotAssign", &DREAMPLACE_NAMESPACE::ripUp_SlotAssign, "Run RipUp and Greedy Legalization and Slot Assign");
+  m.def("greedyLG_macroInsts", &DREAMPLACE_NAMESPACE::greedyLG_macroInsts, "Run Greedy Legalization and Slot Assign for macro LUT/FF Instances");
   m.def("updateNbrListMap", &DREAMPLACE_NAMESPACE::updateNbrListMap, "update NbrListMap (Sequential)");
 }

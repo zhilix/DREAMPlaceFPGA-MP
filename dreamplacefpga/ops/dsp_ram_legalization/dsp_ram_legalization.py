@@ -152,7 +152,7 @@ class LegalizeDSPRAM(nn.Module):
             else:
                 dsp_ram_legalization_cpp.legalizeCascadeInsts(pos, torch.flatten(self.site_xy), self.regionBox2xl,
                             self.regionBox2yl, self.regionBox2xh, self.regionBox2yh, model.data_collections.resource_size_x,
-                            model.data_collections.resource_size_x, cascade_sites, torch.flatten(self.spiral_accessor),
+                            model.data_collections.resource_size_y, cascade_sites, torch.flatten(self.spiral_accessor),
                             torch.flatten(self.site_type_map), self.node2regionBox_map, cascade_insts_index,
                             cascade_sites_cumsum, self.xl, self.yl, self.xh, self.yh, region_id, self.spiralBegin,
                             self.spiralEnd, num_cascade_insts, self.num_sites_x, self.num_sites_y, movVal,
@@ -179,14 +179,37 @@ class LegalizeDSPRAM(nn.Module):
                 available_sites[index] = False
 
         #Handle region constraints if any in remaining instances
+        available_region_sites = np.zeros(self.num_region_constraint_boxes, dtype=np.int32)
+        insts_in_region = np.zeros_like(available_region_sites)
+
+        all_site_masks = []
+        all_insts_masks = []
         for el in range(self.num_region_constraint_boxes):
 
             region_x_mask = np.logical_and(sites[:,0] >= self.region_box2xl[el], sites[:,0] < self.region_box2xh[el])
             region_y_mask = np.logical_and(sites[:,1] >= self.region_box2yl[el], sites[:,1] < self.region_box2yh[el])
             region_site_mask = np.logical_and(region_x_mask, region_y_mask)
             region_site_mask = np.logical_and(region_site_mask, available_sites == 1)
+            all_site_masks.append(region_site_mask)
+
+            rSites = sites[region_site_mask]
+            available_region_sites[el] = len(rSites)
 
             region_instance_mask = np.logical_and(self.placedb.node2regionBox_map == el, np.logical_and(rem_insts, self.node2fence_region_map == region_id))
+            all_insts_masks.append(region_instance_mask)
+            insts_in_region[el] = region_instance_mask.sum()
+
+        all_site_masks = np.array(all_site_masks)
+        all_insts_masks = np.array(all_insts_masks)
+
+        #Start with smallest region
+        region_index_ordering = np.argsort(available_region_sites)
+        for idx in range(self.num_region_constraint_boxes):
+            el = region_index_ordering[idx]
+
+            region_site_mask = all_site_masks[el]
+            region_instance_mask = all_insts_masks[el]
+
             inst_mask = torch.from_numpy(region_instance_mask).to(self.device)
             num_rInsts = region_instance_mask.sum()
 
@@ -199,6 +222,10 @@ class LegalizeDSPRAM(nn.Module):
                 precondWL = model.precondWL[:self.num_physical_nodes][inst_mask].cpu().detach().numpy()
                 movVal = np.zeros(2, dtype=np.float32).tolist()
                 outLoc = np.zeros(2*num_rInsts, dtype=np.float32).tolist()
+
+                #Provide message if there are not enough sites for the instances to be legalized
+                if num_rInsts > num_sites:
+                    print("WARNING: Number of sites: %d and number of insts: %d"%(num_sites, num_rInsts))
 
                 dsp_ram_legalization_cpp.legalize(rlocX, rlocY, num_rInsts, num_sites, rSites.flatten(), precondWL, self.lg_max_dist_init,
                                       self.lg_max_dist_incr, self.lg_flow_cost_scale, movVal, outLoc)

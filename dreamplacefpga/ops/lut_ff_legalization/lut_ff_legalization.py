@@ -19,58 +19,65 @@ if configure.compile_configurations["CUDA_FOUND"] == "TRUE":
     import dreamplacefpga.ops.lut_ff_legalization.lut_ff_legalization_cuda as lut_ff_legalization_cuda
 
 class LegalizeCLB(nn.Module):
-    def __init__(self, placedb, lutFlopIndices, flop2ctrlSet, flop_ctrlSet, pin2node, pin2net, flat_net2pin, 
-        flat_net2pin_start, flat_node2pin, flat_node2pin_start, node2fence, pin_types, lut_type, 
-        net_wts, avg_lut_area, avg_ff_area, inst_areas, pin_offset_x, pin_offset_y, site_types, 
-        site_xy, node_size_x, node_size_y, node2outpin, net2pincount, node2pincount, spiral_accessor, 
+    def __init__(self, placedb, data_collections, net_wts, avg_lut_area, avg_ff_area, inst_areas, site_types, 
         num_threads, device):
 
         super(LegalizeCLB, self).__init__()
-        #TODO - Move flag to params
-        self.macro_legalization = True
 
-        self.lut_flop_indices=lutFlopIndices
+        self.lut_flop_indices=data_collections.flop_lut_indices
         self.num_lutflops=self.lut_flop_indices.shape[0]
         self.num_nodes=placedb.num_physical_nodes
 
         #Use nodeNames for debug purpose - Convert string to int
         self.nodeNames=torch.arange(self.num_nodes, dtype=torch.int, device=device)
 
-        self.flop2ctrlSetId_map=flop2ctrlSet
-        self.flop_ctrlSets=flop_ctrlSet
-        self.pin2node_map=pin2node
-        self.pin2net_map=pin2net
-        self.flat_net2pin_map=flat_net2pin
-        self.flat_net2pin_start_map=flat_net2pin_start
-        self.flat_node2pin_map=flat_node2pin
-        self.flat_node2pin_start_map=flat_node2pin_start
-        self.node2fence_region_map=node2fence
-        self.node2outpinIdx_map=node2outpin
-        self.pin_typeIds=pin_types
-        self.lut_type=lut_type
-        self.lut_type[node2fence == 0] += 1
+        self.flop2ctrlSetId_map=data_collections.flop2ctrlSetId_map
+        self.flop_ctrlSets=data_collections.flop_ctrlSets
+        self.pin2node_map=data_collections.pin2node_map
+        self.pin2net_map=data_collections.pin2net_map
+        self.flat_net2pin_map=data_collections.flat_net2pin_map
+        self.flat_net2pin_start_map=data_collections.flat_net2pin_start_map
+        self.flat_node2pin_map=data_collections.flat_node2pin_map
+        self.flat_node2pin_start_map=data_collections.flat_node2pin_start_map
+        self.node2fence_region_map=data_collections.node2fence_region_map
+        self.node2outpinIdx_map=data_collections.node2outpinIdx_map[:placedb.num_physical_nodes]
+        self.pin_typeIds=data_collections.pin_typeIds
+        self.lut_type=data_collections.lut_type
+        self.lut_type[self.node2fence_region_map == 0] += 1
         self.net_wts=net_wts
         self.avg_lut_area=avg_lut_area
         self.avg_ff_area=avg_ff_area
         self.inst_areas=inst_areas
-        self.pin_offset_x=pin_offset_x
-        self.pin_offset_y=pin_offset_y
+        self.pin_offset_x=data_collections.lg_pin_offset_x
+        self.pin_offset_y=data_collections.lg_pin_offset_y
         self.site_types=site_types
-        self.site_xy=site_xy
-        self.node_size_x=node_size_x
-        self.node_size_y=node_size_y
-        self.net2pincount=net2pincount
-        self.node2pincount=node2pincount
-        self.spiral_accessor=spiral_accessor
+        self.site_xy=data_collections.lg_siteXYs
+        self.node_size_x=data_collections.node_size_x[:placedb.num_physical_nodes]
+        self.node_size_y=data_collections.node_size_y[:placedb.num_physical_nodes]
+        self.net2pincount=data_collections.net2pincount_map
+        self.node2pincount=data_collections.node2pincount_map
+        self.spiral_accessor=data_collections.spiral_accessor
         self.num_nets=placedb.num_nets
         self.num_movable_nodes=placedb.num_movable_nodes
         self.num_sites_x=placedb.num_sites_x
         self.num_sites_y=placedb.num_sites_y
+        self.xl=placedb.xl
+        self.yl=placedb.yl
+        self.xh=placedb.xh
+        self.yh=placedb.yh
         self.xWirelenWt=placedb.xWirelenWt
         self.yWirelenWt=placedb.yWirelenWt
         self.nbrDistEnd=placedb.nbrDistEnd
         self.num_threads=num_threads
         self.device=device
+
+        #Region Constraints
+        self.regionBox2xl = data_collections.regionBox2xl
+        self.regionBox2yl = data_collections.regionBox2yl
+        self.regionBox2xh = data_collections.regionBox2xh
+        self.regionBox2yh = data_collections.regionBox2yh
+        self.node2regionBox_map = data_collections.node2regionBox_map
+        self.is_macro_inst = data_collections.is_macro_inst
 
         #Initialize required constants
         self.int_min_val = -2147483647
@@ -96,10 +103,10 @@ class LegalizeCLB(nn.Module):
         self.SCL_IDX = 128 #2*self.SLICE_CAPACITY
         self.SIG_IDX = 2*self.SLICE_CAPACITY #32
         #Initialize required tensors
-        self.net_bbox = torch.zeros(self.num_nets*4, dtype=node_size_x.dtype, device=device)
+        self.net_bbox = torch.zeros(self.num_nets*4, dtype=self.node_size_x.dtype, device=device)
 
-        self.net_pinIdArrayX = torch.zeros(len(flat_net2pin), dtype=torch.int, device=device)
-        self.net_pinIdArrayY = torch.zeros_like(self.net_pinIdArrayX) #len(flat_net2pin)
+        self.net_pinIdArrayX = torch.zeros(len(self.flat_net2pin_map), dtype=torch.int, device=device)
+        self.net_pinIdArrayY = torch.zeros_like(self.net_pinIdArrayX) #len(self.flat_net2pin_map)
 
         self.flat_node2precluster_map = torch.ones((self.num_nodes,3), dtype=torch.int, device=device)
         self.flat_node2precluster_map *= -1
@@ -108,18 +115,18 @@ class LegalizeCLB(nn.Module):
 
         #Instance Candidates
         self.inst_curr_detSite = torch.zeros_like(self.flat_node2prclstrCount) #num_nodes
-        self.inst_curr_detSite[node2fence < 2] = -1
+        self.inst_curr_detSite[self.node2fence_region_map < 2] = -1
         self.inst_curr_bestSite = torch.zeros_like(self.inst_curr_detSite) #num_nodes
-        self.inst_curr_bestSite[node2fence < 2] = -1
-        self.inst_curr_bestScoreImprov = torch.zeros(self.num_nodes, dtype=node_size_x.dtype, device=device)
-        self.inst_curr_bestScoreImprov[node2fence < 2] = -10000.0
+        self.inst_curr_bestSite[self.node2fence_region_map < 2] = -1
+        self.inst_curr_bestScoreImprov = torch.zeros(self.num_nodes, dtype=self.node_size_x.dtype, device=device)
+        self.inst_curr_bestScoreImprov[self.node2fence_region_map < 2] = -10000.0
 
         self.inst_next_detSite = torch.zeros_like(self.inst_curr_detSite) #num_nodes
-        self.inst_next_detSite[node2fence < 2] = -1
+        self.inst_next_detSite[self.node2fence_region_map < 2] = -1
         self.inst_next_bestSite = torch.zeros_like(self.inst_next_detSite) #num_nodes
-        self.inst_next_bestSite[node2fence < 2] = -1
+        self.inst_next_bestSite[self.node2fence_region_map < 2] = -1
         self.inst_next_bestScoreImprov = torch.zeros_like(self.inst_curr_bestScoreImprov) #num_nodes
-        self.inst_next_bestScoreImprov[node2fence < 2] = -10000.0
+        self.inst_next_bestScoreImprov[self.node2fence_region_map < 2] = -10000.0
 
         self.num_clb_sites = torch.bincount(self.site_types.flatten())[1].item()
         #Map from mem addr to CLB site
@@ -138,7 +145,7 @@ class LegalizeCLB(nn.Module):
         self.site_nbrRanges_idx = torch.zeros_like(self.site_nbr_idx) #num_clb_sites
         self.site_nbrGroup_idx = torch.zeros_like(self.site_nbr_idx) #num_clb_sites
         ##Site Candidates
-        self.site_det_score = torch.zeros(self.num_clb_sites, dtype=node_size_x.dtype, device=device)
+        self.site_det_score = torch.zeros(self.num_clb_sites, dtype=self.node_size_x.dtype, device=device)
         self.site_det_siteId = torch.ones_like(self.site_nbr_idx) #num_clb_sites
         self.site_det_siteId *= -1
         self.site_det_impl_lut = torch.ones((self.num_clb_sites, self.SLICE_CAPACITY), dtype=torch.int, device=device)
@@ -158,7 +165,7 @@ class LegalizeCLB(nn.Module):
         self.site_curr_scl_validIdx *= -1
         self.site_curr_scl_siteId = torch.ones((self.num_clb_sites, self.SCL_IDX), dtype=torch.int, device=device) #num_clb_sites * SCL_IDX
         self.site_curr_scl_siteId *= -1
-        self.site_curr_scl_score = torch.zeros((self.num_clb_sites, self.SCL_IDX), dtype=node_size_x.dtype, device=device)
+        self.site_curr_scl_score = torch.zeros((self.num_clb_sites, self.SCL_IDX), dtype=self.node_size_x.dtype, device=device)
         self.site_curr_scl_impl_lut = torch.ones((self.num_clb_sites, self.SCL_IDX, self.SLICE_CAPACITY), dtype=torch.int, device=device)
         self.site_curr_scl_impl_lut *= -1
         self.site_curr_scl_impl_ff = torch.ones_like(self.site_curr_scl_impl_lut) #num_clb_sites * SCL_IDX * SLICE_CAPACITY
@@ -173,7 +180,7 @@ class LegalizeCLB(nn.Module):
         self.site_curr_pq_idx = torch.zeros_like(self.site_nbr_idx) #num_clb_sites
         self.site_curr_pq_top_idx = torch.ones_like(self.site_nbr_idx) #num_clb_sites
         self.site_curr_pq_top_idx *= -1
-        self.site_curr_pq_score = torch.zeros((self.num_clb_sites, self.PQ_IDX), dtype=node_size_x.dtype, device=device)
+        self.site_curr_pq_score = torch.zeros((self.num_clb_sites, self.PQ_IDX), dtype=self.node_size_x.dtype, device=device)
         self.site_curr_pq_validIdx = torch.ones((self.num_clb_sites, self.PQ_IDX), dtype=torch.int, device=device)
         self.site_curr_pq_validIdx *= -1
         self.site_curr_pq_siteId = torch.ones((self.num_clb_sites, self.PQ_IDX), dtype=torch.int, device=device) #num_clb_sites * PQ_IDX
@@ -227,7 +234,7 @@ class LegalizeCLB(nn.Module):
         self.site_next_pq_impl_ce *= -1
 
         self.inst_score_improv = torch.zeros(self.num_nodes, dtype=torch.int, device=self.device)
-        self.inst_score_improv[node2fence < 2] = self.int_min_val
+        self.inst_score_improv[self.node2fence_region_map < 2] = self.int_min_val
         self.site_score_improv = torch.zeros(self.num_clb_sites, dtype=torch.int, device=self.device)
         self.site_score_improv *= self.int_min_val
 
@@ -307,7 +314,110 @@ class LegalizeCLB(nn.Module):
         #print("# Precluster: ", preAll, " (", pre2, " + ", pre3, ")")
         #DBG
         print("Preclusters: %d (%d + %d) Initialization completed in %.3f seconds" % (preAll, pre2, pre3, time.time()-tt))
-    
+ 
+    # Greedy LG of macro LUT/FF Instances
+    def greedyLG_macroInsts(self, pos, wlPrecond, node_z, sorted_node_map, sorted_node_idx, sorted_net_map, sorted_net_idx, sorted_pin_map):
+
+        tt = time.time()
+        spiralBegin = 0
+        greedyExpansion = 5
+        slotAssignFlowWeightScale = 1000.0
+        slotAssignFlowWeightIncr = 0.5
+
+        updXloc = torch.ones(self.num_nodes, dtype=pos.dtype, device=self.device)
+        updXloc *= -1
+        updYloc = torch.ones_like(updXloc)
+        updYloc *= -1
+        updZloc = torch.zeros(self.num_movable_nodes, dtype=torch.int, device=self.device)
+
+        remInsts_mask = torch.logical_and(self.is_macro_inst == 1,self.node2fence_region_map < 2)
+        num_remInsts = remInsts_mask.sum().item()
+        rem_inst_areas = self.inst_areas[remInsts_mask]
+        rem_inst_ids = torch.nonzero(remInsts_mask, as_tuple=True)[0].to(torch.int)
+
+        #sorted node ids only comprise of remaining instances
+        _, sorted_ids = torch.sort(rem_inst_areas, descending=True)
+        sorted_remNode_idx = rem_inst_ids[sorted_ids]
+        sorted_remNode_idx = sorted_remNode_idx.to(torch.int32)
+
+        #sorted node map will consist of all instances sorted based on decreasing area
+        _, sort_all_ids = torch.sort(self.inst_areas, descending=True)
+        _, sorted_remNode_map = torch.sort(sort_all_ids)
+        sorted_remNode_map = sorted_remNode_map.to(torch.int32)
+
+        numFFs = self.node2fence_region_map[rem_inst_ids.long()].sum().item()
+        numLUTs = rem_inst_ids.shape[0] - numFFs
+
+        if pos.is_cuda:
+            cpu_inst_curr_detSite = torch.flatten(self.inst_curr_detSite).cpu()
+            cpu_site_det_sig_idx = torch.flatten(self.site_det_sig_idx).cpu()
+            cpu_site_det_sig = torch.flatten(self.site_det_sig).cpu()
+            cpu_site_det_impl_lut = torch.flatten(self.site_det_impl_lut).cpu()
+            cpu_site_det_impl_ff = torch.flatten(self.site_det_impl_ff).cpu()
+            cpu_site_det_impl_cksr = torch.flatten(self.site_det_impl_cksr).cpu()
+            cpu_site_det_impl_ce = torch.flatten(self.site_det_impl_ce).cpu()
+            cpu_site_det_siteId = torch.flatten(self.site_det_siteId).cpu()
+            cpu_site_det_score = torch.flatten(self.site_det_score).cpu()
+            cpu_node_x = updXloc.cpu()
+            cpu_node_y = updYloc.cpu()
+            cpu_node_z = updZloc.cpu()
+
+            lut_ff_legalization_cpp.greedyLG_macroInsts(pos.cpu(), self.pin_offset_x.cpu(), self.pin_offset_y.cpu(), self.net_wts.cpu(),
+                self.net_bbox.cpu(), wlPrecond.cpu(), torch.flatten(self.site_xy).cpu(), self.regionBox2xl.cpu(),
+                self.regionBox2yl.cpu(), self.regionBox2xh.cpu(), self.regionBox2yh.cpu(), self.net_pinIdArrayX.cpu(),
+                self.net_pinIdArrayY.cpu(), torch.flatten(self.spiral_accessor).cpu(),self.node2fence_region_map.cpu(),
+                self.lut_type.cpu(), torch.flatten(self.site_types).cpu(), self.node2pincount.cpu(), self.net2pincount.cpu(),
+                self.pin2net_map.cpu(), self.pin2node_map.cpu(), self.pin_typeIds.cpu(), self.flop2ctrlSetId_map.cpu(),
+                self.flop_ctrlSets.cpu(), self.flat_net2pin_start_map.cpu(), self.flat_node2pin_start_map.cpu(),
+                self.flat_node2pin_map.cpu(), self.flat_node2prclstrCount.cpu(), torch.flatten(self.flat_node2precluster_map).cpu(),
+                self.node2regionBox_map.cpu(), sorted_net_map.cpu(), sorted_remNode_map.cpu(), sorted_remNode_idx.cpu(),
+                self.node2outpinIdx_map.cpu(), self.flat_net2pin_map.cpu(),  self.addr2site_map.cpu(), self.site2addr_map.cpu(),
+                self.nodeNames.cpu(), self.xl, self.yl, self.xh, self.yh, self.xWirelenWt, self.yWirelenWt, self.extNetCountWt,
+                self.wirelenImprovWt, slotAssignFlowWeightScale, slotAssignFlowWeightIncr, self.NUM_BLE_PER_HALF_SLICE,
+                num_remInsts, self.num_sites_x, self.num_sites_y, self.num_clb_sites, spiralBegin, self.spiral_accessor.shape[0],
+                self.CKSR_IN_CLB, self.CE_IN_CLB, self.HALF_SLICE_CAPACITY, self.NUM_BLE_PER_SLICE, self.netShareScoreMaxNetDegree,
+                self.WLscoreMaxNetDegree, greedyExpansion, self.SIG_IDX, self.num_threads, cpu_inst_curr_detSite, cpu_site_det_sig_idx,
+                cpu_site_det_sig, cpu_site_det_impl_lut, cpu_site_det_impl_ff, cpu_site_det_impl_cksr, cpu_site_det_impl_ce,
+                cpu_site_det_siteId, cpu_site_det_score, cpu_node_x, cpu_node_y, cpu_node_z)
+
+            self.inst_curr_detSite.data.copy_(cpu_inst_curr_detSite.data)
+            torch.flatten(self.site_det_sig_idx).data.copy_(cpu_site_det_sig_idx.data)
+            torch.flatten(self.site_det_sig).data.copy_(cpu_site_det_sig.data)
+            torch.flatten(self.site_det_impl_lut).data.copy_(cpu_site_det_impl_lut.data)
+            torch.flatten(self.site_det_impl_ff).data.copy_(cpu_site_det_impl_ff.data)
+            torch.flatten(self.site_det_impl_cksr).data.copy_(cpu_site_det_impl_cksr.data)
+            torch.flatten(self.site_det_impl_ce).data.copy_(cpu_site_det_impl_ce.data)
+            torch.flatten(self.site_det_siteId).data.copy_(cpu_site_det_siteId.data)
+            torch.flatten(self.site_det_score).data.copy_(cpu_site_det_score.data)
+            updXloc.data.copy_(cpu_node_x.data)
+            updYloc.data.copy_(cpu_node_y.data)
+            updZloc.data.copy_(cpu_node_z.data)
+        else:
+            lut_ff_legalization_cpp.greedyLG_macroInsts(pos, self.pin_offset_x, self.pin_offset_y, self.net_wts, self.net_bbox,
+                wlPrecond, torch.flatten(self.site_xy), self.regionBox2xl, self.regionBox2yl, self.regionBox2xh, self.regionBox2yh,
+                self.net_pinIdArrayX, self.net_pinIdArrayY, torch.flatten(self.spiral_accessor), self.node2fence_region_map,
+                self.lut_type, torch.flatten(self.site_types), self.node2pincount, self.net2pincount, self.pin2net_map,
+                self.pin2node_map, self.pin_typeIds, self.flop2ctrlSetId_map, self.flop_ctrlSets, self.flat_net2pin_start_map,
+                self.flat_node2pin_start_map, self.flat_node2pin_map, self.flat_node2prclstrCount,
+                torch.flatten(self.flat_node2precluster_map), self.node2regionBox_map, sorted_net_map, sorted_remNode_map,
+                sorted_remNode_idx, self.node2outpinIdx_map, self.flat_net2pin_map, self.addr2site_map, self.site2addr_map, self.nodeNames,
+                self.xl, self.yl, self.xh, self.yh, self.xWirelenWt, self.yWirelenWt, self.extNetCountWt, self.wirelenImprovWt,
+                slotAssignFlowWeightScale, slotAssignFlowWeightIncr, self.NUM_BLE_PER_HALF_SLICE, num_remInsts, self.num_sites_x,
+                self.num_sites_y, self.num_clb_sites, spiralBegin, self.spiral_accessor.shape[0], self.CKSR_IN_CLB, self.CE_IN_CLB,
+                self.HALF_SLICE_CAPACITY, self.NUM_BLE_PER_SLICE, self.netShareScoreMaxNetDegree, self.WLscoreMaxNetDegree, greedyExpansion,
+                self.SIG_IDX, self.num_threads, self.inst_curr_detSite, self.site_det_sig_idx, self.site_det_sig, self.site_det_impl_lut,
+                self.site_det_impl_ff,  self.site_det_impl_cksr, self.site_det_impl_ce, self.site_det_siteId, self.site_det_score,
+                updXloc, updYloc, updZloc)
+
+        totalNodes = int(len(pos)/2)
+        node_z.data.copy_(updZloc)
+        mask = self.node2fence_region_map < 2
+        pos[:self.num_nodes].data.masked_scatter_(mask, updXloc[mask])
+        pos[totalNodes:totalNodes+self.num_nodes].data.masked_scatter_(mask, updYloc[mask])
+
+        print("Greedy LG on %d macro insts (%d LUTs + %d FFs) takes %.3f seconds" % (num_remInsts, numLUTs, numFFs, time.time()-tt))
+        return pos
+
     def runDLIter(self, pos, wlPrecond, sorted_node_map, sorted_node_idx, sorted_net_map, sorted_net_idx, sorted_pin_map, 
                   activeStatus, illegalStatus, dlIter):
         maxDist = 5.0
