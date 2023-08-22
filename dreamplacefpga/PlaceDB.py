@@ -810,6 +810,8 @@ class PlaceDBFPGA (object):
         str_node_names = self.original_node_names
         for i in self.original_macro_nodes:
             node_id = self.original_node2node_map[i]
+            if self.node2fence_region_map[node_id] < 2:
+                continue
             content += "%s %d %d %g\n" % (
                     str_node_names[i],
                     node_x[node_id] + self.org_cascade_node_x_offset[i], 
