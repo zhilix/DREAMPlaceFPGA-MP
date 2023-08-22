@@ -93,7 +93,7 @@ You can use the Docker container to avoid building all the dependencies yourself
     Replace `your_username` with your name
     Replace `/Your_Designs_Directory` with the path of the Designs folder, which containing `Design_1`, `Design_2`, `Design_3`, etc... For example:
     ```
-    docker run -it -v $(pwd):/DREAMPlaceFPGA_mlcad -v $(pwd)/../Designs:/Designs name/dreamplace_fpga:1.0 bash
+    docker run -it -v $(pwd):/DREAMPlaceFPGA_mlcad -v $(pwd)/../Designs:/Designs your_username/dreamplace_fpga:1.0 bash
     ```
 7. go to the `DREAMPlaceFPGA_mlcad` directory
     ```
