@@ -70,7 +70,7 @@ cat > $(pwd)/design.json <<EOF
     "num_bins_x" : 512,
     "num_bins_y" : 512,
     "global_place_stages" : [
-    {"num_bins_x" : 512, "num_bins_y" : 512, "iteration" : 2000, "learning_rate" : 0.01, "wirelength" : "weighted_average", "optimizer" : "nesterov"}
+    {"num_bins_x" : 512, "num_bins_y" : 512, "iteration" : 1800, "learning_rate" : 0.01, "wirelength" : "weighted_average", "optimizer" : "nesterov"}
     ],
     "target_density" : 1.0,
     "density_weight" : 8e-5,
