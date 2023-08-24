@@ -75,11 +75,17 @@ You can use the Docker container to avoid building all the dependencies yourself
     cd DREAMPlaceFPGA_mlcad
     ```
 4. build the docker image
+    - Option 1: pull the image from the cloud
+    ```
+    docker pull zhixingjiang/dreamplace_fpga:v1.0
+    ```
+    - Option 2: build the image locally
     ```
     docker build . --file Dockerfile --tag your_username/dreamplace_fpga:1.0
     ```
+    
     replace `your_username` with your name.
-5. Enter bash environment of the container.
+6. Enter bash environment of the container.
     Mount the repo and all the Designs into the Docker, which allows the Docker container to directly access and modify these files
 
     Run without GPU on Linux.
