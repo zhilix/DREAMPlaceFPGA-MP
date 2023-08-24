@@ -55,7 +55,7 @@
     - Otherwise, only CPU implementation is enabled. 
 
 - GPU architecture compatibility 6.0 or later (Optional)
-    - Code has been tested on GPUs with compute compatibility 6.0, 7.0, and 7.5. 
+    - Code has been tested on GPUs with compute compatibility 6.0, 6.1, 7.0, 7.5, and 8.0. 
     - Please check the [compatibility](https://developer.nvidia.com/cuda-gpus) of the GPU devices. 
     - The default compilation target is compatibility 6.0. This is the minimum requirement and lower compatibility is not supported for the GPU feature. 
 
@@ -69,43 +69,43 @@ You can use the Docker container to avoid building all the dependencies yourself
 
 1.  Install Docker on [Linux](https://docs.docker.com/install/).(Win and Mac are not tested)
 2.  To enable the GPU features, install [NVIDIA-docker](https://github.com/NVIDIA/nvidia-docker); otherwise, skip this step.
-3.  git clone the git repo, and navigate to the repository
+3.  Clone the repo, and navigate to the repository
     ```
     git clone --recursive https://github.com/zhilix/DREAMPlaceFPGA_mlcad.git
     cd DREAMPlaceFPGA_mlcad
     ```
-4. build the docker image
+4. Get the docker image using one of the options
     - Option 1: pull the image from the cloud
     ```
     docker pull zhixingjiang/dreamplace_fpga:v1.0
     ```
     - Option 2: build the image locally
     ```
-    docker build . --file Dockerfile --tag your_username/dreamplace_fpga:1.0
+    docker build . --file Dockerfile --tag <username>/dreamplace_fpga:1.0
     ```
-    
-    replace `your_username` with your name.
-6. Enter bash environment of the container.
+    replace `<username>` with a username, for instance 'utda_macro_placer'.
+5. Enter bash environment of the container.
     Mount the repo and all the Designs into the Docker, which allows the Docker container to directly access and modify these files
 
-    Run without GPU on Linux.
+    To run on a Linux machine without GPU:
     ```
-    docker run -it -v $(pwd):/DREAMPlaceFPGA_mlcad -v /Your_Designs_Directory your_username/dreamplace_fpga:1.0 bash
+    docker run -it -v $(pwd):/DREAMPlaceFPGA_mlcad -v <path_to_designs_directory>:/Designs <username>/dreamplace_fpga:1.0 bash
     ```
-    Run with GPU on Linux. (not tested yet)
+    To run on a Linux machine with GPU: (Docker verified on NVIDIA GPUs with compute capability 6.1, 7.5, and 8.0)
     ```
-    docker run --gpus 1 -it -v $(pwd):/DREAMPlaceFPGA_mlcad -v /Your_Designs_Directory:/Designs your_username/dreamplace_fpga:1.0 bash
+    docker run --gpus 1 -it -v $(pwd):/DREAMPlaceFPGA_mlcad -v <path_to_designs_directory>:/Designs <username>/dreamplace_fpga:1.0 bash
     ```
-    Replace `your_username` with your name
-    Replace `/Your_Designs_Directory` with the path of the Designs folder, which containing `Design_1`, `Design_2`, `Design_3`, etc... For example:
+    Provide complete path to the designs directory for <path_to_designs_directory>, which contains `Design_1`, `Design_2`, `Design_3`, etc...
+
+    For example to run on a Linux machine without GPU:
     ```
-    docker run -it -v $(pwd):/DREAMPlaceFPGA_mlcad -v $(pwd)/../Designs:/Designs your_username/dreamplace_fpga:1.0 bash
+    docker run -it -v $(pwd):/DREAMPlaceFPGA_mlcad -v $(pwd)/../Designs:/Designs utda_macro_placer/dreamplace_fpga:1.0 bash
     ```
-7. go to the `DREAMPlaceFPGA_mlcad` directory
+6. Go to the `DREAMPlaceFPGA_mlcad` directory in the Docker
     ```
     cd /DREAMPlaceFPGA_mlcad
     ```
-8. create a build directory and install the package
+7. Create a build directory and install the package
     ```
     rm -rf build
     mkdir build 
@@ -114,13 +114,13 @@ You can use the Docker container to avoid building all the dependencies yourself
     make
     make install
     ```
-    Note: When there are changes to packages or parser code, it is necessary to delete contents of ***build*** directory for a clean build and proper operation. if no change to the code, no need to run rm -r build.
+    Note: When there are changes to packages or parser code, it is necessary to delete contents of ***build*** directory for a clean build and proper operation.
+    If there is no change to code, there is no need to delete the build directory using `rm -r build`.
     ```
     rm -r build
     ```
-9.  Running UTDA_macro_placer
-    Before running, ensure that all python dependent packages have been installed. 
-    Go to the ***benchmark directory***, and run:
+8.  To run the UTDA_macro_placer on a design
+    Go to the ***design directory*** containing the bookshelf input files, and run:
     ```
     source <path_to_root_dir>/run_mlcad_design.sh <path_to_root_dir> <gpu_flag>
     ```
@@ -157,7 +157,7 @@ You can use the Docker container to avoid building all the dependencies yourself
     ```
     mkdir build 
     cd build 
-    cmake .. -DCMAKE_INSTALL_PREFIX=path_to_root_dir
+    cmake .. -DCMAKE_INSTALL_PREFIX=<path_to_root_dir>
     make
     make install
     ```
@@ -181,19 +181,7 @@ You can use the Docker container to avoid building all the dependencies yourself
     
     > ***~/Downloads/DREAMPlaceFPGA_mlcad:*** *rm -r build*
 
-4.  Cmake Options 
-    Here are the available options for CMake. 
-    - CMAKE_INSTALL_PREFIX: installation or root directory
-        - Example ```cmake -DCMAKE_INSTALL_PREFIX=path/to/root/directory```
-    - CMAKE_CUDA_FLAGS: custom string for NVCC (default -gencode=arch=compute_60,code=sm_60)
-        - Example ```cmake -DCMAKE_CUDA_FLAGS=-gencode=arch=compute_60,code=sm_60```
-    - CMAKE_CXX_ABI: 0|1 for the value of _GLIBCXX_USE_CXX11_ABI for C++ compiler, default is 0. 
-        - Example ```cmake -DCMAKE_CXX_ABI=0```
-        - It must be consistent with the _GLIBCXX_USE_CXX11_ABI for compling all the C++ dependencies, such as Boost and PyTorch. 
-        - PyTorch in default is compiled with _GLIBCXX_USE_CXX11_ABI=0, but in a customized PyTorch environment, it might be compiled with _GLIBCXX_USE_CXX11_ABI=1. 
-
-
-5.  Running UTDA_macro_placer
+4.  Running UTDA_macro_placer
     Before running, ensure that all python dependent packages have been installed. 
     Go to the ***benchmark directory***, and run:
     ```
@@ -204,6 +192,16 @@ You can use the Docker container to avoid building all the dependencies yourself
     For example, to run on GPU: 
     > ***~/Downloads/Designs/Design_181:*** *source ~/Downloads/DREAMPlaceFPGA_mlcad/run_mlcad_design.sh ~/Downloads/DREAMPlaceFPGA_mlcad 1*
 
+### Optional Cmake Options
+    Here are the available options for CMake. 
+    - CMAKE_INSTALL_PREFIX: installation or root directory
+        - Example ```cmake -DCMAKE_INSTALL_PREFIX=path/to/root/directory```
+    - CMAKE_CUDA_FLAGS: custom string for NVCC (default -gencode=arch=compute_60,code=sm_60)
+        - Example ```cmake -DCMAKE_CUDA_FLAGS=-gencode=arch=compute_60,code=sm_60```
+    - CMAKE_CXX_ABI: 0|1 for the value of _GLIBCXX_USE_CXX11_ABI for C++ compiler, default is 0. 
+        - Example ```cmake -DCMAKE_CXX_ABI=0```
+        - It must be consistent with the _GLIBCXX_USE_CXX11_ABI for compling all the C++ dependencies, such as Boost and PyTorch. 
+        - PyTorch in default is compiled with _GLIBCXX_USE_CXX11_ABI=0, but in a customized PyTorch environment, it might be compiled with _GLIBCXX_USE_CXX11_ABI=1. 
 
 ## <a name="copyright"></a>Copyright
 
