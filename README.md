@@ -90,22 +90,23 @@ You can use the Docker container to avoid building all the dependencies yourself
 
     Run without GPU on Linux.
     ```
-    docker run -it -v $(pwd):/DREAMPlaceFPGA_mlcad -v /Your_Designs_Directory your_username/dreamplace_fpga:1.0 bash
+    docker run -it -v $(pwd):/DREAMPlaceFPGA_mlcad -v /Your_Designs_Directory:/Designs your_username/dreamplace_fpga:1.0 bash
     ```
     Run with GPU on Linux. (not tested yet)
     ```
     docker run --gpus 1 -it -v $(pwd):/DREAMPlaceFPGA_mlcad -v /Your_Designs_Directory:/Designs your_username/dreamplace_fpga:1.0 bash
     ```
-    Replace `your_username` with your name
+    Replace `your_username` with your name if using option 2.
+    Replace `your_username` with your `zhixingjiang` if using option 1. 
     Replace `/Your_Designs_Directory` with the path of the Designs folder, which containing `Design_1`, `Design_2`, `Design_3`, etc... For example:
     ```
     docker run -it -v $(pwd):/DREAMPlaceFPGA_mlcad -v $(pwd)/../Designs:/Designs your_username/dreamplace_fpga:1.0 bash
     ```
-7. go to the `DREAMPlaceFPGA_mlcad` directory
+8. go to the `DREAMPlaceFPGA_mlcad` directory
     ```
     cd /DREAMPlaceFPGA_mlcad
     ```
-8. create a build directory and install the package
+9. create a build directory and install the package
     ```
     rm -rf build
     mkdir build 
@@ -118,7 +119,7 @@ You can use the Docker container to avoid building all the dependencies yourself
     ```
     rm -r build
     ```
-9.  Running UTDA_macro_placer
+10.  Running UTDA_macro_placer
     Before running, ensure that all python dependent packages have been installed. 
     Go to the ***benchmark directory***, and run:
     ```
