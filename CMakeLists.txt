@@ -83,8 +83,6 @@ message(STATUS "LIMBO_SOURCE_DIR ${LIMBO_SOURCE_DIR}")
 set(LIMBO_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/thirdparty/Limbo)
 message(STATUS "LIMBO_BINARY_DIR ${LIMBO_BINARY_DIR}")
 if(CUDA_FOUND)
-  #TODO- Remove below line for open-source version
-  set(CUDA_INCLUDE_DIRS "/usr/local/cuda-11.7/include")
   if (${CUDA_VERSION_MAJOR} VERSION_GREATER_EQUAL "11")
     set(CUB_DIR ${CUDA_INCLUDE_DIRS})
   else()
