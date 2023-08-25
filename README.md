@@ -69,9 +69,9 @@ You can use the Docker container to avoid building all the dependencies yourself
 
 1.  Install Docker on [Linux](https://docs.docker.com/install/).(Win and Mac are not tested)
 2.  To enable the GPU features, install [NVIDIA-docker](https://github.com/NVIDIA/nvidia-docker); otherwise, skip this step.
-3.  Clone the repo, and navigate to the repository
+3.  Download the DREAMPlaceFPGA_mlcad-main.zip, and navigate to the repository
     ```
-    git clone --recursive https://github.com/zhilix/DREAMPlaceFPGA_mlcad.git
+    unzip DREAMPlaceFPGA_mlcad-main.zip
     cd DREAMPlaceFPGA_mlcad
     ```
 4. Get the docker image using one of the options
