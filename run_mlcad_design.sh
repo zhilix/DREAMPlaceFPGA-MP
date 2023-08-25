@@ -20,7 +20,7 @@ else
     fi
 fi
 
-#clean bookshelf files
+#fixing bookshelf files typos
 lib_file=$(pwd)/design.lib
 if [ -f $lib_file ]; then
     sed -i 's/CELL END/END CELL/' $lib_file
@@ -28,9 +28,11 @@ fi
 
 instance_file=$(pwd)/design.cascade_shape_instances
 if [ -f $instance_file ]; then
+    sed -i 's/cascade/CASCADE/' $instance_file
     sed -i 's/BRAM_CASCADE /BRAM_CASCADE_2 /' $instance_file
 fi
 
+#'DSP_ALU_INST' not present in design.nodes
 region_file=$(pwd)/design.regions
 if [ -f $region_file ]; then
     sed -i 's+/DSP_ALU_INST++' $region_file
