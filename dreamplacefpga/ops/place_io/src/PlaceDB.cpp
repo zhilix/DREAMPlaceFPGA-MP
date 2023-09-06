@@ -361,8 +361,11 @@ void PlaceDB::add_cascade_instance_to_shape(std::string const& shapeName, std::s
     }else{
         dreamplacePrint(kWARN, "Cascade shape not found in .cascade_shapes file: %s\n",
                 shapeName.c_str());
+        return;
     }
-    cascade_inst2shape.emplace_back(shapeId);
+    
+    shapeIdTemp = shapeId;
+    instNameTemp = instName;
 
     std::string type = cascade_shape2macro_type[shapeId];
     if (type.find("DSP") != std::string::npos)
@@ -375,19 +378,31 @@ void PlaceDB::add_cascade_instance_to_shape(std::string const& shapeName, std::s
         m_cascade_nodeSizeYTemp = 5.0;
     }
 
-    cascade_inst_names.emplace_back(instName);
-    ++m_numCascadeInst;
     num_cascade_nodesTemp = 0;
-    
-    std::vector<index_type> temp;
-    cascade_inst2org_node_map.emplace_back(temp);
 
 }
 void PlaceDB::add_node_to_cascade_inst(std::string const& nodeName)
 {
-    
-    index_type org_nodeId = original_node_name2id_map.at(nodeName);
-    index_type cascade_inst_id = m_numCascadeInst - 1;
+    string2index_map_type::iterator found = original_node_name2id_map.find(nodeName);
+
+    index_type org_nodeId;
+    if (found != original_node_name2id_map.end())
+    {
+        org_nodeId = original_node_name2id_map.at(nodeName);
+    }else{
+        dreamplacePrint(kWARN, "Cascade node : %s not found in .nodes file\n",
+                nodeName.c_str());
+        return;
+    }
+
+    index_type cascade_inst_id = m_numCascadeInst;
+
+    if (num_cascade_nodesTemp == 0)
+    {
+        cascade_inst2org_start_node.emplace_back(org_nodeId);
+        std::vector<index_type> temp;
+        cascade_inst2org_node_map.emplace_back(temp);
+    }
 
     cascade_inst2org_node_map[cascade_inst_id].emplace_back(org_nodeId);
     original_node_is_cascade[org_nodeId] = 1;
@@ -396,11 +411,21 @@ void PlaceDB::add_node_to_cascade_inst(std::string const& nodeName)
     org_cascade_node_x_offset[org_nodeId] = 0.0;
     org_cascade_node_y_offset[org_nodeId] = num_cascade_nodesTemp*m_cascade_nodeSizeYTemp;
 
-    if (num_cascade_nodesTemp == 0)
-    {
-        cascade_inst2org_start_node.emplace_back(org_nodeId);
-    }
     ++num_cascade_nodesTemp;
+}
+
+void PlaceDB::end_of_cascade_inst()
+{
+    if (num_cascade_nodesTemp != 0)
+    {
+        cascade_inst2shape.emplace_back(shapeIdTemp);
+        cascade_inst_names.emplace_back(instNameTemp);
+        ++m_numCascadeInst;
+    }
+    else{
+        dreamplacePrint(kWARN, "Cascade instance %s has no nodes in this design\n",
+                instNameTemp.c_str());
+    }
 }
 
 void PlaceDB::update_nodes(){
