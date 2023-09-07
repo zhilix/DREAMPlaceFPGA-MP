@@ -80,7 +80,7 @@ cat > $(pwd)/design.json <<EOF
     "scale_factor" : 1.0,
     "global_place_flag" : 1,
     "dtype" : "float32",
-    "num_threads" : 16,
+    "num_threads" : 40,
     "deterministic_flag" : 1
 }
 EOF
