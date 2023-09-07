@@ -425,6 +425,11 @@ void Driver::addNodeToCascadeInstCbk(const std::string& nodeName)
 {
     m_db.add_node_to_cascade_inst(nodeName);
 }
+void Driver::endofCascadeInstCbk()
+{
+   m_db.end_of_cascade_inst();
+}
+
 void Driver::addMacroCbk(const std::string& name)
 {
     m_db.add_macro(name);

@@ -895,7 +895,7 @@ cascade_inst_block_header : STRING INTEGER INTEGER STRING EOL { driver.addCascad
 cascade_inst_block_header_begin : KWD_BEGIN EOL
                           ;
 
-cascade_inst_block_footer : KWD_END EOL_STAR
+cascade_inst_block_footer : KWD_END EOL_STAR { driver.endofCascadeInstCbk();}
 
 cascade_inst_block_lines  : cascade_inst_block_lines cascade_inst_block_line
                           | cascade_inst_block_line
