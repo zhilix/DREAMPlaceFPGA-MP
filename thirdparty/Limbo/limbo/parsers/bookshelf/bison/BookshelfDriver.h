@@ -156,6 +156,8 @@ public:
     void addCascadeInstToShapeCbk(const std::string& shapeName, const std::string& instName);
     /// @brief from cascade_shape_inst file, add node to instance entry
     void addNodeToCascadeInstCbk(const std::string& nodeName);
+    /// @brief from cascade_shape_inst file, end of instance entry
+    void endofCascadeInstCbk();
     /// @brief from macro file, add macro entry
     void addMacroCbk(const std::string& name);
 

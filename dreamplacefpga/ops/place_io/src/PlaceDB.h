@@ -347,6 +347,7 @@ class PlaceDB : public BookshelfParser::BookshelfDataBase
         virtual void add_cascade_shape_double_col(std::string macroType);
         virtual void add_cascade_instance_to_shape(std::string const& shapeName, std::string const& instName);
         virtual void add_node_to_cascade_inst(std::string const& nodeName);
+        virtual void end_of_cascade_inst();
         virtual void add_macro(std::string const& name);
         virtual void set_bookshelf_design(std::string& name);
         virtual void bookshelf_end(); 
@@ -458,6 +459,9 @@ class PlaceDB : public BookshelfParser::BookshelfDataBase
         double m_cascade_nodeSizeXTemp;
         double m_cascade_nodeSizeYTemp;
         std::size_t num_cascade_nodesTemp;
+
+        index_type shapeIdTemp;
+        std::string instNameTemp;
 
         std::vector<std::string> cascade_inst_names;
         std::vector<index_type> cascade_inst2shape;
