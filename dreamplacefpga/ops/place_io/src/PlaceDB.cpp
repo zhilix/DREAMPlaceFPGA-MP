@@ -390,8 +390,6 @@ void PlaceDB::add_node_to_cascade_inst(std::string const& nodeName)
     {
         org_nodeId = original_node_name2id_map.at(nodeName);
     }else{
-        dreamplacePrint(kWARN, "Cascade node : %s not found in .nodes file\n",
-                nodeName.c_str());
         return;
     }
 
