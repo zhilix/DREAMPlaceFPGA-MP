@@ -27,6 +27,7 @@ import dreamplacefpga.ops.precondWL.precondWL as precondWL
 import dreamplacefpga.ops.demandMap.demandMap as demandMap
 import dreamplacefpga.ops.sortNode2Pin.sortNode2Pin as sortNode2Pin
 import dreamplacefpga.ops.dsp_ram_legalization.dsp_ram_legalization as dsp_ram_legalization
+import dreamplacefpga.ops.dsp_ram_legalization.ISM_solver as ISM_solver
 import dreamplacefpga.ops.lut_ff_legalization.lut_ff_legalization as lut_ff_legalization
 import pdb
 import random
@@ -186,7 +187,10 @@ class PlaceDataCollectionFPGA(object):
             net_degrees = np.array([len(net2pin) for net2pin in placedb.net2pin_map])
             net_mask = np.logical_and(2 <= net_degrees,
                 net_degrees < params.ignore_net_degree).astype(np.uint8)
+            net_mask_ISM = np.logical_and(2 <= net_degrees,
+                net_degrees < 16).astype(np.uint8)
             self.net_mask_ignore_large_degrees = torch.from_numpy(net_mask).to(device)  # nets with large degrees are ignored
+            self.net_mask_ISM = torch.from_numpy(net_mask_ISM).to(device)  # nets with large degrees are ignored
 
             # For WL computation
             self.net_bounding_box_min = torch.zeros(placedb.num_nets * 2, dtype=datatypes[params.dtype], device=self.device)
@@ -366,6 +370,9 @@ class BasicPlaceFPGA(nn.Module):
 
         #Legalization
         self.op_collections.dsp_ram_legalization_op = self.build_dsp_ram_legalization(placedb, self.data_collections, self.device)
+
+        self.op_collections.ISM_solver_op = self.build_ISM_solver(placedb, self.data_collections, self.device)
+
         self.op_collections.lut_ff_legalization_op = self.build_lut_ff_legalization(params, placedb, self.data_collections, self.device)
  
         # draw placement
@@ -551,6 +558,18 @@ class BasicPlaceFPGA(nn.Module):
         @param device cpu or cuda
         """
         return dsp_ram_legalization.LegalizeDSPRAM(
+            data_collections=data_collections,
+            placedb=placedb,
+            device=device)
+
+    def build_ISM_solver(self, placedb, data_collections, device):
+        """
+        @brief ISM solver for DSP/BRAM Instances
+        @param placedb placement database
+        @param data_collections a collection of all data and variables required for constructing the ops
+        @param device cpu or cuda
+        """
+        return ISM_solver.ISMSolver(
             data_collections=data_collections,
             placedb=placedb,
             device=device)

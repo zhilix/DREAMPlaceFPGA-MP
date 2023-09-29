@@ -462,6 +462,8 @@ class NonLinearPlaceFPGA (BasicPlaceFPGA):
                             ##Legalize URAM at the end of Global placement
                             #moVal = self.op_collections.dsp_ram_legalization_op.legalize(pos, 4, model)
                             #logging.info("Legalized URAMs with maxMov = %g and avgMov = %g" % (moVal[0], moVal[1]))
+                            route_utilization_map = model.op_collections.route_utilization_map_op(pos)
+                            self.op_collections.ISM_solver_op.run_ISM(pos, 3, model, route_utilization_map)
 
                             #Lock DSP/RAM locations
                             model.lock_mask[2:4] = True
