@@ -1,5 +1,5 @@
-# ``UTDA_macro_placer``
-``UTDA_macro_placer`` is a GPU-Accelerated Macro Placer for Large Scale Heterogeneous FPGAs using a Deep Learning Toolkit.
+# ``DREAMPlaceFPGA-MP``
+``DREAMPlaceFPGA-MP`` is a GPU-Accelerated Macro Placer for Large Scale Heterogeneous FPGAs using a Deep Learning Toolkit.
 
 ## <a name="team members"></a>Team Members
 
@@ -69,10 +69,10 @@ You can use the Docker container to avoid building all the dependencies yourself
 
 1.  Install Docker on [Linux](https://docs.docker.com/install/).(Win and Mac are not tested)
 2.  To enable the GPU features, install [NVIDIA-docker](https://github.com/NVIDIA/nvidia-docker); otherwise, skip this step.
-3.  Download the DREAMPlaceFPGA_mlcad-main.zip, and navigate to the repository
+3.  Download the DREAMPlaceFPGA-MP-main.zip, and navigate to the repository
     ```
-    unzip DREAMPlaceFPGA_mlcad-main.zip
-    cd DREAMPlaceFPGA_mlcad
+    unzip DREAMPlaceFPGA-MP-main.zip
+    cd DREAMPlaceFPGA-MP
     ```
 4. Get the docker image using one of the options
     - Option 1: pull the image from the cloud
@@ -89,28 +89,28 @@ You can use the Docker container to avoid building all the dependencies yourself
 
     To run on a Linux machine without GPU:
     ```
-    docker run -it -v $(pwd):/DREAMPlaceFPGA_mlcad -v <path_to_designs_directory>:/Designs <username>/dreamplace_fpga:1.0 bash
+    docker run -it -v $(pwd):/DREAMPlaceFPGA-MP -v <path_to_designs_directory>:/Designs <username>/dreamplace_fpga:1.0 bash
     ```
     To run on a Linux machine with GPU: (Docker verified on NVIDIA GPUs with compute capability 6.1, 7.5, and 8.0)
     ```
-    docker run --gpus 1 -it -v $(pwd):/DREAMPlaceFPGA_mlcad -v <path_to_designs_directory>:/Designs <username>/dreamplace_fpga:1.0 bash
+    docker run --gpus 1 -it -v $(pwd):/DREAMPlaceFPGA-MP -v <path_to_designs_directory>:/Designs <username>/dreamplace_fpga:1.0 bash
     ```
     Provide complete path to the designs directory for <path_to_designs_directory>, which contains `Design_1`, `Design_2`, `Design_3`, etc...
 
     For example to run on a Linux machine without GPU:
     ```
-    docker run -it -v $(pwd):/DREAMPlaceFPGA_mlcad -v $(pwd)/../Designs:/Designs utda_macro_placer/dreamplace_fpga:1.0 bash
+    docker run -it -v $(pwd):/DREAMPlaceFPGA-MP -v $(pwd)/../Designs:/Designs utda_macro_placer/dreamplace_fpga:1.0 bash
     ```
-6. Go to the `DREAMPlaceFPGA_mlcad` directory in the Docker
+6. Go to the `DREAMPlaceFPGA-MP` directory in the Docker
     ```
-    cd /DREAMPlaceFPGA_mlcad
+    cd /DREAMPlaceFPGA-MP
     ```
 7. Create a build directory and install the package
     ```
     rm -rf build
     mkdir build 
     cd build 
-    cmake .. -DCMAKE_INSTALL_PREFIX=/DREAMPlaceFPGA_mlcad -DPYTHON_EXECUTABLE=$(which python)
+    cmake .. -DCMAKE_INSTALL_PREFIX=/DREAMPlaceFPGA-MP -DPYTHON_EXECUTABLE=$(which python)
     make
     make install
     ```
@@ -124,9 +124,9 @@ You can use the Docker container to avoid building all the dependencies yourself
     ```
     source <path_to_root_dir>/run_mlcad_design.sh <path_to_root_dir> <gpu_flag>
     ```
-    In our case the path to root dir is just `/DREAMPlaceFPGA_mlcad`, replace gpu_flag with 1 or 0, 1 is using GPU, 0 is using CPU
+    In our case the path to root dir is just `/DREAMPlaceFPGA-MP`, replace gpu_flag with 1 or 0, 1 is using GPU, 0 is using CPU
     ```
-    source /DREAMPlaceFPGA_mlcad/run_mlcad_design.sh /DREAMPlaceFPGA_mlcad <gpu_flag>
+    source /DREAMPlaceFPGA-MP/run_mlcad_design.sh /DREAMPlaceFPGA-MP <gpu_flag>
     ```
     
 
@@ -140,7 +140,7 @@ You can use the Docker container to avoid building all the dependencies yourself
     
     Or alternatively, pull all the submodules when cloning the repository. 
     ```
-    git clone --recursive https://github.com/zhilix/DREAMPlaceFPGA_mlcad.git
+    git clone --recursive https://github.com/zhilix/DREAMPlaceFPGA-MP.git
     ```
 
 2.  To install Python dependency 
@@ -148,9 +148,9 @@ You can use the Docker container to avoid building all the dependencies yourself
     ```
     pip install -r requirements.txt 
     ```
-    > For example, if the repository was cloned in directory ***~/Downloads***, then the root directory is ***~/Downloads/DREAMPlaceFPGA_mlcad***
+    > For example, if the repository was cloned in directory ***~/Downloads***, then the root directory is ***~/Downloads/DREAMPlaceFPGA-MP***
     
-    > You can also use a [python virtual environment](https://docs.python.org/3/library/venv.html) to install all the required packages to run ``DREAMPlaceFPGA_mlcad``
+    > You can also use a [python virtual environment](https://docs.python.org/3/library/venv.html) to install all the required packages to run ``DREAMPlaceFPGA-MP``
 
 3.  To Build 
     At the root directory, 
@@ -165,13 +165,13 @@ You can use the Docker container to avoid building all the dependencies yourself
     
     > For example,
     
-    > ***~/Downloads/DREAMPlaceFPGA_mlcad:*** *mkdir build; cd build*
+    > ***~/Downloads/DREAMPlaceFPGA-MP:*** *mkdir build; cd build*
     
-    > ***~/Downloads/DREAMPlaceFPGA_mlcad/build:***  *cmake . . -DCMAKE_INSTALL_PREFIX=~/Downloads/DREAMPlaceFPGA_mlcad*
+    > ***~/Downloads/DREAMPlaceFPGA-MP/build:***  *cmake . . -DCMAKE_INSTALL_PREFIX=~/Downloads/DREAMPlaceFPGA-MP*
     
-    > ***~/Downloads/DREAMPlaceFPGA_mlcad/build:*** *make; make install*
+    > ***~/Downloads/DREAMPlaceFPGA-MP/build:*** *make; make install*
     
-    > The directory ***~/Downloads/DREAMPlaceFPGA_mlcad/build*** is the install dir
+    > The directory ***~/Downloads/DREAMPlaceFPGA-MP/build*** is the install dir
     
     When there are changes to packages or parser code, it is necessary to delete contents of ***build*** directory for a clean build and proper operation.
     ```
@@ -179,7 +179,7 @@ You can use the Docker container to avoid building all the dependencies yourself
     ```
     > For example,
     
-    > ***~/Downloads/DREAMPlaceFPGA_mlcad:*** *rm -r build*
+    > ***~/Downloads/DREAMPlaceFPGA-MP:*** *rm -r build*
 
 4.  Running UTDA_macro_placer
     Before running, ensure that all python dependent packages have been installed. 
@@ -187,10 +187,10 @@ You can use the Docker container to avoid building all the dependencies yourself
     ```
     source <path_to_root_dir>/run_mlcad_design.sh <path_to_root_dir> <gpu_flag>
     ```
-    > Run from ***~/Downloads/DREAMPlaceFPGA_mlcad/benchmarks/mlcad2023_benchmarks/Design_181*** directory
+    > Run from ***~/Downloads/DREAMPlaceFPGA-MP/benchmarks/mlcad2023_benchmarks/Design_181*** directory
     
     For example, to run on GPU: 
-    > ***~/Downloads/Designs/Design_181:*** *source ~/Downloads/DREAMPlaceFPGA_mlcad/run_mlcad_design.sh ~/Downloads/DREAMPlaceFPGA_mlcad 1*
+    > ***~/Downloads/Designs/Design_181:*** *source ~/Downloads/DREAMPlaceFPGA-MP/run_mlcad_design.sh ~/Downloads/DREAMPlaceFPGA-MP 1*
 
 ### Optional Cmake Options
     Here are the available options for CMake. 
